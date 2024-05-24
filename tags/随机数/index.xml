@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>随机数 on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/%E9%9A%8F%E6%9C%BA%E6%95%B0/</link>
+    <description>Recent content in 随机数 on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Mon, 14 Jan 2019 10:48:06 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/%E9%9A%8F%E6%9C%BA%E6%95%B0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>生成指定范围和个数的不重复的随机整数</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/random_int/</link>
+      <pubDate>Mon, 14 Jan 2019 10:48:06 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/random_int/</guid>
+      <description>从其它平台迁移而来
+生成指定范围内的随机数，有相应的随机函数（如RandomRange(x, y)可生成x &amp;lt;= d &amp;lt; y的随机整数），或者在基本的随机函数上稍加修改也可生成；生成 n 个随机数，只需调用 n 次随机函数即可；生成 n 个不重复的随机数，就会有一点点小麻烦。
+常规思路 一般来说，要生成n个不重复的随机数，只需判断每次生成的随机数有没有和这前生成的随机数重复即可，若重复即抛弃，不重复则记录。
+但是，这样要进行很多额外的判断，而且当生成的量变大时，这样的判断次数也几乎是呈指数级的增加（具体复杂度没有进行详细分析）。
+另一种思路 如果每生成一个随机整数，就在一个整数序列上对应的位置做一个标记，那么只需要判断标记的个数有没有达到n即可，然后把有标记的整数取出就是 n 个不重复的随机整数。（其实该思路是借鉴了某个排序算法的思路，具体算法名称不记得了）
+首先来考虑生成 n 个[0, m)的不重复的随机数方法，n &amp;lt; m。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 var i: Integer; tmpMark: array of Integer; begin SetLength(tmpMark, m); repeat Randomize; i := RandomRange(0, m); //[0,m)半开半闭区间 tmpMark[i] := 1; until SumInt(tmpMark) = n; for i := 0 to m - 1 do if tmpMark[i] = 1 then i; //i即为随机出的不重复的整数 end; 本例中借助长度为m的数组tmpMark来进行标记，同时使用delphi自带的SumInt（在Math单元）函数来计算标记的个数，有标记的tmpMark下标即为随机出的整数。</description>
+    </item>
+  </channel>
+</rss>

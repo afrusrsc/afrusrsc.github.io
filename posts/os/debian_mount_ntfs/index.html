@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Debian开机自动挂载ntfs分区 | 慢步道人</title>
+<meta name="keywords" content="mount">
+<meta name="description" content="背景 由于是win和debian双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是ntfs格式。虽说xfce桌面环境挂载ntfs分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。
+解决方案 以需要把win下的D:盘挂载到/mnt/d下为例进行说明。
+准备工作 安装ntfs-3g驱动，已安装则忽略（桌面环境可挂载则证明已有驱动） 1 sudo apt update &amp;&amp; sudo apt install ntfs-3g 查看待挂载的ntfs分区的设备名称和UUID 1 lsblk -f # 假设设备名为 /dev/sda3，UUID 为 ABCDFE 手动创建挂载点 1 sudo mkdir /mnt/d 查看当前用户的uid和gid 1 id # 一般第一个非root的用户的 uid 和 gid 均为 1000 修改配置 编辑/etc/fstab 1 sudo vi /etc/fstab 添加如下内容并保存 1 UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0 重启 配置详解 1 &lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt; &lt;file system&gt;要挂载的设备，常见格式如下： 格式 示例 说明 设备路径 /dev/sda1 直接指定分区（不推荐，设备名可能变化） UUID UUID=1234-5678 唯一标识符（推荐，通过 blkid 或 lsblk -f 查看） 卷标 LABEL=Data 文件系统卷标（需提前用 e2label 等工具设置） 网络路径 nas:/share NFS/Samba 等网络共享路径 &lt;mount point&gt;挂载点，必须是已存在的空目录，一般在/mnt下">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/os/debian_mount_ntfs/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/os/debian_mount_ntfs/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Debian开机自动挂载ntfs分区" />
+<meta property="og:description" content="背景 由于是win和debian双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是ntfs格式。虽说xfce桌面环境挂载ntfs分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。
+解决方案 以需要把win下的D:盘挂载到/mnt/d下为例进行说明。
+准备工作 安装ntfs-3g驱动，已安装则忽略（桌面环境可挂载则证明已有驱动） 1 sudo apt update &amp;&amp; sudo apt install ntfs-3g 查看待挂载的ntfs分区的设备名称和UUID 1 lsblk -f # 假设设备名为 /dev/sda3，UUID 为 ABCDFE 手动创建挂载点 1 sudo mkdir /mnt/d 查看当前用户的uid和gid 1 id # 一般第一个非root的用户的 uid 和 gid 均为 1000 修改配置 编辑/etc/fstab 1 sudo vi /etc/fstab 添加如下内容并保存 1 UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0 重启 配置详解 1 &lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt; &lt;file system&gt;要挂载的设备，常见格式如下： 格式 示例 说明 设备路径 /dev/sda1 直接指定分区（不推荐，设备名可能变化） UUID UUID=1234-5678 唯一标识符（推荐，通过 blkid 或 lsblk -f 查看） 卷标 LABEL=Data 文件系统卷标（需提前用 e2label 等工具设置） 网络路径 nas:/share NFS/Samba 等网络共享路径 &lt;mount point&gt;挂载点，必须是已存在的空目录，一般在/mnt下" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/os/debian_mount_ntfs/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-06-12T20:06:17+08:00" />
+<meta property="article:modified_time" content="2025-06-12T20:06:17+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Debian开机自动挂载ntfs分区"/>
+<meta name="twitter:description" content="背景 由于是win和debian双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是ntfs格式。虽说xfce桌面环境挂载ntfs分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。
+解决方案 以需要把win下的D:盘挂载到/mnt/d下为例进行说明。
+准备工作 安装ntfs-3g驱动，已安装则忽略（桌面环境可挂载则证明已有驱动） 1 sudo apt update &amp;&amp; sudo apt install ntfs-3g 查看待挂载的ntfs分区的设备名称和UUID 1 lsblk -f # 假设设备名为 /dev/sda3，UUID 为 ABCDFE 手动创建挂载点 1 sudo mkdir /mnt/d 查看当前用户的uid和gid 1 id # 一般第一个非root的用户的 uid 和 gid 均为 1000 修改配置 编辑/etc/fstab 1 sudo vi /etc/fstab 添加如下内容并保存 1 UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0 重启 配置详解 1 &lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt; &lt;file system&gt;要挂载的设备，常见格式如下： 格式 示例 说明 设备路径 /dev/sda1 直接指定分区（不推荐，设备名可能变化） UUID UUID=1234-5678 唯一标识符（推荐，通过 blkid 或 lsblk -f 查看） 卷标 LABEL=Data 文件系统卷标（需提前用 e2label 等工具设置） 网络路径 nas:/share NFS/Samba 等网络共享路径 &lt;mount point&gt;挂载点，必须是已存在的空目录，一般在/mnt下"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🖥️操作系统",
+      "item": "https://afrusrsc.github.io/posts/os/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Debian开机自动挂载ntfs分区",
+      "item": "https://afrusrsc.github.io/posts/os/debian_mount_ntfs/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Debian开机自动挂载ntfs分区",
+  "name": "Debian开机自动挂载ntfs分区",
+  "description": "背景 由于是win和debian双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是ntfs格式。虽说xfce桌面环境挂载ntfs分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。\n解决方案 以需要把win下的D:盘挂载到/mnt/d下为例进行说明。\n准备工作 安装ntfs-3g驱动，已安装则忽略（桌面环境可挂载则证明已有驱动） 1 sudo apt update \u0026amp;\u0026amp; sudo apt install ntfs-3g 查看待挂载的ntfs分区的设备名称和UUID 1 lsblk -f # 假设设备名为 /dev/sda3，UUID 为 ABCDFE 手动创建挂载点 1 sudo mkdir /mnt/d 查看当前用户的uid和gid 1 id # 一般第一个非root的用户的 uid 和 gid 均为 1000 修改配置 编辑/etc/fstab 1 sudo vi /etc/fstab 添加如下内容并保存 1 UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0 重启 配置详解 1 \u0026lt;file system\u0026gt; \u0026lt;mount point\u0026gt; \u0026lt;type\u0026gt; \u0026lt;options\u0026gt; \u0026lt;dump\u0026gt; \u0026lt;pass\u0026gt; \u0026lt;file system\u0026gt;要挂载的设备，常见格式如下： 格式 示例 说明 设备路径 /dev/sda1 直接指定分区（不推荐，设备名可能变化） UUID UUID=1234-5678 唯一标识符（推荐，通过 blkid 或 lsblk -f 查看） 卷标 LABEL=Data 文件系统卷标（需提前用 e2label 等工具设置） 网络路径 nas:/share NFS/Samba 等网络共享路径 \u0026lt;mount point\u0026gt;挂载点，必须是已存在的空目录，一般在/mnt下",
+  "keywords": [
+    "mount"
+  ],
+  "articleBody": "背景 由于是win和debian双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是ntfs格式。虽说xfce桌面环境挂载ntfs分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。\n解决方案 以需要把win下的D:盘挂载到/mnt/d下为例进行说明。\n准备工作 安装ntfs-3g驱动，已安装则忽略（桌面环境可挂载则证明已有驱动） 1 sudo apt update \u0026\u0026 sudo apt install ntfs-3g 查看待挂载的ntfs分区的设备名称和UUID 1 lsblk -f # 假设设备名为 /dev/sda3，UUID 为 ABCDFE 手动创建挂载点 1 sudo mkdir /mnt/d 查看当前用户的uid和gid 1 id # 一般第一个非root的用户的 uid 和 gid 均为 1000 修改配置 编辑/etc/fstab 1 sudo vi /etc/fstab 添加如下内容并保存 1 UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0 重启 配置详解 1 要挂载的设备，常见格式如下： 格式 示例 说明 设备路径 /dev/sda1 直接指定分区（不推荐，设备名可能变化） UUID UUID=1234-5678 唯一标识符（推荐，通过 blkid 或 lsblk -f 查看） 卷标 LABEL=Data 文件系统卷标（需提前用 e2label 等工具设置） 网络路径 nas:/share NFS/Samba 等网络共享路径 挂载点，必须是已存在的空目录，一般在/mnt下\n文件系统类型，必须与分区实际类型一致，常见类型如下：\n类型 说明 ext4 Linux 原生文件系统 ntfs / ntfs-3g Windows NTFS 分区（需安装 ntfs-3g） vfat FAT32/exFAT 分区 swap 交换分区 nfs / cifs 网络文件系统 挂载选项，控制挂载后的权限、性能和行为，详见详解\n备份标志，已废弃\n值 说明 0 不备份（默认） 1 需要备份（极少使用） 文件系统检查顺序，控制fsck在启动时的检查顺序 值 说明 适用场景 0 不检查 NTFS/FAT/swap 等非 Linux 分区 1 优先检查 根分区 / 2 次级检查 其他 Linux 分区（如 /home） 详解 是一个以逗号分隔的列表（两个及以上时）。\n挂载行为 选项 作用 示例 说明 defaults 启用默认选项 defaults 等价于 rw,suid,dev,exec,auto,nouser,async rw / ro 读写 / 只读 ro 只读挂载（保护数据） exec / noexec 允许 / 禁止执行文件 noexec 增强安全性（如数据分区） suid / nosuid 允许 / 禁用 SUID/SGID nosuid 防止提权攻击 dev / nodev 是否允许挂载设备文件 nodev 防止访问设备（如 /dev/sda1） auto / noauto 是否开机自动挂载 noauto 手动挂载（如临时分区） user / nouser 是否允许普通用户挂载 user 允许非 root 用户挂载 权限控制 选项 作用 示例 说明 uid 设置文件所有者 uid=1000 指定用户 ID（id -u 查看） gid 设置文件所属组 gid=1000 指定组 ID（id -g 查看） dmask 目录权限掩码 dmask=022 目录权限 = 777 - dmask（如 755） fmask 文件权限掩码 fmask=133 文件权限 = 666 - fmask（如 644） umask 统一权限掩码 umask=000 同时控制文件和目录权限（不推荐） 性能与可靠性 选项 作用 示例 说明 async / sync 异步/同步写入 sync 同步写入更安全，但性能差 atime / noatime 更新访问时间 noatime 减少磁盘写入（推荐） relatime 相对访问时间 relatime 平衡性能与兼容性 errors=remount-ro 错误时只读挂载 errors=remount-ro 防止数据损坏 文件系统特定选项 NTFS/FAT 专用 选项 作用 示例 说明 windows_names 禁止非法文件名 windows_names 避免创建 *?\u003c\u003e 等 Windows 非法字符 utf8 强制 UTF-8 编码 utf8 正确显示非 ASCII 文件名 shortname=mixed 处理短文件名 shortname=mixed 兼容旧版 Windows 系统 ext4 专用 选项 作用 示例 说明 journal / nojournal 启用/禁用日志 nojournal 禁用日志（提升性能，但风险高） discard 启用 TRIM discard 优化 SSD 性能 data=writeback 日志模式 data=writeback 性能优先（默认 data=ordered） swap 分区 选项 系统 说明 sw OpenBSD等BSD 必要的，用于标记交换分区 sw Linux 只是一个占位符 ",
+  "wordCount" : "329",
+  "inLanguage": "zh",
+  "datePublished": "2025-06-12T20:06:17+08:00",
+  "dateModified": "2025-06-12T20:06:17+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/os/debian_mount_ntfs/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/os/">🖥️操作系统</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Debian开机自动挂载ntfs分区
+    </h1>
+    <div class="post-meta"><span title='2025-06-12 20:06:17 +0800 CST'>2025-06-12 20:06:17</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="解决方案">解决方案</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c" aria-label="准备工作">准备工作</a></li>
+                    <li>
+                        <a href="#%e4%bf%ae%e6%94%b9%e9%85%8d%e7%bd%ae" aria-label="修改配置">修改配置</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e9%85%8d%e7%bd%ae%e8%af%a6%e8%a7%a3" aria-label="配置详解">配置详解</a><ul>
+                            
+                    <li>
+                        <a href="#options%e8%af%a6%e8%a7%a3" aria-label="&amp;lt;options&amp;gt;详解"><code>&lt;options&gt;</code>详解</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%8c%82%e8%bd%bd%e8%a1%8c%e4%b8%ba" aria-label="挂载行为">挂载行为</a></li>
+                    <li>
+                        <a href="#%e6%9d%83%e9%99%90%e6%8e%a7%e5%88%b6" aria-label="权限控制">权限控制</a></li>
+                    <li>
+                        <a href="#%e6%80%a7%e8%83%bd%e4%b8%8e%e5%8f%af%e9%9d%a0%e6%80%a7" aria-label="性能与可靠性">性能与可靠性</a></li>
+                    <li>
+                        <a href="#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f%e7%89%b9%e5%ae%9a%e9%80%89%e9%a1%b9" aria-label="文件系统特定选项">文件系统特定选项</a><ul>
+                            
+                    <li>
+                        <a href="#ntfsfat-%e4%b8%93%e7%94%a8" aria-label="NTFS/FAT 专用">NTFS/FAT 专用</a></li>
+                    <li>
+                        <a href="#ext4-%e4%b8%93%e7%94%a8" aria-label="ext4 专用">ext4 专用</a></li>
+                    <li>
+                        <a href="#swap-%e5%88%86%e5%8c%ba" aria-label="swap 分区">swap 分区</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p>由于是<code>win</code>和<code>debian</code>双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是<code>ntfs</code>格式。虽说<code>xfce</code>桌面环境挂载<code>ntfs</code>分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。</p>
+<h1 id="解决方案">解决方案<a hidden class="anchor" aria-hidden="true" href="#解决方案">#</a></h1>
+<p>以需要把<code>win</code>下的<code>D:</code>盘挂载到<code>/mnt/d</code>下为例进行说明。</p>
+<h2 id="准备工作">准备工作<a hidden class="anchor" aria-hidden="true" href="#准备工作">#</a></h2>
+<ol>
+<li>安装<code>ntfs-3g</code>驱动，已安装则忽略（桌面环境可挂载则证明已有驱动）</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt update <span class="o">&amp;&amp;</span> sudo apt install ntfs-3g
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>查看待挂载的<code>ntfs</code>分区的<code>设备名称</code>和<code>UUID</code></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">lsblk -f <span class="c1"># 假设设备名为 /dev/sda3，UUID 为 ABCDFE</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>手动创建挂载点</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo mkdir /mnt/d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="4">
+<li>查看当前用户的<code>uid</code>和<code>gid</code></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">id <span class="c1"># 一般第一个非root的用户的 uid 和 gid 均为 1000</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="修改配置">修改配置<a hidden class="anchor" aria-hidden="true" href="#修改配置">#</a></h2>
+<ol>
+<li>编辑<code>/etc/fstab</code></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo vi /etc/fstab
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>添加如下内容并保存</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>重启</li>
+</ol>
+<h1 id="配置详解">配置详解<a hidden class="anchor" aria-hidden="true" href="#配置详解">#</a></h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>&lt;file system&gt;</code>要挂载的设备，常见格式如下：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>设备路径</td>
+<td>/dev/sda1</td>
+<td>直接指定分区（不推荐，设备名可能变化）</td>
+</tr>
+<tr>
+<td>UUID</td>
+<td>UUID=1234-5678</td>
+<td>唯一标识符（推荐，通过 blkid 或 lsblk -f 查看）</td>
+</tr>
+<tr>
+<td>卷标</td>
+<td>LABEL=Data</td>
+<td>文件系统卷标（需提前用 e2label 等工具设置）</td>
+</tr>
+<tr>
+<td>网络路径</td>
+<td>nas:/share</td>
+<td>NFS/Samba 等网络共享路径</td>
+</tr>
+</tbody>
+</table>
+<ol start="2">
+<li>
+<p><code>&lt;mount point&gt;</code>挂载点，必须是<strong>已存在的空目录</strong>，一般在<code>/mnt</code>下</p>
+</li>
+<li>
+<p><code>&lt;type&gt;</code>文件系统类型，必须与分区实际类型一致，常见类型如下：</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ext4</td>
+<td>Linux 原生文件系统</td>
+</tr>
+<tr>
+<td>ntfs / ntfs-3g</td>
+<td>Windows NTFS 分区（需安装 ntfs-3g）</td>
+</tr>
+<tr>
+<td>vfat</td>
+<td>FAT32/exFAT 分区</td>
+</tr>
+<tr>
+<td>swap</td>
+<td>交换分区</td>
+</tr>
+<tr>
+<td>nfs / cifs</td>
+<td>网络文件系统</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>
+<p><code>&lt;options&gt;</code>挂载选项，控制挂载后的权限、性能和行为，详见<a href="/posts/os/debian_mount_ntfs/#options详解"><code>&lt;options&gt;</code>详解</a></p>
+</li>
+<li>
+<p><code>&lt;dump&gt;</code>备份标志，已废弃</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>不备份（默认）</td>
+</tr>
+<tr>
+<td>1</td>
+<td>需要备份（极少使用）</td>
+</tr>
+</tbody>
+</table>
+<ol start="6">
+<li><code>&lt;pass&gt;</code>文件系统检查顺序，控制<code>fsck</code>在启动时的检查顺序</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>说明</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>不检查</td>
+<td>NTFS/FAT/swap 等非 Linux 分区</td>
+</tr>
+<tr>
+<td>1</td>
+<td>优先检查</td>
+<td>根分区 /</td>
+</tr>
+<tr>
+<td>2</td>
+<td>次级检查</td>
+<td>其他 Linux 分区（如 /home）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="options详解"><code>&lt;options&gt;</code>详解<a hidden class="anchor" aria-hidden="true" href="#options详解">#</a></h2>
+<p>是一个以逗号分隔的列表（两个及以上时）。</p>
+<h3 id="挂载行为">挂载行为<a hidden class="anchor" aria-hidden="true" href="#挂载行为">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>defaults</td>
+<td>启用默认选项</td>
+<td>defaults</td>
+<td>等价于 rw,suid,dev,exec,auto,nouser,async</td>
+</tr>
+<tr>
+<td>rw / ro</td>
+<td>读写 / 只读</td>
+<td>ro</td>
+<td>只读挂载（保护数据）</td>
+</tr>
+<tr>
+<td>exec / noexec</td>
+<td>允许 / 禁止执行文件</td>
+<td>noexec</td>
+<td>增强安全性（如数据分区）</td>
+</tr>
+<tr>
+<td>suid / nosuid</td>
+<td>允许 / 禁用 SUID/SGID</td>
+<td>nosuid</td>
+<td>防止提权攻击</td>
+</tr>
+<tr>
+<td>dev / nodev</td>
+<td>是否允许挂载设备文件</td>
+<td>nodev</td>
+<td>防止访问设备（如 /dev/sda1）</td>
+</tr>
+<tr>
+<td>auto / noauto</td>
+<td>是否开机自动挂载</td>
+<td>noauto</td>
+<td>手动挂载（如临时分区）</td>
+</tr>
+<tr>
+<td>user / nouser</td>
+<td>是否允许普通用户挂载</td>
+<td>user</td>
+<td>允许非 root 用户挂载</td>
+</tr>
+</tbody>
+</table>
+<h3 id="权限控制">权限控制<a hidden class="anchor" aria-hidden="true" href="#权限控制">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>uid</td>
+<td>设置文件所有者</td>
+<td>uid=1000</td>
+<td>指定用户 ID（id -u 查看）</td>
+</tr>
+<tr>
+<td>gid</td>
+<td>设置文件所属组</td>
+<td>gid=1000</td>
+<td>指定组 ID（id -g 查看）</td>
+</tr>
+<tr>
+<td>dmask</td>
+<td>目录权限掩码</td>
+<td>dmask=022</td>
+<td>目录权限 = 777 - dmask（如 755）</td>
+</tr>
+<tr>
+<td>fmask</td>
+<td>文件权限掩码</td>
+<td>fmask=133</td>
+<td>文件权限 = 666 - fmask（如 644）</td>
+</tr>
+<tr>
+<td>umask</td>
+<td>统一权限掩码</td>
+<td>umask=000</td>
+<td>同时控制文件和目录权限（不推荐）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="性能与可靠性">性能与可靠性<a hidden class="anchor" aria-hidden="true" href="#性能与可靠性">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>async / sync</td>
+<td>异步/同步写入</td>
+<td>sync</td>
+<td>同步写入更安全，但性能差</td>
+</tr>
+<tr>
+<td>atime / noatime</td>
+<td>更新访问时间</td>
+<td>noatime</td>
+<td>减少磁盘写入（推荐）</td>
+</tr>
+<tr>
+<td>relatime</td>
+<td>相对访问时间</td>
+<td>relatime</td>
+<td>平衡性能与兼容性</td>
+</tr>
+<tr>
+<td>errors=remount-ro</td>
+<td>错误时只读挂载</td>
+<td>errors=remount-ro</td>
+<td>防止数据损坏</td>
+</tr>
+</tbody>
+</table>
+<h3 id="文件系统特定选项">文件系统特定选项<a hidden class="anchor" aria-hidden="true" href="#文件系统特定选项">#</a></h3>
+<h4 id="ntfsfat-专用">NTFS/FAT 专用<a hidden class="anchor" aria-hidden="true" href="#ntfsfat-专用">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>windows_names</td>
+<td>禁止非法文件名</td>
+<td>windows_names</td>
+<td>避免创建 *?&lt;&gt; 等 Windows 非法字符</td>
+</tr>
+<tr>
+<td>utf8</td>
+<td>强制 UTF-8 编码</td>
+<td>utf8</td>
+<td>正确显示非 ASCII 文件名</td>
+</tr>
+<tr>
+<td>shortname=mixed</td>
+<td>处理短文件名</td>
+<td>shortname=mixed</td>
+<td>兼容旧版 Windows 系统</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ext4-专用">ext4 专用<a hidden class="anchor" aria-hidden="true" href="#ext4-专用">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>journal / nojournal</td>
+<td>启用/禁用日志</td>
+<td>nojournal</td>
+<td>禁用日志（提升性能，但风险高）</td>
+</tr>
+<tr>
+<td>discard</td>
+<td>启用 TRIM</td>
+<td>discard</td>
+<td>优化 SSD 性能</td>
+</tr>
+<tr>
+<td>data=writeback</td>
+<td>日志模式</td>
+<td>data=writeback</td>
+<td>性能优先（默认 data=ordered）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="swap-分区">swap 分区<a hidden class="anchor" aria-hidden="true" href="#swap-分区">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>系统</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sw</td>
+<td>OpenBSD等BSD</td>
+<td>必要的，用于标记交换分区</td>
+</tr>
+<tr>
+<td>sw</td>
+<td>Linux</td>
+<td>只是一个占位符</td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/mount/">Mount</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://afrusrsc.github.io/posts/os/tar_split/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>tar分卷打包解包</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
