@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>🧺杂项 | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="🧺杂项 - 慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/misc/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/posts/program/misc/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/misc/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="🧺杂项" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/misc/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="🧺杂项"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "🧺杂项",
+      "item": "https://afrusrsc.github.io/posts/program/misc/"
+    }
+  ]
+}
+</script>
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+  <h1>
+    🧺杂项
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">ANSI转义序列
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>起因 近来，翻看gin源码时，无意间看到了green = &#34;\033[97;42m&#34;这种不明所以的代码，遂充满疑惑和好奇，于是就搜索探究了一番，这才知道这叫ANSI转义序列。
+ANSI转义序列 简单说，就是一种标准化的终端控制序列，用于设置文本样式、颜色和背景等。先放个代码吧，以免不知所云。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 package main import &#34;fmt&#34; func main() { for i := 0; i &lt;= 10; i&#43;&#43; { fmt.Printf(&#34;这是\033[%[1]dm&lt;文本属性&gt;%2[1]d\033[0m\n&#34;, i) } s := []int{30, 31, 32, 33, 34, 35, 36, 37} for _, v := range s { fmt.Printf(&#34;这是\033[%[1]dm&lt;16色标准前景色&gt;%2[1]d\033[0m\t\033[%[2]dm&lt;16色亮前景色&gt;%2[2]d\033[0m\n&#34;, v, v&#43;60) fmt.Printf(&#34;这是\033[%[1]dm&lt;16色标准背景色&gt;%2[1]d\033[0m\t\033[%[2]dm&lt;16色亮背景色&gt;%2[2]d\033[0m\n&#34;, v&#43;10, v&#43;70) } for i := 0; i &lt; 256; i&#43;&#43; { fmt....</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-04-17 20:28:24 +0800 CST'>2025-04-17 20:28:24</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to ANSI转义序列" href="https://afrusrsc.github.io/posts/program/misc/ansi_es/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">修改jar包内配置并重新构建
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>起因 公司一个小项目，java组封了一个jar包，主要是封一个http的服务，提供几个接口，包含加密/解密和签名/验签的中间件，具体业务在数据库的存储过程里完成。
+由于没怎么接触过java，所以对如何修改配置完全不清楚，问人家，结果得到一句充满不屑和鄙视的回复——用解压工具打开直接改就行。
+呃~某些java仔还是一如既往的让人无力吐槽。算了，还是自己想办法吧。
+方法 网上搜了一下，然后试了试，嗯，可以了！
+列出jar包里的文件和文件夹，找到需要修改的文件 1 jar tf test.jar 提取文件并编辑保存 1 jar xf test.jar BOOT-INF/classes/application.yml 更新jar包 1 jar uf test.jar BOOT-INF/classes/application.yml 网上也有介绍与那个java仔说的方法类似的，不过有声明，说是可能会损坏jar包，所以并未尝试。
+题外话 java的生态确实很强，准确说是spring家族</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-08-16 21:33:30 +0800 CST'>2024-08-16 21:33:30</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 修改jar包内配置并重新构建" href="https://afrusrsc.github.io/posts/program/misc/java_jar_rebuild/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">简单数学运算的比较
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。
+java 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10....</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-01-01 22:37:24 +0800 CST'>2020-01-01 22:37:24</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 简单数学运算的比较" href="https://afrusrsc.github.io/posts/program/misc/float_precision_calc/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">多线程、多进程、多核
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+前言 线程、进程的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。
+碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。
+鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！
+CPU 其实，CPU是个很笨的家伙，笨到只会做最简单的事，而且一次还只能做一件最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！
+CPU仅会做的那几件事呢，就叫做CPU指令。
+虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？快！准！
+时间片 虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行排列组合来完成。所以啊，CPU一点儿也不怕麻烦。
+由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是操作系统（更准确的说是分时操作系统），也叫OS。
+OS规定CPU做一件事只能用一小段时间（这一小段时间就叫时间片），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。
+由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。
+进程&amp;线程 不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个进程，一个小任务就是一个线程。
+把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。
+单线程&amp;多线程 一个大任务只有一个小任务，那这个大任务就叫做单线程，否则就叫多线程。
+举个栗子：
+小明在唱歌，而且在唱歌是其它的事都不做。这就是单线程。
+小明一边唱歌，一边跳舞。这就是多线程。
+小明一边唱歌，一边吃饭。这也是多线程，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是线程同步。
+多进程 直接举栗子：
+小明自己放风筝。这就是单进程。
+小明和小红都在放自己的风筝。这是一种多进程，只不过两个进程是独立的。
+小明和小红一起放大蜈蚣风筝。这是另一种多进程，进程之间需要配合，也存在类似多线程的麻烦。这方面的问题没有详细了解过，就不多扯了。
+多线程&amp;多进程 再次举栗子：
+小明一边唱歌，一边跳舞。这是多线程，用的都是小明的身体（资源）。
+小明唱歌，小红跳舞。这是多进程，各自用各自的身体（资源）。
+小明和小红合唱。这也是多进程，各自用各自的身体（资源）。
+多核 单核、多核是针对CPU来说的。
+继续举栗子说明：
+普通人。单核。
+哪吒。多核。
+如有不对之处，还望大侠指正！</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-04-13 22:53:06 +0800 CST'>2018-04-13 22:53:06</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 多线程、多进程、多核" href="https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">简单确定文件格式
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+有时候，我们会下载到或者从邮箱接收到一些莫名其妙的文件——只有名字，没有后缀名（文件扩展名），排除不安全因素后，确定这就是我们想要的文件，但是不知道文件格式或者不知道用什么软件来打开查看，对于大多数人来说这可是个比较头疼的问题。
+但是，如果掌握一些基础知识的话，这样的问题其实是很好解决的！
+知识点一： 文件后缀名（扩展名）和文件格式没有半毛钱关系！
+文件格式实际上是由文件开头的若干字节来描述的，这些文件描述称为文件头（注意，不是c/c&#43;&#43;里的.h头文件）。
+那么，后缀名是用来做什么的呢？后缀名仅仅是为了方便从文件名中知道文件是什么格式，一方面给用户（你，我，他）看，另一方面给操作系统看，由操作系统判断使用哪个阅读器、浏览器、工具等软件打开，而这些软件对文件的解析就是根据文件头的描述来进行的。
+知识点二： 本质上所有的文件都是二进制文件！
+文本、源码（其实也是文本）、word、excel、ppt、pdf、dll、exe、图片、压缩包……都是二进制文件，因为现代计算机系统只认识0和1。不信的话可以用十六进制工具打开来查看。
+好了，有了这两个基础知识，我们就可以进行继续了。上面提到了十六进制工具，这里我们要使用的神器也正是它！
+这是一张png图片，用十六进制打开后是这样的，可以明显看到有PNG字样。
+这是一个pdf文件，也可以明显看到PDF字样。
+就不再贴图了，套路就是这么个套路，下面就直接上整理好的常用的对应表了！
+文件格式 文件头 bmp图片 42 4D (BM) png图片 89 50 4E 47 (‰PNG) jpg图片 FF D8 pdf文档 25 50 44 46 (%PDF) zip压缩包 50 4B (PK) rar压缩包 52 61 72 (Rar) 7z压缩包 37 7A (7z) docx、xlsx、pptx 50 4B (PK) dll或exe 4D 5A (MZ) 可看到，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 与 zip压缩包的文件头是一样的，是不是搞错了？没错，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 实际上就是一个 zip压缩包，不信的小伙伴儿们可以把后缀名改为zip用解压工具打开看看真面目。...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-03-31 16:33:46 +0800 CST'>2018-03-31 16:33:46</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 简单确定文件格式" href="https://afrusrsc.github.io/posts/program/misc/file_type/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">GBK编码
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。
+其中，中文字符集编码常用的有GB2312和GBK，以及万国码UTF8，另外还有GB18030。
+ASCII码每个字符占一个字节；GB2312是GBK的子集，两个字符集都是每个字符占两个字节；GB18030是GBK的取代版本，每个字符占一个、两个或四个字节；UFT8是万国码，每个字符占一个、两个或三个字节。
+下图是GBK字符编码表。
+图是265*256的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为0000~FF00；垂直方向表示低字节，从上到下为0000~00FF。
+左侧0区：0000~007F，ASCII码区。
+右下色块区：8140~FEFE（需剔除a区即817F~FE7F），GBK编码区。
+具体说明 GBK编码分三部分。
+一、汉字区 2区：B0A1~F7FE，GBK/2，GB2312汉字区，GB2312汉字6763个。
+GB13000.1扩充汉字区
+3区：8140~A0FE，GBK/3，GB13000.1中的CJK汉字6080个。
+4区：AA40~FEA0，GBK/4，CJK汉字和增补的汉字8160个。
+二、图形符号区 1区：A1A1~A9FE，GBK/1，GB2312非汉字符号区。除GB2312的符号外，还有10个小写罗马数字和GB12345增补的符号。计符号717个。
+5区：A840~A9A0，GBK/5，GB13000.1扩充非汉字区。包含BIG-5非汉字符号、结构符和汉字〇。计符号166个。
+三、用户自定义区 A区：AAA1~AFFE，码位564个。
+B区：F8A1~FEFE，码位658个。
+C区：A140~A7A0，码位672个。</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-11-30 10:46:25 +0800 CST'>2017-11-30 10:46:25</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to GBK编码" href="https://afrusrsc.github.io/posts/program/misc/gbk/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

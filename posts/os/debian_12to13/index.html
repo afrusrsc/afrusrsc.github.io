@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Debian从12升到13的翻车记 | 慢步道人</title>
+<meta name="keywords" content="linux">
+<meta name="description" content="前言 之前都是在虚拟机里玩玩Debian，也就最近两年才实打实地在物理机上装了Debian 12，也一直用得挺好。
+前段时间，关注已久的trixie也就是Debian 13终于发布了，虽然告诫过自己要等稳定一段时间再升级，但终究挡不过尝鲜的念头一起再起，于是在发布的第二天晚上开启了升级之路。
+虽然已经研究了官方的升级文档，但还是翻车了。
+升级过程 先更新当前系统的补丁 1 sudo apt update &amp;&amp; sudo apt upgrade -y 备份源，然后修改源，把bookworm替换为trixie 1 2 3 4 5 6 7 # 备份 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak # 修改 sudo sed -i &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list # 也可用一个命令备份并修改 sudo sed -i.bak &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list 再进行大版本更新 1 sudo apt update &amp;&amp; sudo apt full-upgrade -y 更新完成后会有类似执行apt autoremove的提示，慎重执行 翻车记 翻车根源在于：大版本更新时使用了sudo apt update &amp;&amp; sudo apt upgrade -y，之后又无脑执行了sudo apt autoremove，好巧不巧把network-manager卸载了，没法上网了！
+若是可以接有线网，插上网线，sudo apt install network-manager也就不会有后面的问题了。但是，偏偏这是在一个没有有线网的环境下。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/os/debian_12to13/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/os/debian_12to13/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Debian从12升到13的翻车记" />
+<meta property="og:description" content="前言 之前都是在虚拟机里玩玩Debian，也就最近两年才实打实地在物理机上装了Debian 12，也一直用得挺好。
+前段时间，关注已久的trixie也就是Debian 13终于发布了，虽然告诫过自己要等稳定一段时间再升级，但终究挡不过尝鲜的念头一起再起，于是在发布的第二天晚上开启了升级之路。
+虽然已经研究了官方的升级文档，但还是翻车了。
+升级过程 先更新当前系统的补丁 1 sudo apt update &amp;&amp; sudo apt upgrade -y 备份源，然后修改源，把bookworm替换为trixie 1 2 3 4 5 6 7 # 备份 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak # 修改 sudo sed -i &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list # 也可用一个命令备份并修改 sudo sed -i.bak &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list 再进行大版本更新 1 sudo apt update &amp;&amp; sudo apt full-upgrade -y 更新完成后会有类似执行apt autoremove的提示，慎重执行 翻车记 翻车根源在于：大版本更新时使用了sudo apt update &amp;&amp; sudo apt upgrade -y，之后又无脑执行了sudo apt autoremove，好巧不巧把network-manager卸载了，没法上网了！
+若是可以接有线网，插上网线，sudo apt install network-manager也就不会有后面的问题了。但是，偏偏这是在一个没有有线网的环境下。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/os/debian_12to13/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-08-20T20:45:47+08:00" />
+<meta property="article:modified_time" content="2025-08-20T20:45:47+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Debian从12升到13的翻车记"/>
+<meta name="twitter:description" content="前言 之前都是在虚拟机里玩玩Debian，也就最近两年才实打实地在物理机上装了Debian 12，也一直用得挺好。
+前段时间，关注已久的trixie也就是Debian 13终于发布了，虽然告诫过自己要等稳定一段时间再升级，但终究挡不过尝鲜的念头一起再起，于是在发布的第二天晚上开启了升级之路。
+虽然已经研究了官方的升级文档，但还是翻车了。
+升级过程 先更新当前系统的补丁 1 sudo apt update &amp;&amp; sudo apt upgrade -y 备份源，然后修改源，把bookworm替换为trixie 1 2 3 4 5 6 7 # 备份 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak # 修改 sudo sed -i &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list # 也可用一个命令备份并修改 sudo sed -i.bak &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list 再进行大版本更新 1 sudo apt update &amp;&amp; sudo apt full-upgrade -y 更新完成后会有类似执行apt autoremove的提示，慎重执行 翻车记 翻车根源在于：大版本更新时使用了sudo apt update &amp;&amp; sudo apt upgrade -y，之后又无脑执行了sudo apt autoremove，好巧不巧把network-manager卸载了，没法上网了！
+若是可以接有线网，插上网线，sudo apt install network-manager也就不会有后面的问题了。但是，偏偏这是在一个没有有线网的环境下。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🖥️操作系统",
+      "item": "https://afrusrsc.github.io/posts/os/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Debian从12升到13的翻车记",
+      "item": "https://afrusrsc.github.io/posts/os/debian_12to13/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Debian从12升到13的翻车记",
+  "name": "Debian从12升到13的翻车记",
+  "description": "前言 之前都是在虚拟机里玩玩Debian，也就最近两年才实打实地在物理机上装了Debian 12，也一直用得挺好。\n前段时间，关注已久的trixie也就是Debian 13终于发布了，虽然告诫过自己要等稳定一段时间再升级，但终究挡不过尝鲜的念头一起再起，于是在发布的第二天晚上开启了升级之路。\n虽然已经研究了官方的升级文档，但还是翻车了。\n升级过程 先更新当前系统的补丁 1 sudo apt update \u0026amp;\u0026amp; sudo apt upgrade -y 备份源，然后修改源，把bookworm替换为trixie 1 2 3 4 5 6 7 # 备份 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak # 修改 sudo sed -i \u0026#39;s/bookworm/trixie/g\u0026#39; /etc/apt/sources.list # 也可用一个命令备份并修改 sudo sed -i.bak \u0026#39;s/bookworm/trixie/g\u0026#39; /etc/apt/sources.list 再进行大版本更新 1 sudo apt update \u0026amp;\u0026amp; sudo apt full-upgrade -y 更新完成后会有类似执行apt autoremove的提示，慎重执行 翻车记 翻车根源在于：大版本更新时使用了sudo apt update \u0026amp;\u0026amp; sudo apt upgrade -y，之后又无脑执行了sudo apt autoremove，好巧不巧把network-manager卸载了，没法上网了！\n若是可以接有线网，插上网线，sudo apt install network-manager也就不会有后面的问题了。但是，偏偏这是在一个没有有线网的环境下。",
+  "keywords": [
+    "linux"
+  ],
+  "articleBody": "前言 之前都是在虚拟机里玩玩Debian，也就最近两年才实打实地在物理机上装了Debian 12，也一直用得挺好。\n前段时间，关注已久的trixie也就是Debian 13终于发布了，虽然告诫过自己要等稳定一段时间再升级，但终究挡不过尝鲜的念头一起再起，于是在发布的第二天晚上开启了升级之路。\n虽然已经研究了官方的升级文档，但还是翻车了。\n升级过程 先更新当前系统的补丁 1 sudo apt update \u0026\u0026 sudo apt upgrade -y 备份源，然后修改源，把bookworm替换为trixie 1 2 3 4 5 6 7 # 备份 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak # 修改 sudo sed -i 's/bookworm/trixie/g' /etc/apt/sources.list # 也可用一个命令备份并修改 sudo sed -i.bak 's/bookworm/trixie/g' /etc/apt/sources.list 再进行大版本更新 1 sudo apt update \u0026\u0026 sudo apt full-upgrade -y 更新完成后会有类似执行apt autoremove的提示，慎重执行 翻车记 翻车根源在于：大版本更新时使用了sudo apt update \u0026\u0026 sudo apt upgrade -y，之后又无脑执行了sudo apt autoremove，好巧不巧把network-manager卸载了，没法上网了！\n若是可以接有线网，插上网线，sudo apt install network-manager也就不会有后面的问题了。但是，偏偏这是在一个没有有线网的环境下。\n网上搜了下，可以使用networking先联上网，但折腾一番后没能成功（可能是哪个步骤出了点小问题吧，事后了也无法验证），心急了，就决定重装了（因为是双系统，在bug10上下载了最新的镜像并制作了启动盘）。\n因为热点是TypeC供电的一个设备提供的（充电和热点只能二选一），偏偏又在安装过程中的联网更新环节手机没电，最终导致仅安装了无桌面的基本系统。\n终于等到电量够用了，安装桌面，安装并切换到network-manager，安装需要使用的应用。\n后记 总结下经验教训吧：\n墨菲定律\n升级要选在一个有较大空闲的时间段里进行，并且要网络（最好是有线网络）、供电等条件一应俱全，万一翻车还能从容不迫的进行挽救\n执行sudo apt autoremove前一定要先执行sudo apt autoremove --dry-run，看清楚都卸载了哪些包，对于不希望卸载的包要使用sudo apt-mark manual xxx标记为手工，避免一顿操作猛如虎，仔细一看二百五的情况\n",
+  "wordCount" : "88",
+  "inLanguage": "zh",
+  "datePublished": "2025-08-20T20:45:47+08:00",
+  "dateModified": "2025-08-20T20:45:47+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/os/debian_12to13/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/os/">🖥️操作系统</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Debian从12升到13的翻车记
+    </h1>
+    <div class="post-meta"><span title='2025-08-20 20:45:47 +0800 CST'>2025-08-20 20:45:47</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                    <li>
+                        <a href="#%e5%8d%87%e7%ba%a7%e8%bf%87%e7%a8%8b" aria-label="升级过程">升级过程</a></li>
+                    <li>
+                        <a href="#%e7%bf%bb%e8%bd%a6%e8%ae%b0" aria-label="翻车记">翻车记</a></li>
+                    <li>
+                        <a href="#%e5%90%8e%e8%ae%b0" aria-label="后记">后记</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>之前都是在虚拟机里玩玩<code>Debian</code>，也就最近两年才实打实地在物理机上装了<code>Debian 12</code>，也一直用得挺好。</p>
+<p>前段时间，关注已久的<code>trixie</code>也就是<code>Debian 13</code>终于发布了，虽然告诫过自己要等稳定一段时间再升级，但终究挡不过尝鲜的念头一起再起，于是在发布的第二天晚上开启了升级之路。</p>
+<p>虽然已经研究了官方的升级文档，但还是翻车了。</p>
+<h1 id="升级过程">升级过程<a hidden class="anchor" aria-hidden="true" href="#升级过程">#</a></h1>
+<ol>
+<li>先更新当前系统的补丁</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt update <span class="o">&amp;&amp;</span> sudo apt upgrade -y
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>备份源，然后修改源，把<code>bookworm</code>替换为<code>trixie</code></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># 备份</span>
+</span></span><span class="line"><span class="cl">sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+</span></span><span class="line"><span class="cl"><span class="c1"># 修改</span>
+</span></span><span class="line"><span class="cl">sudo sed -i <span class="s1">&#39;s/bookworm/trixie/g&#39;</span> /etc/apt/sources.list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 也可用一个命令备份并修改</span>
+</span></span><span class="line"><span class="cl">sudo sed -i.bak <span class="s1">&#39;s/bookworm/trixie/g&#39;</span> /etc/apt/sources.list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>再进行大版本更新</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt update <span class="o">&amp;&amp;</span> sudo apt full-upgrade -y
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="4">
+<li>更新完成后会有类似执行<code>apt autoremove</code>的提示，慎重执行</li>
+</ol>
+<h1 id="翻车记">翻车记<a hidden class="anchor" aria-hidden="true" href="#翻车记">#</a></h1>
+<p>翻车根源在于：大版本更新时使用了<code>sudo apt update &amp;&amp; sudo apt upgrade -y</code>，之后又无脑执行了<code>sudo apt autoremove</code>，好巧不巧把<code>network-manager</code>卸载了，没法上网了！</p>
+<p>若是可以接有线网，插上网线，<code>sudo apt install network-manager</code>也就不会有后面的问题了。但是，偏偏这是在一个没有有线网的环境下。</p>
+<p>网上搜了下，可以使用<code>networking</code>先联上网，但折腾一番后没能成功（可能是哪个步骤出了点小问题吧，事后了也无法验证），心急了，就决定重装了（因为是双系统，在<code>bug10</code>上下载了最新的镜像并制作了启动盘）。</p>
+<p>因为热点是<code>TypeC</code>供电的一个设备提供的（充电和热点只能二选一），偏偏又在安装过程中的联网更新环节手机没电，最终导致仅安装了无桌面的基本系统。</p>
+<p>终于等到电量够用了，安装桌面，安装并切换到<code>network-manager</code>，安装需要使用的应用。</p>
+<h1 id="后记">后记<a hidden class="anchor" aria-hidden="true" href="#后记">#</a></h1>
+<p>总结下经验教训吧：</p>
+<ol>
+<li>
+<p>墨菲定律</p>
+</li>
+<li>
+<p>升级要选在一个有较大空闲的时间段里进行，并且要网络（最好是有线网络）、供电等条件一应俱全，万一翻车还能从容不迫的进行挽救</p>
+</li>
+<li>
+<p>执行<code>sudo apt autoremove</code>前一定要先执行<code>sudo apt autoremove --dry-run</code>，看清楚都卸载了哪些包，对于不希望卸载的包要使用<code>sudo apt-mark manual xxx</code>标记为手工，避免<code>一顿操作猛如虎，仔细一看二百五</code>的情况</p>
+</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/linux/">Linux</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/other/gimp_change_background_color/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Gimp更换证件照的背景色</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/os/pc_mult_wechat/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>PC上多开微信的方法</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

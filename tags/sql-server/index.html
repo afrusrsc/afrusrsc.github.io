@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>SQL Server | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/tags/sql-server/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/tags/sql-server/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/tags/sql-server/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="SQL Server" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/tags/sql-server/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SQL Server"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/tags/">🔖标签</a></div>
+  <h1>
+    SQL Server
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">愚蠢的 SQL Server
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+今天在SQL Server的坑里跌得鼻青脸肿，折腾两三个小时，终于爬了出来，特此纪念一下，并以此明志！
+背景 传统行业的老旧ERP项目
+数据库在公司服务器上，版本为SQL Server 2000，本地使用的数据库为SQL Server 2008 R2，数据库工具为Navicat
+多数查询是从视图里查
+部分业务是写在存储过程里
+案发过程 业务功能扩充，需要在数据库中增加几个字段，于是直接从本地SQL Server 2008 R2连接公司SQL Server 2000，在表适当的位置插入所需字段，然后在Navicat中修改对应的视图和存储过程。
+然后，奇怪的事情发生了，程序运行未报错也无错误日志，但就是出不来数据！
+打断点，跟踪调试，发现程序抛了个异常，但是没有任何代码能捕获到，而且也并未层层抛出，不知道中间哪个环节被吃了！先不管是哪吃了，把异常处理了应该就没问题了，毕竟之前都是正常的。
+异常是类型不兼容和类型转换错误，好嘛，开始排查存储过程调用……一切正常！
+把查询的SQL输出，在Navicat中查询，也无结果！把查询条件去掉，结果出来了！排查条件吧，结果发现条件没问题！这TM就有点让人抓狂了！！！
+如此这般折磨几遍之后，结果丝毫没有任何改变！法了个克！
+还是先喝口水压压惊吧，然后！居然！！竟然！！！发现了不正常的东西！！！！一个布尔型的字段里居然出现了字符串！！！！！
+再次排查存储过程，存储过程正常！
+排查视图，视图不正常，但视图的SQL是正确的！这TM是个什么鬼情况？？？
+百思不得其解！
+再喝口水压压惊，把整个修改过程回忆一遍，灵光一闪，发现了点蛛丝马迹：修改视图时，只是在Navicat中确认了下视图的SQL是否正确，因为是正确的，所以并未进行修改！嗯，问题可能就是出在这里！！！
+那就在SQL Server 2008 R2里看一下吧，然后就发现了真相！我只想说：法了个克！！！
+重新修改视图，问题解决！
+真相 真相就是：
+自作聪明的SQL Server其实愚蠢到令人发指！！！
+罢了，还是好好说话吧。
+其实问题还是出在插入字段的这操作上，正常情况下可能是不会出什么问题的，但是当遇到视图里使用SELECT a.*, b.xx, c.xx ...这种方式时，问题就来了。
+Navicat中看到的还是SELECT a.*, b.xx, c.xx ...这种方式，但是在SQL Server中却变成了SELECT a.f1, a.f2, a.f3, b.xx, c.xx ...这种方式，本来这也没什么大不了的，但是偏偏在对a表插入（并非追加）字段时就出问题了，因为SQL Server自己按字段顺序把原有的字段AS成了新字段，由于插入了字段，于是后面的字段就都错位了，结果自然就是驴唇不对马嘴了！
+思考 基于这次的发现，估计在SQL Server中调整字段的顺序也有可能会出现类似的情况，不过没有去测试验证，以后有时间了再说吧（不过估计不会再有时间了吧，就算有时间估计也不会去折腾讨厌的SQL Server吧）。
+另外，服务器的数据库是SQL Server 2000，修改时用的是SQL Server 2008 R2，还不好就此说这是哪个版本出现的问题，也许新版本已经解决过了吧，这还是留给有心的朋友去研究吧。
+最后，我只想说，MySQL它不香么？PostgreSQL它不香么？为什么要把时间浪费在SQL Server上？</p>
+  </div>
+  <footer class="entry-footer"><span title='2021-02-04 15:56:00 +0800 CST'>2021-02-04 15:56:00</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 愚蠢的 SQL Server" href="https://afrusrsc.github.io/posts/db/sqlserver_bug/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

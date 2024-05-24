@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>💻编程开发 on 慢步道人</title>
+    <link>https://afrusrsc.github.io/posts/program/</link>
+    <description>Recent content in 💻编程开发 on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate></lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/posts/program/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

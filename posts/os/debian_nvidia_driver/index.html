@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Debian安装Nvidia驱动 | 慢步道人</title>
+<meta name="keywords" content="linux, nvidia">
+<meta name="description" content="背景 系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，CPU使用率就会蹭蹭上去，风扇呼呼的，总感觉N卡压根就没派上用场，所以就想换上Nvidia的闭源驱动看看效果。
+安装驱动 准备工作 修改/etc/apt/sources.list，在main后加入contrib non-free，已有则跳过
+禁用BIOS中的Secure Boot（！！！非常非常非常重要！！！）
+由于我一开始没有禁用Secure Boot，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。
+安装 更新包索引 1 sudo apt update 对于debian 13需要先安装内核头文件和构建工具 1 sudo apt install linux-headers-$(uname -r) build-essential dkms 安装nvidia-detect 1 sudo apt install nvidia-detect 运行nvidia-detect，我的提示安装nvidia-driver即可
+安装nvidia-driver
+1 sudo apt install nvidia-driver 重启
+查看驱动状态
+1 nvidia-smi 双卡切换 Debian官方仓库中并没有nvidia-prime，所以使用envycontrol来实现。
+下载envycontrol
+安装
+1 sudo apt install ./python3-envycontrol_3.5.1-1_all.deb 查看当前显卡模式sudo envycontrol --query
+切换显卡
+1 2 3 sudo envycontrol -s integrated # 切换到 集显 sudo envycontrol -s hybrid # 切换到 混合模式 sudo envycontrol -s nvidia # 切换到 N卡 重启 ">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/os/debian_nvidia_driver/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/os/debian_nvidia_driver/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Debian安装Nvidia驱动" />
+<meta property="og:description" content="背景 系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，CPU使用率就会蹭蹭上去，风扇呼呼的，总感觉N卡压根就没派上用场，所以就想换上Nvidia的闭源驱动看看效果。
+安装驱动 准备工作 修改/etc/apt/sources.list，在main后加入contrib non-free，已有则跳过
+禁用BIOS中的Secure Boot（！！！非常非常非常重要！！！）
+由于我一开始没有禁用Secure Boot，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。
+安装 更新包索引 1 sudo apt update 对于debian 13需要先安装内核头文件和构建工具 1 sudo apt install linux-headers-$(uname -r) build-essential dkms 安装nvidia-detect 1 sudo apt install nvidia-detect 运行nvidia-detect，我的提示安装nvidia-driver即可
+安装nvidia-driver
+1 sudo apt install nvidia-driver 重启
+查看驱动状态
+1 nvidia-smi 双卡切换 Debian官方仓库中并没有nvidia-prime，所以使用envycontrol来实现。
+下载envycontrol
+安装
+1 sudo apt install ./python3-envycontrol_3.5.1-1_all.deb 查看当前显卡模式sudo envycontrol --query
+切换显卡
+1 2 3 sudo envycontrol -s integrated # 切换到 集显 sudo envycontrol -s hybrid # 切换到 混合模式 sudo envycontrol -s nvidia # 切换到 N卡 重启 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/os/debian_nvidia_driver/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-03-28T23:00:49+08:00" />
+<meta property="article:modified_time" content="2025-03-28T23:00:49+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Debian安装Nvidia驱动"/>
+<meta name="twitter:description" content="背景 系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，CPU使用率就会蹭蹭上去，风扇呼呼的，总感觉N卡压根就没派上用场，所以就想换上Nvidia的闭源驱动看看效果。
+安装驱动 准备工作 修改/etc/apt/sources.list，在main后加入contrib non-free，已有则跳过
+禁用BIOS中的Secure Boot（！！！非常非常非常重要！！！）
+由于我一开始没有禁用Secure Boot，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。
+安装 更新包索引 1 sudo apt update 对于debian 13需要先安装内核头文件和构建工具 1 sudo apt install linux-headers-$(uname -r) build-essential dkms 安装nvidia-detect 1 sudo apt install nvidia-detect 运行nvidia-detect，我的提示安装nvidia-driver即可
+安装nvidia-driver
+1 sudo apt install nvidia-driver 重启
+查看驱动状态
+1 nvidia-smi 双卡切换 Debian官方仓库中并没有nvidia-prime，所以使用envycontrol来实现。
+下载envycontrol
+安装
+1 sudo apt install ./python3-envycontrol_3.5.1-1_all.deb 查看当前显卡模式sudo envycontrol --query
+切换显卡
+1 2 3 sudo envycontrol -s integrated # 切换到 集显 sudo envycontrol -s hybrid # 切换到 混合模式 sudo envycontrol -s nvidia # 切换到 N卡 重启 "/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🖥️操作系统",
+      "item": "https://afrusrsc.github.io/posts/os/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Debian安装Nvidia驱动",
+      "item": "https://afrusrsc.github.io/posts/os/debian_nvidia_driver/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Debian安装Nvidia驱动",
+  "name": "Debian安装Nvidia驱动",
+  "description": "背景 系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，CPU使用率就会蹭蹭上去，风扇呼呼的，总感觉N卡压根就没派上用场，所以就想换上Nvidia的闭源驱动看看效果。\n安装驱动 准备工作 修改/etc/apt/sources.list，在main后加入contrib non-free，已有则跳过\n禁用BIOS中的Secure Boot（！！！非常非常非常重要！！！）\n由于我一开始没有禁用Secure Boot，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。\n安装 更新包索引 1 sudo apt update 对于debian 13需要先安装内核头文件和构建工具 1 sudo apt install linux-headers-$(uname -r) build-essential dkms 安装nvidia-detect 1 sudo apt install nvidia-detect 运行nvidia-detect，我的提示安装nvidia-driver即可\n安装nvidia-driver\n1 sudo apt install nvidia-driver 重启\n查看驱动状态\n1 nvidia-smi 双卡切换 Debian官方仓库中并没有nvidia-prime，所以使用envycontrol来实现。\n下载envycontrol\n安装\n1 sudo apt install ./python3-envycontrol_3.5.1-1_all.deb 查看当前显卡模式sudo envycontrol --query\n切换显卡\n1 2 3 sudo envycontrol -s integrated # 切换到 集显 sudo envycontrol -s hybrid # 切换到 混合模式 sudo envycontrol -s nvidia # 切换到 N卡 重启 ",
+  "keywords": [
+    "linux", "nvidia"
+  ],
+  "articleBody": "背景 系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，CPU使用率就会蹭蹭上去，风扇呼呼的，总感觉N卡压根就没派上用场，所以就想换上Nvidia的闭源驱动看看效果。\n安装驱动 准备工作 修改/etc/apt/sources.list，在main后加入contrib non-free，已有则跳过\n禁用BIOS中的Secure Boot（！！！非常非常非常重要！！！）\n由于我一开始没有禁用Secure Boot，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。\n安装 更新包索引 1 sudo apt update 对于debian 13需要先安装内核头文件和构建工具 1 sudo apt install linux-headers-$(uname -r) build-essential dkms 安装nvidia-detect 1 sudo apt install nvidia-detect 运行nvidia-detect，我的提示安装nvidia-driver即可\n安装nvidia-driver\n1 sudo apt install nvidia-driver 重启\n查看驱动状态\n1 nvidia-smi 双卡切换 Debian官方仓库中并没有nvidia-prime，所以使用envycontrol来实现。\n下载envycontrol\n安装\n1 sudo apt install ./python3-envycontrol_3.5.1-1_all.deb 查看当前显卡模式sudo envycontrol --query\n切换显卡\n1 2 3 sudo envycontrol -s integrated # 切换到 集显 sudo envycontrol -s hybrid # 切换到 混合模式 sudo envycontrol -s nvidia # 切换到 N卡 重启 ",
+  "wordCount" : "81",
+  "inLanguage": "zh",
+  "datePublished": "2025-03-28T23:00:49+08:00",
+  "dateModified": "2025-03-28T23:00:49+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/os/debian_nvidia_driver/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/os/">🖥️操作系统</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Debian安装Nvidia驱动
+    </h1>
+    <div class="post-meta"><span title='2025-03-28 23:00:49 +0800 CST'>2025-03-28 23:00:49</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e5%ae%89%e8%a3%85%e9%a9%b1%e5%8a%a8" aria-label="安装驱动">安装驱动</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c" aria-label="准备工作">准备工作</a></li>
+                    <li>
+                        <a href="#%e5%ae%89%e8%a3%85" aria-label="安装">安装</a></li>
+                    <li>
+                        <a href="#%e5%8f%8c%e5%8d%a1%e5%88%87%e6%8d%a2" aria-label="双卡切换">双卡切换</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p>系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，<code>CPU</code>使用率就会蹭蹭上去，风扇呼呼的，总感觉<code>N卡</code>压根就没派上用场，所以就想换上<code>Nvidia</code>的闭源驱动看看效果。</p>
+<h1 id="安装驱动">安装驱动<a hidden class="anchor" aria-hidden="true" href="#安装驱动">#</a></h1>
+<h2 id="准备工作">准备工作<a hidden class="anchor" aria-hidden="true" href="#准备工作">#</a></h2>
+<ol>
+<li>
+<p>修改<code>/etc/apt/sources.list</code>，在<code>main</code>后加入<code>contrib non-free</code>，已有则跳过</p>
+</li>
+<li>
+<p>禁用<code>BIOS</code>中的<code>Secure Boot</code>（<strong>！！！非常非常非常重要！！！</strong>）</p>
+</li>
+</ol>
+<p>由于我一开始没有禁用<code>Secure Boot</code>，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。</p>
+<h2 id="安装">安装<a hidden class="anchor" aria-hidden="true" href="#安装">#</a></h2>
+<ol>
+<li>更新包索引</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt update
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>对于<code>debian 13</code>需要先安装内核头文件和构建工具</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt install linux-headers-<span class="k">$(</span>uname -r<span class="k">)</span> build-essential dkms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>安装<code>nvidia-detect</code></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt install nvidia-detect
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="4">
+<li>
+<p>运行<code>nvidia-detect</code>，我的提示安装<code>nvidia-driver</code>即可</p>
+</li>
+<li>
+<p>安装<code>nvidia-driver</code></p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt install nvidia-driver
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="6">
+<li>
+<p>重启</p>
+</li>
+<li>
+<p>查看驱动状态</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">nvidia-smi
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="双卡切换">双卡切换<a hidden class="anchor" aria-hidden="true" href="#双卡切换">#</a></h2>
+<p><code>Debian</code>官方仓库中并没有<code>nvidia-prime</code>，所以使用<code>envycontrol</code>来实现。</p>
+<ol>
+<li>
+<p>下载<a href="https://github.com/bayasdev/envycontrol/releases">envycontrol</a></p>
+</li>
+<li>
+<p>安装</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt install ./python3-envycontrol_3.5.1-1_all.deb
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>
+<p>查看当前显卡模式<code>sudo envycontrol --query</code></p>
+</li>
+<li>
+<p>切换显卡</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo envycontrol -s integrated <span class="c1"># 切换到 集显</span>
+</span></span><span class="line"><span class="cl">sudo envycontrol -s hybrid     <span class="c1"># 切换到 混合模式</span>
+</span></span><span class="line"><span class="cl">sudo envycontrol -s nvidia     <span class="c1"># 切换到 N卡</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="5">
+<li>重启</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/nvidia/">Nvidia</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/db/functional_index/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>使用函数索引优化特定查询</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/os/debian_install_slowly/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>解决Debian安装巨慢的问题</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

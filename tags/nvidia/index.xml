@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Nvidia on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/nvidia/</link>
+    <description>Recent content in Nvidia on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sun, 12 Apr 2026 11:08:50 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/nvidia/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux下使用Nvidia驱动玩Minecraft</title>
+      <link>https://afrusrsc.github.io/posts/other/linux_mc_nvidia/</link>
+      <pubDate>Sun, 12 Apr 2026 11:08:50 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/other/linux_mc_nvidia/</guid>
+      <description>背景 一直以来，想放松一下玩个游戏了，都是习惯性地切到win下，但其实很多时候并不想进行系统的切换，毕竟越来越觉得linux极度顺手，而win各种反人类，那么能在linux下玩游戏就完美了。
+Minecraft java版是天生跨平台的版本，就先拿来试水了。
+开始 Nvidia驱动 驱动是基础，具体安装详见Debian安装Nvidia驱动
+下载启动器 Minecraft有多种启动器，选择的是比较经典的HMCL，去官网下载linux版。下载完之后是个sh文件，这是个自解压sh脚本，前半部分是sh脚本，后半部分是二进制的jar包。
+分配执行权限 1 chmod +x HMCL-3.12.4.sh 运行 cd到启动器所在目录，执行以下命令：
+1 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 也可以在~/.local/bin下写个runmc.sh脚本，内容如下：
+1 2 3 4 #!/bin/bash cd 启动器所在目录 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 分配执行权限后直接运行runmc.sh即可。
+验证 执行以下命令监控N卡使用情况。
+1 watch -n 1 nvidia-smi 题外话 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia 程序这种命令方式，也适用于其它一些可以使用N卡的应用，如FreeCAD、LibreCAD等，但也有无效的，如浏览器、gimp 3等。</description>
+    </item>
+    <item>
+      <title>Debian安装Nvidia驱动</title>
+      <link>https://afrusrsc.github.io/posts/os/debian_nvidia_driver/</link>
+      <pubDate>Fri, 28 Mar 2025 23:00:49 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/os/debian_nvidia_driver/</guid>
+      <description>背景 系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，CPU使用率就会蹭蹭上去，风扇呼呼的，总感觉N卡压根就没派上用场，所以就想换上Nvidia的闭源驱动看看效果。
+安装驱动 准备工作 修改/etc/apt/sources.list，在main后加入contrib non-free，已有则跳过
+禁用BIOS中的Secure Boot（！！！非常非常非常重要！！！）
+由于我一开始没有禁用Secure Boot，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。
+安装 更新包索引 1 sudo apt update 对于debian 13需要先安装内核头文件和构建工具 1 sudo apt install linux-headers-$(uname -r) build-essential dkms 安装nvidia-detect 1 sudo apt install nvidia-detect 运行nvidia-detect，我的提示安装nvidia-driver即可
+安装nvidia-driver
+1 sudo apt install nvidia-driver 重启
+查看驱动状态
+1 nvidia-smi 双卡切换 Debian官方仓库中并没有nvidia-prime，所以使用envycontrol来实现。
+下载envycontrol
+安装
+1 sudo apt install ./python3-envycontrol_3.5.1-1_all.deb 查看当前显卡模式sudo envycontrol --query
+切换显卡
+1 2 3 sudo envycontrol -s integrated # 切换到 集显 sudo envycontrol -s hybrid # 切换到 混合模式 sudo envycontrol -s nvidia # 切换到 N卡 重启 </description>
+    </item>
+  </channel>
+</rss>

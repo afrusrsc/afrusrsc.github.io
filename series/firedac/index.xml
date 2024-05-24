@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>FireDAC on 慢步道人</title>
+    <link>https://afrusrsc.github.io/series/firedac/</link>
+    <description>Recent content in FireDAC on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Tue, 11 Aug 2020 21:59:09 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/series/firedac/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>FireDAC的数据连接池</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/firedac_fdconnection_pool/</link>
+      <pubDate>Tue, 11 Aug 2020 21:59:09 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/firedac_fdconnection_pool/</guid>
+      <description>从其它平台迁移而来
+之前就想搞个数据连接池，结果太麻烦就放弃了，不想却在TFDConnection中看到了Pooled属性，就一路挖了下来，还真就是那么回事！
+TFDManager 之前只知道，放上TFDManager控件后，什么都不用做，就可以在别的单元引用该单元后直接连接到TFDConnection控件了；现在，数据连接池还是要通过TFDManager来实现。
+设置数据连接池参数 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 //指定动态库 FDPhysMySQLDriverLink.VendorLib := &amp;#39;libmysql.dll&amp;#39;; //设置连接参数 with FDManager.ConnectionDefs.AddConnectionDef do begin Name := &amp;#39;MySQL_Conn&amp;#39;; Params.DriverID := &amp;#39;MySQL&amp;#39;; Params.Add(&amp;#39;CharacterSet=csUtf8mb4&amp;#39;); Params.Add(&amp;#39;Server=127.0.0.1&amp;#39;); Params.Add(&amp;#39;Port=3306&amp;#39;); Params.Database := &amp;#39;test&amp;#39;; Params.UserName := &amp;#39;root&amp;#39;; Params.Password := &amp;#39;123456&amp;#39;; Params.PoolMaximumItems := 10; Params.Pooled := True; end; 以上是以MySQL为例，其它数据库参照即可。
+打开连接池 1 FDManager.Open; 获取连接 1 2 FDConnection.ConnectionDefName := &amp;#39;MySQL_Conn&amp;#39;; FDConnection.Connected := True; 归还连接 FDConnection直接放到窗体上，或动态创建，写上如下代码即可，无需在设计器里设置任何东西。</description>
+    </item>
+    <item>
+      <title>使用FireDAC的TFDQuery查询Firebird遇到的坑</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/firedac_fdquery_firebird/</link>
+      <pubDate>Wed, 03 Jan 2018 01:43:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/firedac_fdquery_firebird/</guid>
+      <description>从其它平台迁移而来
+这几天被Prepare这个东西搞死了，虽然用它解决了目前的问题，但是完全不知道为什么，如有大侠知道还望指教，不胜感激！
+首先，说下开发环境：
+win10 x64(1709 [10.0.16299.125])+Delphi XE7 up1(自带FireDAC)+Firebird 3.0.2.32703_0(数据库字符集使用UTF8)
+问题一：中文模糊查询 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 var CompanyType: Integer FDQuery1.Close; FDQuery1.SQL.Text := &amp;#39;SELECT * FROM companyinfo &amp;#39; + &amp;#39;WHERE (tag = 0) AND (companytype = :companytype) AND &amp;#39; + &amp;#39;((companyname LIKE :Text) OR (pym LIKE :Text))&amp;#39; + &amp;#39; ORDER BY TIMES DESC&amp;#39;; //FDQuery1.Prepare; //写在这里会报错，提示如下，大致意思是： //数据库 companytype 字段是SmallInt类型，却赋了一个Integer类型的值 {--------------------------- [FireDAC][Phys][FB]-338.</description>
+    </item>
+    <item>
+      <title>FireDAC之TFDStoredProc</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/firedac_fdstoredproc/</link>
+      <pubDate>Fri, 24 Nov 2017 10:11:13 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/firedac_fdstoredproc/</guid>
+      <description>从其它平台迁移而来
+1.在FireDAC选项卡中找到TFDStoredProc控件，放到窗体上，并把Connection属性设置为准备好的数据库连接控件上。
+2.在需要执行存储过程的位置写入类似以下的代码：
+1 2 3 4 5 6 7 8 9 FDStoredProc1.StoredProcName := &amp;#39;SP_StoredProcName&amp;#39;; FDStoredProc1.Prepare; //必须，否则会报找不到参数的错误 FDStoredProc1.ParamByName(&amp;#39;I_ID&amp;#39;).AsInteger := id; //无返回值或返回值由输出参数传递时 FDStoredProc1.ExecProc; UserName := FDStoredProc1.ParamByName(&amp;#39;O_USERNAME&amp;#39;).AsString; //有返回值或数据集时 FDStoredProc1.Open(); UserName := FDStoredProc1.FindField(&amp;#39;O_USERNAME&amp;#39;).AsString; 3.以上为存储过程返回单个值或单条记录时的用法，存储过程返回多条记录（即数据表）的用法暂未研究。</description>
+    </item>
+    <item>
+      <title>FirdDAC之TFDQuery使用</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/firedac_fdquery/</link>
+      <pubDate>Thu, 23 Nov 2017 22:31:27 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/firedac_fdquery/</guid>
+      <description> 从其它平台迁移而来
+1.在FireDAC选项卡中找到TFDQuery控件，放到窗体上，并把Connection属性设置为准备好的数据库连接控件上。
+2.在需要查询或执行SQL语句的位置写入类似以下的代码：
+1 2 3 4 5 6 7 8 //查询，有返回集 FDQuery1.SQL.Text := &amp;#39;SELECT * FROM DBTable WHERE id = :id&amp;#39;; FDQuery1.ParamByName(&amp;#39;id&amp;#39;).AsInteger := 1; FDQuery1.Open(); //执行SQL语句，无返回集 FDQuery1.SQL.Text := &amp;#39;DELETE FROM DBTable WHERE id = :id&amp;#39;; FDQuery1.ParamByName(&amp;#39;id&amp;#39;).AsInteger := 1; FDQuery1.ExecSQL; 3.若查询结果需要连接到数据集，则在DataAccess选项卡中找到TDataSource控件，放到窗体上，并把DataSet属性连接到TFDQuery控件。然后把数据感知控件（如cxGrid等）的DataSource属性连接到TDataSource控件。
+4.若只需要取出查询结果并进行后续处理，可使用如下代码取出结果：
+1 2 3 id := FDQuery1.FindField(&amp;#39;id&amp;#39;).AsInteger; DeptName := FDQuery1.FindField(&amp;#39;deptname&amp;#39;).AsString; Money := FDQuery1.FindField(&amp;#39;money&amp;#39;).AsFloat; </description>
+    </item>
+    <item>
+      <title>FireDAC连接数据库</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/firedac_fdconnection/</link>
+      <pubDate>Wed, 22 Nov 2017 11:25:47 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/firedac_fdconnection/</guid>
+      <description>从其它平台迁移而来
+建立DataModule
+在FireDAC选项卡中找到我们的主角TFDConnection控件，并放到DataModule窗体上，把LoginPrompt设为False，这样在连接时就不会弹出登陆对话框了。然后再找到TFDManager控件，也放到DataModule窗体上，并且把Active属性设为True，这样一来，在引用了本单元的其它单元中，就可以直接把FireDAC控件的Connection连接到本单元的TFDConnection了。
+在FireDAC Links选项卡中找到所需要连接的数据的驱动链接控件，放到DataModule窗体上。本例中使用的是FireBird数据库，因此就选择了TFDPhysFBDriverLink，其它数据库参照执行（本人接触的数据库不多，各数据库间的差异不敢妄言，但整体使用思路和方法应是不差的）。 在FireDAC UI选项卡中找到TFDGUIxWaitCursor控件，放到DataModule窗体上。该控件其实只是个光标，可修改ScreenCursor属性来改变光标。 至此，拖控件的工作基本上就做完了，下面该写代码了（虽然代码中有相当一部分工作可以直接在设计器中修改属性来达到，但建议用代码来实现，一方面便于DEBUG，另一方面也易于进行数据库的变更、迁移等）。
+在DataModule的Create事件中写入类似以下的代码（也可写在其它地主，但要保证必须在任何数据库操作代码前运行）： 1 2 3 4 5 6 7 8 9 10 11 12 FDPhysFBDriverLink1.VendorLib := DllPath + &amp;#39;fbclient.dll&amp;#39;; FDConnection1.Params.DriverID := &amp;#39;FB&amp;#39;; FDConnection1.Params.Database := HostName + &amp;#39;/&amp;#39; + DBPort + &amp;#39;:&amp;#39; + DBFilePathAndName; FDConnection1.Params.UserName := UserName; FDConnection1.Params.Password := Password; FDConnection1.Params.Add(&amp;#39;CharacterSet=utf8&amp;#39;); try FDConnection1.Open(); except on E:Exception do ShowMessage(E.Message); end; 注意：FDConnection1.Params.Add(&#39;CharacterSet=utf8&#39;);这句是设置客户端连接数据库是默认使用的字符集，一定要与所连接的数据库使用的默认字符集一致，否则将会发生很多奇怪的事情。而且该项无法在设计器的属性中进行设置！</description>
+    </item>
+  </channel>
+</rss>

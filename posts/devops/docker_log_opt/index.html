@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Docker容器日志配置 | 慢步道人</title>
+<meta name="keywords" content="docker">
+<meta name="description" content="事件 有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是CPU或内存被拉満了，top查看后是正常的，那问题可能出在磁盘上。
+服务器上暂时没有合适的查看磁盘I/O的工具，只好先看下容量：
+1 df -h 瞬间发现磁盘使用率达到了95%以上，铁定有问题了！
+1 du -h -d 1 / 发现/var目录巨大无比！
+1 du -h -t 10G /var 发现有几个/var/lib/docker/containers/xxxxxx的文件特别大，问了deepseek，得到的回答是：docker默认会将容器内应用产生的日志记录在json日志文件里，且默认没有大小限制！
+查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。
+方案 全局配置 全局配置适用于所有之后新建的容器。
+修改/etc/docker/daemon.json，添加日志限制：
+1 2 3 4 5 6 7 { &#34;log-driver&#34;: &#34;json-file&#34;, &#34;log-opts&#34;: { &#34;max-size&#34;: &#34;10m&#34;, &#34;max-file&#34;: &#34;5&#34; } } 单容器配置 启动时通过参数直接限制：
+1 docker run --log-opt max-size=10m --log-opt max-file=5 ... docker-compose.yaml配置 使用docker compose时，可以在docker-compose.yaml里配置：
+1 2 3 4 5 6 7 8 services: your-service: image: your-image logging: driver: &#34;json-file&#34; options: max-size: &#34;10m&#34; max-file: &#34;5&#34; 也可以使用yaml锚点避免重复配置：">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/devops/docker_log_opt/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/devops/docker_log_opt/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Docker容器日志配置" />
+<meta property="og:description" content="事件 有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是CPU或内存被拉満了，top查看后是正常的，那问题可能出在磁盘上。
+服务器上暂时没有合适的查看磁盘I/O的工具，只好先看下容量：
+1 df -h 瞬间发现磁盘使用率达到了95%以上，铁定有问题了！
+1 du -h -d 1 / 发现/var目录巨大无比！
+1 du -h -t 10G /var 发现有几个/var/lib/docker/containers/xxxxxx的文件特别大，问了deepseek，得到的回答是：docker默认会将容器内应用产生的日志记录在json日志文件里，且默认没有大小限制！
+查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。
+方案 全局配置 全局配置适用于所有之后新建的容器。
+修改/etc/docker/daemon.json，添加日志限制：
+1 2 3 4 5 6 7 { &#34;log-driver&#34;: &#34;json-file&#34;, &#34;log-opts&#34;: { &#34;max-size&#34;: &#34;10m&#34;, &#34;max-file&#34;: &#34;5&#34; } } 单容器配置 启动时通过参数直接限制：
+1 docker run --log-opt max-size=10m --log-opt max-file=5 ... docker-compose.yaml配置 使用docker compose时，可以在docker-compose.yaml里配置：
+1 2 3 4 5 6 7 8 services: your-service: image: your-image logging: driver: &#34;json-file&#34; options: max-size: &#34;10m&#34; max-file: &#34;5&#34; 也可以使用yaml锚点避免重复配置：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/devops/docker_log_opt/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-11-01T15:43:00+08:00" />
+<meta property="article:modified_time" content="2025-11-01T15:43:00+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker容器日志配置"/>
+<meta name="twitter:description" content="事件 有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是CPU或内存被拉満了，top查看后是正常的，那问题可能出在磁盘上。
+服务器上暂时没有合适的查看磁盘I/O的工具，只好先看下容量：
+1 df -h 瞬间发现磁盘使用率达到了95%以上，铁定有问题了！
+1 du -h -d 1 / 发现/var目录巨大无比！
+1 du -h -t 10G /var 发现有几个/var/lib/docker/containers/xxxxxx的文件特别大，问了deepseek，得到的回答是：docker默认会将容器内应用产生的日志记录在json日志文件里，且默认没有大小限制！
+查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。
+方案 全局配置 全局配置适用于所有之后新建的容器。
+修改/etc/docker/daemon.json，添加日志限制：
+1 2 3 4 5 6 7 { &#34;log-driver&#34;: &#34;json-file&#34;, &#34;log-opts&#34;: { &#34;max-size&#34;: &#34;10m&#34;, &#34;max-file&#34;: &#34;5&#34; } } 单容器配置 启动时通过参数直接限制：
+1 docker run --log-opt max-size=10m --log-opt max-file=5 ... docker-compose.yaml配置 使用docker compose时，可以在docker-compose.yaml里配置：
+1 2 3 4 5 6 7 8 services: your-service: image: your-image logging: driver: &#34;json-file&#34; options: max-size: &#34;10m&#34; max-file: &#34;5&#34; 也可以使用yaml锚点避免重复配置："/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🚢运维",
+      "item": "https://afrusrsc.github.io/posts/devops/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Docker容器日志配置",
+      "item": "https://afrusrsc.github.io/posts/devops/docker_log_opt/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Docker容器日志配置",
+  "name": "Docker容器日志配置",
+  "description": "事件 有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是CPU或内存被拉満了，top查看后是正常的，那问题可能出在磁盘上。\n服务器上暂时没有合适的查看磁盘I/O的工具，只好先看下容量：\n1 df -h 瞬间发现磁盘使用率达到了95%以上，铁定有问题了！\n1 du -h -d 1 / 发现/var目录巨大无比！\n1 du -h -t 10G /var 发现有几个/var/lib/docker/containers/xxxxxx的文件特别大，问了deepseek，得到的回答是：docker默认会将容器内应用产生的日志记录在json日志文件里，且默认没有大小限制！\n查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。\n方案 全局配置 全局配置适用于所有之后新建的容器。\n修改/etc/docker/daemon.json，添加日志限制：\n1 2 3 4 5 6 7 { \u0026#34;log-driver\u0026#34;: \u0026#34;json-file\u0026#34;, \u0026#34;log-opts\u0026#34;: { \u0026#34;max-size\u0026#34;: \u0026#34;10m\u0026#34;, \u0026#34;max-file\u0026#34;: \u0026#34;5\u0026#34; } } 单容器配置 启动时通过参数直接限制：\n1 docker run --log-opt max-size=10m --log-opt max-file=5 ... docker-compose.yaml配置 使用docker compose时，可以在docker-compose.yaml里配置：\n1 2 3 4 5 6 7 8 services: your-service: image: your-image logging: driver: \u0026#34;json-file\u0026#34; options: max-size: \u0026#34;10m\u0026#34; max-file: \u0026#34;5\u0026#34; 也可以使用yaml锚点避免重复配置：",
+  "keywords": [
+    "docker"
+  ],
+  "articleBody": "事件 有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是CPU或内存被拉満了，top查看后是正常的，那问题可能出在磁盘上。\n服务器上暂时没有合适的查看磁盘I/O的工具，只好先看下容量：\n1 df -h 瞬间发现磁盘使用率达到了95%以上，铁定有问题了！\n1 du -h -d 1 / 发现/var目录巨大无比！\n1 du -h -t 10G /var 发现有几个/var/lib/docker/containers/xxxxxx的文件特别大，问了deepseek，得到的回答是：docker默认会将容器内应用产生的日志记录在json日志文件里，且默认没有大小限制！\n查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。\n方案 全局配置 全局配置适用于所有之后新建的容器。\n修改/etc/docker/daemon.json，添加日志限制：\n1 2 3 4 5 6 7 { \"log-driver\": \"json-file\", \"log-opts\": { \"max-size\": \"10m\", \"max-file\": \"5\" } } 单容器配置 启动时通过参数直接限制：\n1 docker run --log-opt max-size=10m --log-opt max-file=5 ... docker-compose.yaml配置 使用docker compose时，可以在docker-compose.yaml里配置：\n1 2 3 4 5 6 7 8 services: your-service: image: your-image logging: driver: \"json-file\" options: max-size: \"10m\" max-file: \"5\" 也可以使用yaml锚点避免重复配置：\n1 2 3 4 5 6 7 8 9 10 11 12 13 x-logging: \u0026default-logging driver: \"json-file\" options: max-size: \"10m\" max-file: \"5\" services: your-service1: image: your-image1 logging: *default-logging your-service2: image: your-image2 logging: *default-logging 配置完执行docker compose up -d即可生效。\n",
+  "wordCount" : "115",
+  "inLanguage": "zh",
+  "datePublished": "2025-11-01T15:43:00+08:00",
+  "dateModified": "2025-11-01T15:43:00+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/devops/docker_log_opt/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/devops/">🚢运维</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Docker容器日志配置
+    </h1>
+    <div class="post-meta"><span title='2025-11-01 15:43:00 +0800 CST'>2025-11-01 15:43:00</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e4%ba%8b%e4%bb%b6" aria-label="事件">事件</a></li>
+                    <li>
+                        <a href="#%e6%96%b9%e6%a1%88" aria-label="方案">方案</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%85%a8%e5%b1%80%e9%85%8d%e7%bd%ae" aria-label="全局配置">全局配置</a></li>
+                    <li>
+                        <a href="#%e5%8d%95%e5%ae%b9%e5%99%a8%e9%85%8d%e7%bd%ae" aria-label="单容器配置">单容器配置</a></li>
+                    <li>
+                        <a href="#docker-composeyaml%e9%85%8d%e7%bd%ae" aria-label="docker-compose.yaml配置">docker-compose.yaml配置</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="事件">事件<a hidden class="anchor" aria-hidden="true" href="#事件">#</a></h1>
+<p>有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是<code>CPU</code>或<code>内存</code>被拉満了，<code>top</code>查看后是正常的，那问题可能出在磁盘上。</p>
+<p>服务器上暂时没有合适的查看<code>磁盘I/O</code>的工具，只好先看下容量：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">df -h
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>瞬间发现磁盘使用率达到了<code>95%</code>以上，铁定有问题了！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">du -h -d <span class="m">1</span> /
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>发现<code>/var</code>目录巨大无比！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">du -h -t 10G /var
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>发现有几个<code>/var/lib/docker/containers/xxxxxx</code>的文件特别大，问了<code>deepseek</code>，得到的回答是：<code>docker</code>默认会将容器内应用产生的日志记录在<code>json日志文件</code>里，且<strong>默认没有大小限制</strong>！</p>
+<p>查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。</p>
+<h1 id="方案">方案<a hidden class="anchor" aria-hidden="true" href="#方案">#</a></h1>
+<h2 id="全局配置">全局配置<a hidden class="anchor" aria-hidden="true" href="#全局配置">#</a></h2>
+<p>全局配置适用于所有之后新建的容器。</p>
+<p>修改<code>/etc/docker/daemon.json</code>，添加日志限制：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;log-driver&#34;</span><span class="p">:</span> <span class="s2">&#34;json-file&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;log-opts&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;max-size&#34;</span><span class="p">:</span> <span class="s2">&#34;10m&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;max-file&#34;</span><span class="p">:</span> <span class="s2">&#34;5&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="单容器配置">单容器配置<a hidden class="anchor" aria-hidden="true" href="#单容器配置">#</a></h2>
+<p>启动时通过参数直接限制：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker run --log-opt max-size<span class="o">=</span>10m --log-opt max-file<span class="o">=</span><span class="m">5</span> ...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="docker-composeyaml配置">docker-compose.yaml配置<a hidden class="anchor" aria-hidden="true" href="#docker-composeyaml配置">#</a></h2>
+<p>使用<code>docker compose</code>时，可以在<code>docker-compose.yaml</code>里配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">your-service</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">your-image</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">logging</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;json-file&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">max-size</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;10m&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">max-file</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;5&#34;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>也可以使用<code>yaml锚点</code>避免重复配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">x-logging</span><span class="p">:</span><span class="w"> </span><span class="cp">&amp;default-logging</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;json-file&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">max-size</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;10m&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">max-file</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;5&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">your-service1</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">your-image1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">logging</span><span class="p">:</span><span class="w"> </span><span class="cp">*default-logging</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">your-service2</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">your-image2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">logging</span><span class="p">:</span><span class="w"> </span><span class="cp">*default-logging</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>配置完执行<code>docker compose up -d</code>即可生效。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/docker/">Docker</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/other/warehouse_management_model/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>仓库管理模型</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/os/bye_win10/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Bye~~ win10！</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Svn on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/svn/</link>
+    <description>Recent content in Svn on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Mon, 05 Jun 2023 21:30:33 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/svn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>同时使用Git和SVN</title>
+      <link>https://afrusrsc.github.io/posts/git/git_svn/</link>
+      <pubDate>Mon, 05 Jun 2023 21:30:33 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/git/git_svn/</guid>
+      <description>从其它平台迁移而来
+背景 一般情况下，企业内部多数是使用SVN来进行版本控制的，原因通常也就两个字——简单：
+安装简单，无论服务端还是客户端
+操作简单，即使非技术人员也能很快学会
+管理简单，建目录、开账户、分权限，基本就能完成95%以上的需求
+SVN是很强大的，但是使用者的水平差距也是很巨大的，结果就是多数情况下只有一个分支，大家都往里面各种提交，当然，有好好管理的不含在内。
+不过，用过git的人，尤其是开发人员，估计都会喜欢git多一些，那么，同时使用SVN和git就会爽很多。
+以下就以企业内使用SVN，开发者使用git为例进行说明，其中：SVN遵守企业内的版本控制使用工作流程，git遵守git类的工作流程。
+环境配置 SVN 以使用ToroiseSVN为例：
+任意文件夹中（最好是非SVN项目，减少菜单干扰）右键-&amp;gt;ToroiseSVN-&amp;gt;设置-&amp;gt;常规设置-&amp;gt;Subversion-&amp;gt;全局忽略样式（全局设置不会提交到版本库，避免对仓库信息的修改而影响到别人），在原有基础上追加以下内容： 1 .git .gitignore .README.md 拉取SVN代码 git 配置git环境
+在要使用git的SVN项目下建git版本库的初始化
+1 2 cd 项目 git init 编写.gitignore文件，配置常规开发需忽略的文件，再加上SVN的版本库信息.svn/
+再次拉取SVN代码，确保代码最新
+把文件增加进git库
+1 git add . 提交初版代码 1 git commit 工作流 分支 master：主分支，与SVN保持一致
+dev：开发主分支，主要用于合并开发完成的内容
+...：任务分支（含BUG修复），具体的开发任务，开发完成后要合并到dev
+具体流程 --- title: SVN+git工作流程 --- graph TD subgraph m[master分支流程] direction TB m1[切到master分支] m2[检出SVN代码] m3[git提交] m4[合并dev代码] m5[SVN提交] m1 --&gt; m2 --&gt; m3 --&gt; m4 --&gt; m5 end subgraph d[dev分支流程] direction TB d1[切到dev分支] d2[合并工作分支内容] d3[合并master分支内容] d4[根据情况调整] d5[提交] d6[切回master] d1 --&gt; d2 --&gt; d4 d1 --&gt; d3 --&gt; d4 --&gt; d5 --&gt; d6 end subgraph w[工作分支流程] direction TB w1[新建/切到工作分支] w2[根据情况合并dev分支内容] w3[开发] w4[提交] w5[根据情况切对应分支] w1 --&gt; w2 --&gt; w4 --&gt; w5 w1 --&gt; w3 --&gt; w4 end m3 -.</description>
+    </item>
+  </channel>
+</rss>

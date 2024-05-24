@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>🤖AI on 慢步道人</title>
+    <link>https://afrusrsc.github.io/posts/ai/</link>
+    <description>Recent content in 🤖AI on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Tue, 02 Jun 2026 22:43:32 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/posts/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cline使用初体验</title>
+      <link>https://afrusrsc.github.io/posts/ai/first_experience_with_cline/</link>
+      <pubDate>Tue, 02 Jun 2026 22:43:32 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/ai/first_experience_with_cline/</guid>
+      <description>背景 AI大行其道的当下，AI要取代程序员了、程序员这个职业要消失了之类的声音可谓是不绝于耳，所以就体验一把AI编程。
+体验过程 选型 首先是选模式，像代码补全这种辅助型的肯定是不在考虑范围内的。
+之前，同事使用智能体自动帮他改程序，结果被狠狠坑了一把：代码看起来很不错，但是测试后却发现很多问题，比如别的很多没让改的功能和原来的不一样了，比如多了一个假死的特性，比如再也不会触发docker的自动重启了……总之，甩手掌柜的方式是pass了。而Cline这种先规则再执行，而且中间必须要人工确认的方式，反倒是挻符合软件开发的核心流程。
+然后是选模型。国外的需要梯子，pass了。国内的，DeepSeek算是领军模型了吧，而且刚发了V4；另外一个，选了智谱GLM-5.1，无他，刚好有key而已。
+**说明：**刚开始时Cline默认只能接入deepseek-chat和deepseek-reasoner，后来才有deepseek-v4-flash和deepseek-v4-pro。
+使用 正式使用之前，还是做了一些功课，包括如何使用Cline，如何写提示词等。
+写函数 先写好函数的声明，定义好入参和返回值，然后让AI写具体实现。
+测试一 先来个简单的：给一个初始日期和周期，列出截止到当天的所有符合的日期。结果，很不错。
+测试二 来个现实场景的：输入N列数据，每个数据为电能表读数的k-v，要求得出有电量变化的时间段，多列之间取并集，同时要剔除掉电量为0等异常值。
+结果，很糟糕！粗看代码，很像回事，注释也把逻辑写得比较清楚，但是一给数据跑出来的结果就让人火大：有起止时间完全一样的时间段，还有电量根本没变化的时间段……
+据说AI很擅长写测试，那就先写测试再实现。结果，测试用例的数据跑出来是正确的，换一批数据又让人火大了……
+耐着性子交流了一下午，结果还是没达到预期的正确结果，怒了，丢掉AI采用已被称之为古法编程的纯手工编写方式，不到半小时，完美通过。
+测试三 根据当前日期和历史统计记录，把测试二的成果——时间段数据，按归属统计出每日时长，并依次统计出周、月、季、年对应的数据。
+结果，磕磕绊绊的总算把日统计做好了，周统计费了点工夫也搞定了，至于月、季、年倒是一次通过。呵，好吧，这写代码的能力也就那样吧，倒是抄代码的能力那真是顶呱呱！
+知识库 这此考察重点不是写代码，是知识库。
+var a *int = new(1) 这段go代码是否正确，这是go1.26.0的新特性，发布于2026-02-10。结果，只有deepseek-v4知道这个特性。 注意：后来又测试，发现deepseek-v4又不知道这个特性了，莫名其妙。
+为pg18创建一个最简用户表，要求主键用uuid v7，这是pg18.0的新特性，原生支持uuid v7，发布于2025-09-25。结果，全军覆没，要么让安装插件，要么就开始瞎猜。
+把上面两个发行日志的页面地址给AI，让它自己去提取新特性并写入规则文件。结果，跑了很长时间都还没跑完，强行给终止了。
+写项目 上面的测试其实都是小儿科，实实在在从0开始去写个项目，才更考验AI的能力。
+项目一 目标，写一个文件去重工具，要求支持tui和web两种操作界面，支持多种哈希算法。技术栈是go+Bubble Tea+templ+Tailwind CSS+Alpine.js。
+虽然有些小波折，但结果还算满意，比我写的强多了。一下午的时间，目标基本完成了，随后又抽空优化了几次，但仍有已知bug。
+项目地址如下：
+Gitee：https://gitee.com/afrusrsc/duplicate-cleaner
+Github：https://github.com/afrusrsc/duplicate-cleaner
+项目二 精心选择了pg+pgx+sqlc+gin+templ+Tailwind CSS+Alpine.js这个技术栈，前端、后端、数据库都有，主流、非主流也都有。
+目标，写一个精简版的ERP，因为有前同事刚用codex花了10元完成了一个内部使用的ERP，使用c#的技术栈，刚好可以进行对照。
+本想项目完成之后再写这一章节的，但是，现在放弃继续测试了。
+三天了，成果如下：
+功能 结果 备注 登录 通过 修改密码 通过 查看登录日志 基本能用 超时无操作后锁定 勉强通过 仍有bug 部门管理 进行中 在此放弃的，基本的CURD，前端都能bug满天飞，而且同一个bug，这次改没了，下次又改出来了，烦不胜烦 额外发现 deepseek比glm-5.1响应速度要快
+deepseek-v4在thinking中经常会狂飙英文
+deepseek-v4与Cline配合，经常会读不到终端的输出结果而死等</description>
+    </item>
+  </channel>
+</rss>

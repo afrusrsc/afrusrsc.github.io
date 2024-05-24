@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go fmt包 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="fmt包提供了格式化输入、输出的功能。
+格式化输出 函数名 说明 Print 以默认格式进行格式化，格式化结果输出到os.Stdout Printf 以指定格式进行格式化，格式化结果输出到os.Stdout Println 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到os.Stdout Fprint 以默认格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintf 以指定格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到指定的io.Writer接口 Sprint 以默认格式进行格式化，格式化结果以字符串形式返回 Sprintf 以指定格式进行格式化，格式化结果以字符串形式返回 Sprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果以字符串形式返回 具体格式化规则详见Go 格式化。
+格式化输入 函数名 说明 Scan 按默认格式从os.Stdin进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Scanf 按指定格式从os.Stdin进行扫描，扫描结果存入对应的变量 Scanln 按默认格式从os.Stdin进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Fscan 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Fscanf 按指定格式从指定的io.Reader接口进行扫描，扫描结果存入对应的变量 Fscanln 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Sscan 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Sscanf 按指定格式从指定的字符串中进行扫描，扫描结果存入对应的变量 Sscanln 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 注意：变量前必须要带上&amp;才能成功接收扫描到的数据!
+其它 函数名 说明 Append 以默认格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendf 以指定格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendln 以默认格式进行格式化，并在末尾添加换行符，格式化结果追加到指定的字节切片，并返回新的字节切片 Errorf 以指定格式进行格式化，格式化结果转为error接口并返回 ">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_learn_fmt/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_learn_fmt/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go fmt包" />
+<meta property="og:description" content="fmt包提供了格式化输入、输出的功能。
+格式化输出 函数名 说明 Print 以默认格式进行格式化，格式化结果输出到os.Stdout Printf 以指定格式进行格式化，格式化结果输出到os.Stdout Println 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到os.Stdout Fprint 以默认格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintf 以指定格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到指定的io.Writer接口 Sprint 以默认格式进行格式化，格式化结果以字符串形式返回 Sprintf 以指定格式进行格式化，格式化结果以字符串形式返回 Sprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果以字符串形式返回 具体格式化规则详见Go 格式化。
+格式化输入 函数名 说明 Scan 按默认格式从os.Stdin进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Scanf 按指定格式从os.Stdin进行扫描，扫描结果存入对应的变量 Scanln 按默认格式从os.Stdin进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Fscan 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Fscanf 按指定格式从指定的io.Reader接口进行扫描，扫描结果存入对应的变量 Fscanln 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Sscan 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Sscanf 按指定格式从指定的字符串中进行扫描，扫描结果存入对应的变量 Sscanln 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 注意：变量前必须要带上&amp;才能成功接收扫描到的数据!
+其它 函数名 说明 Append 以默认格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendf 以指定格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendln 以默认格式进行格式化，并在末尾添加换行符，格式化结果追加到指定的字节切片，并返回新的字节切片 Errorf 以指定格式进行格式化，格式化结果转为error接口并返回 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_learn_fmt/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-16T20:51:40+08:00" />
+<meta property="article:modified_time" content="2024-10-16T20:51:40+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go fmt包"/>
+<meta name="twitter:description" content="fmt包提供了格式化输入、输出的功能。
+格式化输出 函数名 说明 Print 以默认格式进行格式化，格式化结果输出到os.Stdout Printf 以指定格式进行格式化，格式化结果输出到os.Stdout Println 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到os.Stdout Fprint 以默认格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintf 以指定格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到指定的io.Writer接口 Sprint 以默认格式进行格式化，格式化结果以字符串形式返回 Sprintf 以指定格式进行格式化，格式化结果以字符串形式返回 Sprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果以字符串形式返回 具体格式化规则详见Go 格式化。
+格式化输入 函数名 说明 Scan 按默认格式从os.Stdin进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Scanf 按指定格式从os.Stdin进行扫描，扫描结果存入对应的变量 Scanln 按默认格式从os.Stdin进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Fscan 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Fscanf 按指定格式从指定的io.Reader接口进行扫描，扫描结果存入对应的变量 Fscanln 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Sscan 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Sscanf 按指定格式从指定的字符串中进行扫描，扫描结果存入对应的变量 Sscanln 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 注意：变量前必须要带上&amp;才能成功接收扫描到的数据!
+其它 函数名 说明 Append 以默认格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendf 以指定格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendln 以默认格式进行格式化，并在末尾添加换行符，格式化结果追加到指定的字节切片，并返回新的字节切片 Errorf 以指定格式进行格式化，格式化结果转为error接口并返回 "/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go fmt包",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_learn_fmt/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go fmt包",
+  "name": "Go fmt包",
+  "description": "fmt包提供了格式化输入、输出的功能。\n格式化输出 函数名 说明 Print 以默认格式进行格式化，格式化结果输出到os.Stdout Printf 以指定格式进行格式化，格式化结果输出到os.Stdout Println 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到os.Stdout Fprint 以默认格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintf 以指定格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到指定的io.Writer接口 Sprint 以默认格式进行格式化，格式化结果以字符串形式返回 Sprintf 以指定格式进行格式化，格式化结果以字符串形式返回 Sprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果以字符串形式返回 具体格式化规则详见Go 格式化。\n格式化输入 函数名 说明 Scan 按默认格式从os.Stdin进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Scanf 按指定格式从os.Stdin进行扫描，扫描结果存入对应的变量 Scanln 按默认格式从os.Stdin进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Fscan 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Fscanf 按指定格式从指定的io.Reader接口进行扫描，扫描结果存入对应的变量 Fscanln 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Sscan 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Sscanf 按指定格式从指定的字符串中进行扫描，扫描结果存入对应的变量 Sscanln 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 注意：变量前必须要带上\u0026amp;才能成功接收扫描到的数据!\n其它 函数名 说明 Append 以默认格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendf 以指定格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendln 以默认格式进行格式化，并在末尾添加换行符，格式化结果追加到指定的字节切片，并返回新的字节切片 Errorf 以指定格式进行格式化，格式化结果转为error接口并返回 ",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "fmt包提供了格式化输入、输出的功能。\n格式化输出 函数名 说明 Print 以默认格式进行格式化，格式化结果输出到os.Stdout Printf 以指定格式进行格式化，格式化结果输出到os.Stdout Println 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到os.Stdout Fprint 以默认格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintf 以指定格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到指定的io.Writer接口 Sprint 以默认格式进行格式化，格式化结果以字符串形式返回 Sprintf 以指定格式进行格式化，格式化结果以字符串形式返回 Sprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果以字符串形式返回 具体格式化规则详见Go 格式化。\n格式化输入 函数名 说明 Scan 按默认格式从os.Stdin进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Scanf 按指定格式从os.Stdin进行扫描，扫描结果存入对应的变量 Scanln 按默认格式从os.Stdin进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Fscan 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Fscanf 按指定格式从指定的io.Reader接口进行扫描，扫描结果存入对应的变量 Fscanln 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Sscan 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Sscanf 按指定格式从指定的字符串中进行扫描，扫描结果存入对应的变量 Sscanln 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 注意：变量前必须要带上\u0026才能成功接收扫描到的数据!\n其它 函数名 说明 Append 以默认格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendf 以指定格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendln 以默认格式进行格式化，并在末尾添加换行符，格式化结果追加到指定的字节切片，并返回新的字节切片 Errorf 以指定格式进行格式化，格式化结果转为error接口并返回 ",
+  "wordCount" : "57",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-16T20:51:40+08:00",
+  "dateModified": "2024-10-16T20:51:40+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_learn_fmt/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go fmt包
+    </h1>
+    <div class="post-meta"><span title='2024-10-16 20:51:40 +0800 CST'>2024-10-16 20:51:40</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e6%a0%bc%e5%bc%8f%e5%8c%96%e8%be%93%e5%87%ba" aria-label="格式化输出">格式化输出</a></li>
+                    <li>
+                        <a href="#%e6%a0%bc%e5%bc%8f%e5%8c%96%e8%be%93%e5%85%a5" aria-label="格式化输入">格式化输入</a></li>
+                    <li>
+                        <a href="#%e5%85%b6%e5%ae%83" aria-label="其它">其它</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><p><code>fmt</code>包提供了格式化输入、输出的功能。</p>
+<h1 id="格式化输出">格式化输出<a hidden class="anchor" aria-hidden="true" href="#格式化输出">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Print</td>
+<td>以<code>默认格式</code>进行格式化，格式化结果输出到<code>os.Stdout</code></td>
+</tr>
+<tr>
+<td>Printf</td>
+<td>以<code>指定格式</code>进行格式化，格式化结果输出到<code>os.Stdout</code></td>
+</tr>
+<tr>
+<td>Println</td>
+<td>以<code>默认格式</code>进行格式化，并在末尾添加<code>换行符</code>，格式化结果输出到<code>os.Stdout</code></td>
+</tr>
+<tr>
+<td>Fprint</td>
+<td>以<code>默认格式</code>进行格式化，格式化结果输出到指定的<code>io.Writer</code>接口</td>
+</tr>
+<tr>
+<td>Fprintf</td>
+<td>以<code>指定格式</code>进行格式化，格式化结果输出到指定的<code>io.Writer</code>接口</td>
+</tr>
+<tr>
+<td>Fprintln</td>
+<td>以<code>默认格式</code>进行格式化，并在末尾添加<code>换行符</code>，格式化结果输出到指定的<code>io.Writer</code>接口</td>
+</tr>
+<tr>
+<td>Sprint</td>
+<td>以<code>默认格式</code>进行格式化，格式化结果以<code>字符串</code>形式返回</td>
+</tr>
+<tr>
+<td>Sprintf</td>
+<td>以<code>指定格式</code>进行格式化，格式化结果以<code>字符串</code>形式返回</td>
+</tr>
+<tr>
+<td>Sprintln</td>
+<td>以<code>默认格式</code>进行格式化，并在末尾添加<code>换行符</code>，格式化结果以<code>字符串</code>形式返回</td>
+</tr>
+</tbody>
+</table>
+<p>具体格式化规则详见<a href="/posts/program/go/go_learn_format/">Go 格式化</a>。</p>
+<h1 id="格式化输入">格式化输入<a hidden class="anchor" aria-hidden="true" href="#格式化输入">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scan</td>
+<td>按<code>默认格式</code>从<code>os.Stdin</code>进行扫描，<code>空格</code>用于分隔数据，<code>换行符</code>按<code>空格</code>处理，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Scanf</td>
+<td>按<code>指定格式</code>从<code>os.Stdin</code>进行扫描，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Scanln</td>
+<td>按<code>默认格式</code>从<code>os.Stdin</code>进行扫描，<code>空格</code>用于分隔数据，遇<code>换行符</code>时停止扫描，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Fscan</td>
+<td>按<code>默认格式</code>从指定的<code>io.Reader</code>接口进行扫描，<code>空格</code>用于分隔数据，<code>换行符</code>按<code>空格</code>处理，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Fscanf</td>
+<td>按<code>指定格式</code>从指定的<code>io.Reader</code>接口进行扫描，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Fscanln</td>
+<td>按<code>默认格式</code>从指定的<code>io.Reader</code>接口进行扫描，<code>空格</code>用于分隔数据，遇<code>换行符</code>时停止扫描，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Sscan</td>
+<td>按<code>默认格式</code>从指定的<code>字符串</code>中进行扫描，<code>空格</code>用于分隔数据，<code>换行符</code>按<code>空格</code>处理，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Sscanf</td>
+<td>按<code>指定格式</code>从指定的<code>字符串</code>中进行扫描，扫描结果存入对应的<code>变量</code></td>
+</tr>
+<tr>
+<td>Sscanln</td>
+<td>按<code>默认格式</code>从指定的<code>字符串</code>中进行扫描，<code>空格</code>用于分隔数据，遇<code>换行符</code>时停止扫描，扫描结果存入对应的<code>变量</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意：变量前必须要带上<code>&amp;</code>才能成功接收扫描到的数据!</strong></p>
+<h1 id="其它">其它<a hidden class="anchor" aria-hidden="true" href="#其它">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Append</td>
+<td>以<code>默认格式</code>进行格式化，格式化结果追加到指定的<code>字节切片</code>，并返回新的<code>字节切片</code></td>
+</tr>
+<tr>
+<td>Appendf</td>
+<td>以<code>指定格式</code>进行格式化，格式化结果追加到指定的<code>字节切片</code>，并返回新的<code>字节切片</code></td>
+</tr>
+<tr>
+<td>Appendln</td>
+<td>以<code>默认格式</code>进行格式化，并在末尾添加<code>换行符</code>，格式化结果追加到指定的<code>字节切片</code>，并返回新的<code>字节切片</code></td>
+</tr>
+<tr>
+<td>Errorf</td>
+<td>以<code>指定格式</code>进行格式化，格式化结果转为<code>error</code>接口并返回</td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_learn_strconv/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go strconv包</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_learn_format/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go 格式化</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

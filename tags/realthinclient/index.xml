@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>RealThinClient on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/realthinclient/</link>
+    <description>Recent content in RealThinClient on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sun, 22 Nov 2020 14:54:39 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/realthinclient/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>自学RTC——DualServer</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/rtc_dual_server/</link>
+      <pubDate>Sun, 22 Nov 2020 14:54:39 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/rtc_dual_server/</guid>
+      <description>从其它平台迁移而来
+在窗体上放4个TRtcHttpServer，依次设置ServerPort为：80、443、8080和8090，并分别命名为HS80、HS443、HS8080和HS8090
+再放3个TRtcDualDataServerLink到窗体上，分别命名为DL80and443、DL8080and8090和DLall
+设置DL80and443的Server属性为HS80，Server2属性为HS443；设置DL8080and8090的Server属性为HS8080，Server2属性为HS8090
+设置DLall的Link属性为DL80and443，Link2属性为DL8080and8090
+再放1个TRtcDataProvider到窗体上，设置Link属性为DLall，并在OnCheckRequest事件里写上代码：
+1 2 3 4 5 with TRtcDataServer(Sender) do begin Accept; Write(&amp;#39;you are on Server &amp;#39; + ServerPort); end; 在窗口OnShow事件里启动所有TRtcHttpServer，在OnClose事件里停止所有TRtcHttpServer
+编译运行
+在浏览器里分别访问http://localhost:80、http://localhost:443、http://localhost:8080、http://localhost:8090
+注意：TRtcDualDataServerLink只能选择设置Server*或Link*！</description>
+    </item>
+    <item>
+      <title>RTC组件关系图</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/rtc/</link>
+      <pubDate>Tue, 10 Nov 2020 21:26:27 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/rtc/</guid>
+      <description>从其它平台迁移而来</description>
+    </item>
+    <item>
+      <title>自学RTC——BrowserUpload</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/rtc_browser_upload/</link>
+      <pubDate>Tue, 10 Nov 2020 20:04:07 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/rtc_browser_upload/</guid>
+      <description>从其它平台迁移而来
+核心代码 OnCheckRequest事件中的代码： 1 2 3 with TRtcDataServer(Sender) do if Request.FilePath.Equal(0, &amp;#39;UPLOAD&amp;#39;) then Accept; OnDataReceived事件中的代码： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 var fname: string; cnt: integer; begin with TRtcDataServer(Sender) do begin if Request.</description>
+    </item>
+    <item>
+      <title>自学RTC——ServerLesson4</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson4/</link>
+      <pubDate>Sat, 07 Nov 2020 23:47:54 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson4/</guid>
+      <description>从其它平台迁移而来
+对于上节的示例中，比较适合发送小文件，若直接用于发送大文件的话，很容易把服务器的内存资源耗尽。当请求大文件时，可以限制每次发送大文件时使用的内存大小（例如16000 B）。
+打开上节的工程
+修改RtcDataProvider3的OnCheckRequest事件：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 var fname: string; begin with TRtcDataServer(Sender) do begin fname := GetFullFileName(Request.FileName); if (fname &amp;lt;&amp;gt; &amp;#39;&amp;#39;) and (File_Exists(fname)) then begin Accept; Request.Info[&amp;#39;fname&amp;#39;] := fname; Response.ContentLength := File_Size(fname); WriteHeader; end; end; end; 修改RtcDataProvider3的OnDataReceived事件： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 var fname: string; len: cardinal; begin with TRtcDataServer(Sender) do if Request.</description>
+    </item>
+    <item>
+      <title>自学RTC——ServerLesson3</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson3/</link>
+      <pubDate>Sat, 07 Nov 2020 20:27:36 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson3/</guid>
+      <description>从其它平台迁移而来
+/test.txt 打开上节的工程
+添加组件RtcDataProvider3并设置Server属性为RtcHttpServer1，设置CheckOrder属性为900，使得RtcDataProvider3所处理的请求在其它请求之后（CheckOrder越小越先处理）
+在当前exe所在路径下创建一个data文件夹，并在该文件夹内新建一个有内容的test.txt，然后编写一个GetFullFileName函数，用于从请求中提取文件名并转化为本地文件名
+1 2 3 4 5 6 7 8 9 10 11 12 13 function GetFullFileName(fname: string): string; var DocRoot: string; begin DocRoot := ExtractFilePath(AppFileName); if Copy(DocRoot, length(DocRoot), 1) = &amp;#39;\&amp;#39; then Delete(DocRoot, length(DocRoot), 1); DocRoot := DocRoot + &amp;#39;\data&amp;#39;; fname := StringReplace(fname, &amp;#39;/&amp;#39;, &amp;#39;\&amp;#39;, [rfreplaceall]); Result := ExpandFileName(DocRoot + fname); if UpperCase(Copy(Result, 1, length(DocRoot))) &amp;lt;&amp;gt; UpperCase(DocRoot) then Result := &amp;#39;&amp;#39;; end; 在RtcDataProvider3的OnCheckRequest事件中写上代码： 1 2 3 4 5 6 7 8 9 10 11 12 13 var fname: string; begin with TRtcDataServer(Sender) do begin fname := GetFullFileName(Request.</description>
+    </item>
+    <item>
+      <title>自学RTC——ServerLesson2</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson2/</link>
+      <pubDate>Thu, 05 Nov 2020 23:34:37 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson2/</guid>
+      <description>从其它平台迁移而来
+/SQUARE 打开上节的工程
+添加组件RtcDataProvider2并设置Server属性为RtcHttpServer1
+在RtcDataProvider2的OnCheckRequest事件中写上代码：
+1 2 3 with TRtcDataServer(Sender) do if UpperCase(Request.FileName)=&amp;#39;/SQUARE&amp;#39; then Accept; 在RtcDataProvider2的OnDataReceived事件中写上代码： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 var line:integer; begin with TRtcDataServer(Sender) do if Request.Complete then begin Write(&amp;#39;&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;&amp;#39;); Write(&amp;#39;Here comes a table of square values ... &amp;lt;br&amp;gt;&amp;#39;); for line:=1 to 100 do begin // 使用3个 write 和使用1个效果是一样的 Write(&amp;#39;Square of &amp;#39;+IntToStr(line)+&amp;#39; = &amp;#39;); Write(IntToStr(line*line)); Write(&amp;#39;&amp;lt;br&amp;gt;&amp;#39;); end; Write(&amp;#39;.</description>
+    </item>
+    <item>
+      <title>自学RTC——ServerLesson1</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson1/</link>
+      <pubDate>Thu, 05 Nov 2020 20:51:13 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson1/</guid>
+      <description>从其它平台迁移而来
+RTC全称RealThinClient，据说是Delphi做三层的神器之一，虽然听说已久，却始终未好好研究过，而且安装包里带的有示例源码，于是乎，索性拿这些源码开这么个系列，督促下自己。
+步骤 创建一个新工程
+从RTC Server组件页中找到RtcHttpServer组件放到窗体上
+设置RtcHttpServer1的ServerPort属性为80
+在窗体的OnCreate事件里写上代码：
+1 RtcHttpServer1.Listen; 从RTC Server组件页中找到RtcDataProvider组件放到窗体上
+设置RtcDataProvider1的Server属性为RtcHttpServer1
+在RtcDataProvider1的OnCheckRequest事件中写上代码：
+1 2 3 with Sender as TRtcDataServer do if UpperCase(Request.FileName)=&amp;#39;/TIME&amp;#39; then Accept; 在RtcDataProvider1的OnDataReceived事件中写上代码： 1 2 3 with Sender as TRtcDataServer do if Request.Complete then Write(&amp;#39;Current time is: &amp;#39;+TimeToStr(Now)); 编译并运行
+打开浏览器，访问网址http://localhost/time
+示例源码 核心源码 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 procedure TForm1.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Float on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/float/</link>
+    <description>Recent content in Float on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 01 Jan 2020 22:37:24 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/float/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>简单数学运算的比较</title>
+      <link>https://afrusrsc.github.io/posts/program/misc/float_precision_calc/</link>
+      <pubDate>Wed, 01 Jan 2020 22:37:24 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/misc/float_precision_calc/</guid>
+      <description>从其它平台迁移而来
+人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。
+java 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Json on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/json/</link>
+    <description>Recent content in Json on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Tue, 28 Nov 2023 21:38:45 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/json/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>给json数组中的元素排序</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/lazarus_json_order/</link>
+      <pubDate>Tue, 28 Nov 2023 21:38:45 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/lazarus_json_order/</guid>
+      <description>从其它平台迁移而来
+起因 基本信息 平台：windows
+IDE：Lazarus 2.2.6
+json包：FPC自带的fpjson
+背景 最近在搞一个小工具，数据文件采用的是json格式，其中一个节点存放的是一组文件的基本信息的清单，这个节点自然就是个json数组，元素就是每个文件基本信息的json对象。界面展示用的是经典的DBGrid + DataSource + DataSet方案，所以会把json数组转为DataSet。
+操作过程中会比对磁盘上的文件，该添的添，该删的的删，该改的改，该标记的标记。一番操作下来，顺序自然是乱的，虽然可以操作DataSet或者换用带排序功能的DBGridEh达到排序的目的，但直接看json数据的话，依然是乱序的。因此，期望直接对json数组进行排序。
+解决过程 习惯先看源码，如果没有原生解决方案了，或者原生解决方案太别扭了，才会选择第三方解决方案或自己造轮子。
+一看源码 1 2 3 4 TJSONArray = class(TJSONData) public ... Procedure Sort(Compare: TListSortCompare); TJSONArray已经提供了排序方法，不过这个参数是什么东西？
+1 TListSortCompare = function (Item1, Item2: Pointer): Integer; 嗯，是个函数声明，也就是说具体的算法实现要自己写，可以先找找看有默认的实现没。结果是：没有！那就自己写吧。
+看声明，这个函数是要比较两个指针指向的东西，并返回一个整数。嗯，看上去很简单，不过：
+到底是怎么实现排序的？
+参数是指针，指向的又是什么东西？
+返回一个什么样的整数才能实现排序呢？
+没懂！！！
+还是接着看源码吧：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 procedure TJSONArray.</description>
+    </item>
+  </channel>
+</rss>

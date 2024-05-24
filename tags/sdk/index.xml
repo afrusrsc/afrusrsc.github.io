@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Sdk on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/sdk/</link>
+    <description>Recent content in Sdk on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 02 Jan 2019 16:29:46 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/sdk/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用海康威视SDK的那些坑</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/sdk_hcnetsdk/</link>
+      <pubDate>Wed, 02 Jan 2019 16:29:46 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/sdk_hcnetsdk/</guid>
+      <description>从其它平台迁移而来
+由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。
+Delphi版本的接口 Gitee地址
+首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C++的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。
+由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。
+坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。
+其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。
+PlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。</description>
+    </item>
+  </channel>
+</rss>

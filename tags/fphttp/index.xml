@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Fphttp on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/fphttp/</link>
+    <description>Recent content in Fphttp on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Fri, 17 Feb 2023 20:59:53 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/fphttp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>FPHTTPClient请求https</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/lazarus_fphttpclient_https/</link>
+      <pubDate>Fri, 17 Feb 2023 20:59:53 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/lazarus_fphttpclient_https/</guid>
+      <description>从其它平台迁移而来
+在客户端不需要证书的情况下，简单两步操作即可让TFPHTTPClient实现https的请求：
+在源码中引用opensslsockets单元
+在生成目录下加入动态库libcrypto-1_1.dll和libssl-1_1.dll</description>
+    </item>
+  </channel>
+</rss>

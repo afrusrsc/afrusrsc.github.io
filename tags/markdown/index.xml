@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Markdown on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/markdown/</link>
+    <description>Recent content in Markdown on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Thu, 10 Aug 2023 21:27:10 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/markdown/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Markdown基础</title>
+      <link>https://afrusrsc.github.io/posts/other/markdown/</link>
+      <pubDate>Thu, 10 Aug 2023 21:27:10 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/other/markdown/</guid>
+      <description>从其它平台迁移而来
+基础知识 后缀名一般为.md
+只关注于内容，渲染交给页面或软件来实现
+语法 标题 1 2 3 4 5 6 # 一级标题 ## 二级标题 ### 三级标题 #### 四级标题 ##### 五级标题 ###### 六级标题 段落 连续两个回车或连续两个空格一个回车表示一个段落的结束。
+有序列表 1 2 3 4 5 1. 有序列表1 2. 有序列表2 3. 有序列表3 无序列表 1 2 3 4 5 - 无序列表1 - 无序列表2 - 无序列表3 任务列表 1 2 3 - [ ] 这是未完成 - [x] 这是已完成 这是扩展语法，部分渲染可能不支持。 引用 1 2 3 &amp;gt; 这是引用的内容 &amp;gt; &amp;gt; 这是又一行的引用内容 格式 1 2 3 *这是斜体* **这是加粗** ~~这是删除线~~ 分隔线 1 2 3 --- *** ___ 代码块 1 `这是行内代码块` 1 2 3 ``` 这是多行代码块 ``` 1 2 3 4 5 6 7 ```c //在```之后加语言名可进行语法高亮，具体看渲染如何实现 # include &amp;lt;stdio.</description>
+    </item>
+  </channel>
+</rss>

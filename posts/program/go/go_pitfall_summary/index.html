@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go踩坑小结 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="背景 近两三个月，在项目（go）中踩了很多坑，在此汇总一下以备忘。
+大坑小坑都是坑 指针 指针是个很强大的工具，日常开发中也有很多妙用，自认在delphi/lazarus中已经是得心应手了，但在go中却频频踩坑。
+空指针 空指针是最近踩坑最多的，而且一不小心就会panic，动不动就被摁在地上摩擦，踩坑后也有了些心得：
+能使用值变量的情况下就不要使用指针变量，除非必须使用指针变量的场景
+避免var p *T这种单纯的声明指针变量，一定要在声明指针变量时立即初始化，除非期望的初始值是nil
+使用指针变量前先判空
+赋值 目前在go(go1.25.x)中是不能直接给指针变量赋字面量值的，必须先把字面量赋给变量，再把变量的地址赋给指针变量，如：
+1 2 n := 0 p := &amp;n 时间转换 字符串时间解析 字符串时间解析为time.Time是经常会用到的，通常使用time.Parse即可，但必须要确保时间格式与字符串时间的格式一致。可以自定义函数实现兼容多种格式：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func parseTime(timeStr string) (time.Time, error) { // 尝试多种格式 layouts := []string{ &#34;2006-01-02 15:04:05&#34;, &#34;2006/01/02 15:04:05&#34;, &#34;2006-01-02&#34;, time.RFC3339, &#34;02/01/2006 15:04:05&#34;, } for _, layout := range layouts { if t, err := time.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_pitfall_summary/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_pitfall_summary/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go踩坑小结" />
+<meta property="og:description" content="背景 近两三个月，在项目（go）中踩了很多坑，在此汇总一下以备忘。
+大坑小坑都是坑 指针 指针是个很强大的工具，日常开发中也有很多妙用，自认在delphi/lazarus中已经是得心应手了，但在go中却频频踩坑。
+空指针 空指针是最近踩坑最多的，而且一不小心就会panic，动不动就被摁在地上摩擦，踩坑后也有了些心得：
+能使用值变量的情况下就不要使用指针变量，除非必须使用指针变量的场景
+避免var p *T这种单纯的声明指针变量，一定要在声明指针变量时立即初始化，除非期望的初始值是nil
+使用指针变量前先判空
+赋值 目前在go(go1.25.x)中是不能直接给指针变量赋字面量值的，必须先把字面量赋给变量，再把变量的地址赋给指针变量，如：
+1 2 n := 0 p := &amp;n 时间转换 字符串时间解析 字符串时间解析为time.Time是经常会用到的，通常使用time.Parse即可，但必须要确保时间格式与字符串时间的格式一致。可以自定义函数实现兼容多种格式：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func parseTime(timeStr string) (time.Time, error) { // 尝试多种格式 layouts := []string{ &#34;2006-01-02 15:04:05&#34;, &#34;2006/01/02 15:04:05&#34;, &#34;2006-01-02&#34;, time.RFC3339, &#34;02/01/2006 15:04:05&#34;, } for _, layout := range layouts { if t, err := time." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_pitfall_summary/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-02-02T17:05:12+08:00" />
+<meta property="article:modified_time" content="2026-02-02T17:05:12+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go踩坑小结"/>
+<meta name="twitter:description" content="背景 近两三个月，在项目（go）中踩了很多坑，在此汇总一下以备忘。
+大坑小坑都是坑 指针 指针是个很强大的工具，日常开发中也有很多妙用，自认在delphi/lazarus中已经是得心应手了，但在go中却频频踩坑。
+空指针 空指针是最近踩坑最多的，而且一不小心就会panic，动不动就被摁在地上摩擦，踩坑后也有了些心得：
+能使用值变量的情况下就不要使用指针变量，除非必须使用指针变量的场景
+避免var p *T这种单纯的声明指针变量，一定要在声明指针变量时立即初始化，除非期望的初始值是nil
+使用指针变量前先判空
+赋值 目前在go(go1.25.x)中是不能直接给指针变量赋字面量值的，必须先把字面量赋给变量，再把变量的地址赋给指针变量，如：
+1 2 n := 0 p := &amp;n 时间转换 字符串时间解析 字符串时间解析为time.Time是经常会用到的，通常使用time.Parse即可，但必须要确保时间格式与字符串时间的格式一致。可以自定义函数实现兼容多种格式：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func parseTime(timeStr string) (time.Time, error) { // 尝试多种格式 layouts := []string{ &#34;2006-01-02 15:04:05&#34;, &#34;2006/01/02 15:04:05&#34;, &#34;2006-01-02&#34;, time.RFC3339, &#34;02/01/2006 15:04:05&#34;, } for _, layout := range layouts { if t, err := time."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go踩坑小结",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_pitfall_summary/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go踩坑小结",
+  "name": "Go踩坑小结",
+  "description": "背景 近两三个月，在项目（go）中踩了很多坑，在此汇总一下以备忘。\n大坑小坑都是坑 指针 指针是个很强大的工具，日常开发中也有很多妙用，自认在delphi/lazarus中已经是得心应手了，但在go中却频频踩坑。\n空指针 空指针是最近踩坑最多的，而且一不小心就会panic，动不动就被摁在地上摩擦，踩坑后也有了些心得：\n能使用值变量的情况下就不要使用指针变量，除非必须使用指针变量的场景\n避免var p *T这种单纯的声明指针变量，一定要在声明指针变量时立即初始化，除非期望的初始值是nil\n使用指针变量前先判空\n赋值 目前在go(go1.25.x)中是不能直接给指针变量赋字面量值的，必须先把字面量赋给变量，再把变量的地址赋给指针变量，如：\n1 2 n := 0 p := \u0026amp;n 时间转换 字符串时间解析 字符串时间解析为time.Time是经常会用到的，通常使用time.Parse即可，但必须要确保时间格式与字符串时间的格式一致。可以自定义函数实现兼容多种格式：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func parseTime(timeStr string) (time.Time, error) { // 尝试多种格式 layouts := []string{ \u0026#34;2006-01-02 15:04:05\u0026#34;, \u0026#34;2006/01/02 15:04:05\u0026#34;, \u0026#34;2006-01-02\u0026#34;, time.RFC3339, \u0026#34;02/01/2006 15:04:05\u0026#34;, } for _, layout := range layouts { if t, err := time.",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "背景 近两三个月，在项目（go）中踩了很多坑，在此汇总一下以备忘。\n大坑小坑都是坑 指针 指针是个很强大的工具，日常开发中也有很多妙用，自认在delphi/lazarus中已经是得心应手了，但在go中却频频踩坑。\n空指针 空指针是最近踩坑最多的，而且一不小心就会panic，动不动就被摁在地上摩擦，踩坑后也有了些心得：\n能使用值变量的情况下就不要使用指针变量，除非必须使用指针变量的场景\n避免var p *T这种单纯的声明指针变量，一定要在声明指针变量时立即初始化，除非期望的初始值是nil\n使用指针变量前先判空\n赋值 目前在go(go1.25.x)中是不能直接给指针变量赋字面量值的，必须先把字面量赋给变量，再把变量的地址赋给指针变量，如：\n1 2 n := 0 p := \u0026n 时间转换 字符串时间解析 字符串时间解析为time.Time是经常会用到的，通常使用time.Parse即可，但必须要确保时间格式与字符串时间的格式一致。可以自定义函数实现兼容多种格式：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func parseTime(timeStr string) (time.Time, error) { // 尝试多种格式 layouts := []string{ \"2006-01-02 15:04:05\", \"2006/01/02 15:04:05\", \"2006-01-02\", time.RFC3339, \"02/01/2006 15:04:05\", } for _, layout := range layouts { if t, err := time.Parse(layout, timeStr); err == nil { return t, nil } } return time.Time{}, fmt.Errorf(\"无法解析时间: %s\", timeStr) } 时区问题 一般情况下，可以不考虑时区问题，但当字符串时间中含有时区时，就必须考虑并处理时区。\ntime.Parse返回的是UTC时间\ntime.ParseInLocation返回的是指定时区的时间\ntime.LoadLocation用于指定时区\n在容器中使用 基于alpine、scratch等的镜像默认不包含时区数据，因此会无法正常使用time.LoadLocation等与时区相关的函数，解决方案如下：\n打包镜像时安装时区数据库 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # Dockerfile FROM alpine:latest # 安装时区数据库 RUN apk add --no-cache tzdata # 设置默认时区（可选） ENV TZ=Asia/Shanghai # 验证 RUN ls -la /usr/share/zoneinfo/ # 复制应用 COPY app /app CMD [\"/app\"] 源码导入\"time/tzdata\"（适用于go1.15+） 1 2 3 4 5 6 // 仅在入口包导入 import ( \"time\" _ \"time/tzdata\" //要在 time 包之后 ) // 需要注意避免重复导入的问题，尤其是在库包中慎用 panic 某些情况下程序会抛panic，如果未捕获则会导致程序异常退出，可在主函数或主路由中进行捕获，捕获后最好打印堆栈信息，以方便定位问题。\n1 2 3 4 5 6 7 8 9 defer func() { if r := recover(); r != nil { //打印堆栈 debug.PrintStack() //也可转换为 error 进行返回，例如：在某个具体的函数中使用 //如有必要可重新抛出供后续处理，例如：日志中间件仅记录不处理 panic(r) } }() ",
+  "wordCount" : "191",
+  "inLanguage": "zh",
+  "datePublished": "2026-02-02T17:05:12+08:00",
+  "dateModified": "2026-02-02T17:05:12+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_pitfall_summary/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go踩坑小结
+    </h1>
+    <div class="post-meta"><span title='2026-02-02 17:05:12 +0800 CST'>2026-02-02 17:05:12</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e5%a4%a7%e5%9d%91%e5%b0%8f%e5%9d%91%e9%83%bd%e6%98%af%e5%9d%91" aria-label="大坑小坑都是坑">大坑小坑都是坑</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%8c%87%e9%92%88" aria-label="指针">指针</a><ul>
+                            
+                    <li>
+                        <a href="#%e7%a9%ba%e6%8c%87%e9%92%88" aria-label="空指针">空指针</a></li>
+                    <li>
+                        <a href="#%e8%b5%8b%e5%80%bc" aria-label="赋值">赋值</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e6%97%b6%e9%97%b4%e8%bd%ac%e6%8d%a2" aria-label="时间转换">时间转换</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2%e6%97%b6%e9%97%b4%e8%a7%a3%e6%9e%90" aria-label="字符串时间解析">字符串时间解析</a></li>
+                    <li>
+                        <a href="#%e6%97%b6%e5%8c%ba%e9%97%ae%e9%a2%98" aria-label="时区问题">时区问题</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%9c%a8%e5%ae%b9%e5%99%a8%e4%b8%ad%e4%bd%bf%e7%94%a8" aria-label="在容器中使用">在容器中使用</a></li></ul>
+                    </li></ul>
+                    </li>
+                    <li>
+                        <a href="#panic" aria-label="panic">panic</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p>近两三个月，在项目（go）中踩了很多坑，在此汇总一下以备忘。</p>
+<h1 id="大坑小坑都是坑">大坑小坑都是坑<a hidden class="anchor" aria-hidden="true" href="#大坑小坑都是坑">#</a></h1>
+<h2 id="指针">指针<a hidden class="anchor" aria-hidden="true" href="#指针">#</a></h2>
+<p><code>指针</code>是个很强大的工具，日常开发中也有很多妙用，自认在<code>delphi</code>/<code>lazarus</code>中已经是得心应手了，但在<code>go</code>中却频频踩坑。</p>
+<h3 id="空指针">空指针<a hidden class="anchor" aria-hidden="true" href="#空指针">#</a></h3>
+<p><code>空指针</code>是最近踩坑最多的，而且一不小心就会<code>panic</code>，动不动就被摁在地上摩擦，踩坑后也有了些心得：</p>
+<ul>
+<li>
+<p>能使用<code>值变量</code>的情况下就不要使用<code>指针变量</code>，除非必须使用<code>指针变量</code>的场景</p>
+</li>
+<li>
+<p>避免<code>var p *T</code>这种单纯的声明<code>指针变量</code>，一定要在声明<code>指针变量</code>时立即初始化，除非期望的初始值是<code>nil</code></p>
+</li>
+<li>
+<p>使用<code>指针变量</code>前先判空</p>
+</li>
+</ul>
+<h3 id="赋值">赋值<a hidden class="anchor" aria-hidden="true" href="#赋值">#</a></h3>
+<p>目前在<code>go</code>(go1.25.x)中是不能直接给<code>指针变量</code>赋<code>字面量</code>值的，必须先把<code>字面量</code>赋给<code>变量</code>，再把<code>变量</code>的地址赋给<code>指针变量</code>，如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">n</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="nx">p</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">n</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="时间转换">时间转换<a hidden class="anchor" aria-hidden="true" href="#时间转换">#</a></h2>
+<h3 id="字符串时间解析">字符串时间解析<a hidden class="anchor" aria-hidden="true" href="#字符串时间解析">#</a></h3>
+<p><code>字符串时间</code>解析为<code>time.Time</code>是经常会用到的，通常使用<code>time.Parse</code>即可，但必须要确保<code>时间格式</code>与<code>字符串时间</code>的格式一致。可以自定义函数实现兼容多种格式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">parseTime</span><span class="p">(</span><span class="nx">timeStr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 尝试多种格式
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">layouts</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;2006-01-02 15:04:05&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;2006/01/02 15:04:05&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;2006-01-02&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">time</span><span class="p">.</span><span class="nx">RFC3339</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;02/01/2006 15:04:05&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">layout</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">layouts</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="nx">layout</span><span class="p">,</span> <span class="nx">timeStr</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">t</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;无法解析时间: %s&#34;</span><span class="p">,</span> <span class="nx">timeStr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="时区问题">时区问题<a hidden class="anchor" aria-hidden="true" href="#时区问题">#</a></h3>
+<p>一般情况下，可以不考虑<code>时区</code>问题，但当<code>字符串时间</code>中含有<code>时区</code>时，就必须考虑并处理<code>时区</code>。</p>
+<ul>
+<li>
+<p><code>time.Parse</code>返回的是<code>UTC</code>时间</p>
+</li>
+<li>
+<p><code>time.ParseInLocation</code>返回的是<code>指定时区</code>的时间</p>
+</li>
+<li>
+<p><code>time.LoadLocation</code>用于指定时区</p>
+</li>
+</ul>
+<h4 id="在容器中使用">在容器中使用<a hidden class="anchor" aria-hidden="true" href="#在容器中使用">#</a></h4>
+<p>基于<code>alpine</code>、<code>scratch</code>等的镜像默认不包含时区数据，因此会无法正常使用<code>time.LoadLocation</code>等与时区相关的函数，解决方案如下：</p>
+<ol>
+<li>打包镜像时安装时区数据库</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># Dockerfile</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="s"> alpine:latest</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 安装时区数据库</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> apk add --no-cache tzdata<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 设置默认时区（可选）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">TZ</span><span class="o">=</span>Asia/Shanghai<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 验证</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> ls -la /usr/share/zoneinfo/<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 复制应用</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> app /app<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;/app&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>源码导入<code>&quot;time/tzdata&quot;</code>（适用于<code>go1.15+</code>）</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// 仅在入口包导入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;time&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">_</span> <span class="s">&#34;time/tzdata&#34;</span> <span class="c1">//要在 time 包之后
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 需要注意避免重复导入的问题，尤其是在库包中慎用
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="panic">panic<a hidden class="anchor" aria-hidden="true" href="#panic">#</a></h2>
+<p>某些情况下程序会抛<code>panic</code>，如果未捕获则会导致程序异常退出，可在主函数或主路由中进行捕获，捕获后最好打印<code>堆栈信息</code>，以方便定位问题。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">r</span> <span class="o">:=</span> <span class="nb">recover</span><span class="p">();</span> <span class="nx">r</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//打印堆栈
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">debug</span><span class="p">.</span><span class="nf">PrintStack</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//也可转换为 error 进行返回，例如：在某个具体的函数中使用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//如有必要可重新抛出供后续处理，例如：日志中间件仅记录不处理
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nb">panic</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/other/docker_vscode_go/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>使用Docker&#43;vscode搭建离线的go开发调试环境</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/other/warehouse_management_model/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>仓库管理模型</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

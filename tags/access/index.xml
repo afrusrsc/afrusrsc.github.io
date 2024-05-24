@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Access on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/access/</link>
+    <description>Recent content in Access on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Mon, 10 May 2021 21:58:30 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/access/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>恶心的Access时间查询</title>
+      <link>https://afrusrsc.github.io/posts/db/access_time/</link>
+      <pubDate>Mon, 10 May 2021 21:58:30 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/access_time/</guid>
+      <description>从其它平台迁移而来
+背景 客户使用的是南方XX的生产控制系统，需要把数据导入到我们自己的系统里，之前做过类似的东西，不难。
+当看到南方XX使用的是Access数据库里，心中一沉……（此处省略1024G脏字）不管心中有多少头神兽奔腾而过，该做的事情终究还是要做的，谁让人家里客户是金主呢。
+坑来了 代码写好了，测试也没问题（小BUG什么的分分钟搞定，不算数），通过！
+然后等着定时器，看第二回合是否通过。结果，卡卡卡的报主键重复！！！墨菲定律再次生效！
+查日志、打断点……一波操作后发现，是Access的时间过滤SQL执行结果和预期不一样！
+在Access里执行，正常！在程序里（ADO）执行，异常！！（此处再次省略1024G脏字）
+开启面向搜索引擎编程模式，浪费一把又一把生命后（论浪费生命，某垃圾度绝对功不可没），终于找到了解决方案：
+1 SELECT * FROM 表 WHERE 时间字段&amp;gt;CDate(&amp;#39;字符串型的时间条件值&amp;#39;) 吐槽 （此处直接省略1024T脏字）
+微软早期的东西自己和自己都范冲，真是垃圾得不能再垃圾了，呃~不好意思，侮辱垃圾了！
+福利？ 分享个图吧，不知道算不算福利，反正我是差点笑岔气儿！</description>
+    </item>
+  </channel>
+</rss>

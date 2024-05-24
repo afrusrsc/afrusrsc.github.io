@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Pg on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/pg/</link>
+    <description>Recent content in Pg on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Mon, 31 Mar 2025 17:04:49 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/pg/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用函数索引优化特定查询</title>
+      <link>https://afrusrsc.github.io/posts/db/functional_index/</link>
+      <pubDate>Mon, 31 Mar 2025 17:04:49 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/functional_index/</guid>
+      <description>问题 业务中遇到一个非常慢的查询，大致可以简化为以下SQL：
+1 2 3 4 5 select * from t1 where c1 not in (...) and c2 not like &amp;#39;ABC%&amp;#39; and c3 in (...) and c4=-1 and c5&amp;gt;&amp;#39;2020-01-01,00:00:00&amp;#39; 其中：
+有索引且命中的条件已简化掉了
+c5为自定义格式的时间字符串
+c2和c5有索引（普通索引），c1、c3和c4无索引
+c3和c4为绑定条件
+c1、c3和c4均为小值域列
+分析 not in和not like会导致普通索引失效
+为小值域列添加普通索引无法提供预期的效果
+c3和c4为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域
+c5虽然已有索引，但字符串比较操作还是太低效
+解决方案 基于以上特殊的情形，搜索并尝试后发现，函数索引恰好可以达到预期，而使用的数据库又刚好支持（Oracel和PostgreSQL完全支持）。
+添加索引 将c1的not in手动改为in查询，即可利用已有索引
+c2的not like为后模糊查询，为其创建函数索引：
+1 CREATE INDEX idx_t1_func_c2 ON t1(CASE WHEN c2 NOT LIKE &amp;#39;ABC%&amp;#39; THEN 1 ELSE 0 END); 为c3和c4的绑定条件创建函数索引： 1 CREATE INDEX idx_t1_func_c3c4 ON t1(CASE WHEN c3 in (.</description>
+    </item>
+    <item>
+      <title>PostgreSQL错误消息在win和linux上的差异</title>
+      <link>https://afrusrsc.github.io/posts/db/pgsql_errmsg/</link>
+      <pubDate>Sun, 23 Mar 2025 18:53:21 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/pgsql_errmsg/</guid>
+      <description>意外的乱码 在尝试用go操作pg数据库时，由于连接参数的笔误，意外得到了一条包含乱码的错误消息，很显然是字符编码的问题：win系统默认是gbk编码，debian一般都默认utf8编码，做一下编码转换就可以了。
+虽然很容易得到期望的结果，但还是引出了我很深的疑惑，因为这表现出了跨平台的不一致性，而这正是我一直都在设法避免的。
+环境说明 pg是在win10上的服务，安装方法见PostgreSQL zip 安装
+go开发是在wsl2的debian上进行
+对比pg是在虚拟机的debian上，安装方法见Debian上安装PostgreSQL
+排查 统一服务端编码 \l命令查看，win上的pg：Encoding是utf8，Collate和Ctype是cp932，即gbk；debian上的pg全部是utf8。
+win上使用bin\initdb -D data -U postgres -A password --locale=zh_CN.UTF-8 -E utf8 -W重新安装，全部变为utf8。
+此时进行测试，发现数据库连接成功之后的错误消息都是utf8的，但连接过程中的错误消息还是gbk。
+修改系统默认编码 修改windows的区域设置，勾选Beta版：使用 Unicode UTF-8 提供全球语言支持(U)，重启系统。
+此时进行测试，无论哪个环节，错误消息都是utf8。但这很可能会影响到其它程序，尤其是比较旧的程序或为了兼容旧系统的程序，因此，虽然可行，但还是不能采用。
+其它对比 使用Lazarus自带组件，配合libpq.dll，进行测试，在不修改系统默认编码的情况下，与go的程序表现一样。
+结论 目前，暂时无法通过修改配置使pg达到在windows和debian上的表现完全一致，但通过配置可以达到除连接成功前的错误消息编码外的一致性（至少暂未发现其它不一致处）。</description>
+    </item>
+    <item>
+      <title>PostgreSQL zip 安装</title>
+      <link>https://afrusrsc.github.io/posts/db/pgsql_zip_install/</link>
+      <pubDate>Tue, 30 Jul 2024 21:35:21 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/pgsql_zip_install/</guid>
+      <description>安装脚本 windows上安装PostgreSQL还是比较麻烦的，又是安装又是配置，还要设为系统服务，远不像linux上一条命令就搞定，所以参考网上其它资料整理后形成批处理文件，直接放在解压出来的pgsql根目录下执行即可。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 ::****************************************************************************** :: 注意：需要放到 PostgreSQL 根目录下执行！！ ::****************************************************************************** @echo off ::============================================================================== set pgpath=%cd% echo 1. 安装服务 echo 2. 卸载服务 set /p op=&amp;#34;请选择操作: &amp;#34; if %op%==1 goto :Install if %op%==2 goto :Uninstall ::============================================================================== :Install echo **************************** echo * 注意：输入密码时不可见！ * echo **************************** ::初始化数据库簇 bin\initdb -D data -U postgres -A password -E utf8 -W ::是否开启局域网访问 set /p lan=&amp;#34;是否开启局域网访问？[y/n]：&amp;#34; if %lan%==y ( echo host all all 0.</description>
+    </item>
+    <item>
+      <title>Debian上安装PostgreSQL</title>
+      <link>https://afrusrsc.github.io/posts/os/debian_pg_install/</link>
+      <pubDate>Mon, 15 Jan 2024 23:07:40 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/os/debian_pg_install/</guid>
+      <description>从其它平台迁移而来
+安装 Debian仓库中已包含PostgreSQL，所以，直接安装即可：
+1 sudo apt install postgresql 若想使用pg官方源，则执行：
+1 2 3 4 sudo sh -c &amp;#39;echo &amp;#34;deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main&amp;#34; &amp;gt; /etc/apt/sources.list.d/pgdg.list&amp;#39; wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - sudo apt-get update sudo apt-get -y install postgresql 配置 重置密码 曾经安装又卸载N多次，都没能像在win上一样正常使用，其实就是安装时默认生成的是随机密码，重置下密码即可使用。
+删除linux系统的postgres用户密码 1 sudo passwd -d postgres 设置linux系统的postgres用户密码 1 sudo -u postgres passwd 登录数据库 1 sudo -u postgres psql 修改数据库的postgres用户密码 1 ALTER USER postgres WITH PASSWORD &amp;#39;xxxxxx&amp;#39;; # 注意带分号 退出psql并重启服务 1 2 \q # 退出 psql sudo systemctl restart postgresql.</description>
+    </item>
+  </channel>
+</rss>

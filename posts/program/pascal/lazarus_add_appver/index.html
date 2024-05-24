@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Lazarus为应用添加版本信息 | 慢步道人</title>
+<meta name="keywords" content="lazarus, pascal">
+<meta name="description" content="需求背景 在开发过程中，我们经常需要给应用添加版本信息，以便于追踪和管理应用的版本。
+对于windows平台，直接在Project-&gt;Project Options...对话框中的Project Options-&gt;Version Info内进行设置即可。
+但是，对于非windows平台，该方案便不可行。
+而且，该方案还存在一个明显的问题：版本信息需要手动维护，未能与版本控制系统进行有效关联，很可能出现应用与源码不一致的情况。
+解决思路 不使用Version Info功能，但取其把版本信息编译到可执行文件中的思想。
+借鉴vscode的关于方案，版本信息中包含版本号和提交ID即可使应用和源码进行关联。
+只要解决了在构建时动态获取版本信息的问题，便可以解决该问题。
+解决方案 经多种尝试，最终确定的方案如下：
+在源码中添加ver.inc文件，用于存储版本信息，在关于界面等进行展示。
+编写脚本，获取版本信息并写入ver.inc文件。
+打开Project-&gt;Project Options...对话框，在Compiler Options-&gt;Compiler Commands-&gt;Execute before中添加脚本的路径。
+正常构建应用即可。
+如要跨平台，可分别编写对应平台的脚本并创建对应的Build mode，在Build modes中选择对应的模式，然后配置对应的脚本，正常构建即可。
+附脚本 以使用git为例：
+windows 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 @echo off ::获取版本号 git describe --tags &gt;nul 2&gt;nul if errorlevel 1 ( set VER_NO=0.0 ) else ( for /f &#34;delims=&#34; %%a in (&#39;git describe --tags&#39;) do set VER_NO=%%a ) ::获取提交id git rev-parse HEAD &gt;nul 2&gt;nul if errorlevel 1 ( set COMMIT_ID=0000000000000000000000000000000000000000 ) else ( for /f &#34;delims=&#34; %%b in (&#39;git rev-parse HEAD&#39;) do set COMMIT_ID=%%b ) ::写入文件 echo const &gt; ver.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_add_appver/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_add_appver/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Lazarus为应用添加版本信息" />
+<meta property="og:description" content="需求背景 在开发过程中，我们经常需要给应用添加版本信息，以便于追踪和管理应用的版本。
+对于windows平台，直接在Project-&gt;Project Options...对话框中的Project Options-&gt;Version Info内进行设置即可。
+但是，对于非windows平台，该方案便不可行。
+而且，该方案还存在一个明显的问题：版本信息需要手动维护，未能与版本控制系统进行有效关联，很可能出现应用与源码不一致的情况。
+解决思路 不使用Version Info功能，但取其把版本信息编译到可执行文件中的思想。
+借鉴vscode的关于方案，版本信息中包含版本号和提交ID即可使应用和源码进行关联。
+只要解决了在构建时动态获取版本信息的问题，便可以解决该问题。
+解决方案 经多种尝试，最终确定的方案如下：
+在源码中添加ver.inc文件，用于存储版本信息，在关于界面等进行展示。
+编写脚本，获取版本信息并写入ver.inc文件。
+打开Project-&gt;Project Options...对话框，在Compiler Options-&gt;Compiler Commands-&gt;Execute before中添加脚本的路径。
+正常构建应用即可。
+如要跨平台，可分别编写对应平台的脚本并创建对应的Build mode，在Build modes中选择对应的模式，然后配置对应的脚本，正常构建即可。
+附脚本 以使用git为例：
+windows 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 @echo off ::获取版本号 git describe --tags &gt;nul 2&gt;nul if errorlevel 1 ( set VER_NO=0.0 ) else ( for /f &#34;delims=&#34; %%a in (&#39;git describe --tags&#39;) do set VER_NO=%%a ) ::获取提交id git rev-parse HEAD &gt;nul 2&gt;nul if errorlevel 1 ( set COMMIT_ID=0000000000000000000000000000000000000000 ) else ( for /f &#34;delims=&#34; %%b in (&#39;git rev-parse HEAD&#39;) do set COMMIT_ID=%%b ) ::写入文件 echo const &gt; ver." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/lazarus_add_appver/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-11-12T20:08:32+08:00" />
+<meta property="article:modified_time" content="2024-11-12T20:08:32+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Lazarus为应用添加版本信息"/>
+<meta name="twitter:description" content="需求背景 在开发过程中，我们经常需要给应用添加版本信息，以便于追踪和管理应用的版本。
+对于windows平台，直接在Project-&gt;Project Options...对话框中的Project Options-&gt;Version Info内进行设置即可。
+但是，对于非windows平台，该方案便不可行。
+而且，该方案还存在一个明显的问题：版本信息需要手动维护，未能与版本控制系统进行有效关联，很可能出现应用与源码不一致的情况。
+解决思路 不使用Version Info功能，但取其把版本信息编译到可执行文件中的思想。
+借鉴vscode的关于方案，版本信息中包含版本号和提交ID即可使应用和源码进行关联。
+只要解决了在构建时动态获取版本信息的问题，便可以解决该问题。
+解决方案 经多种尝试，最终确定的方案如下：
+在源码中添加ver.inc文件，用于存储版本信息，在关于界面等进行展示。
+编写脚本，获取版本信息并写入ver.inc文件。
+打开Project-&gt;Project Options...对话框，在Compiler Options-&gt;Compiler Commands-&gt;Execute before中添加脚本的路径。
+正常构建应用即可。
+如要跨平台，可分别编写对应平台的脚本并创建对应的Build mode，在Build modes中选择对应的模式，然后配置对应的脚本，正常构建即可。
+附脚本 以使用git为例：
+windows 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 @echo off ::获取版本号 git describe --tags &gt;nul 2&gt;nul if errorlevel 1 ( set VER_NO=0.0 ) else ( for /f &#34;delims=&#34; %%a in (&#39;git describe --tags&#39;) do set VER_NO=%%a ) ::获取提交id git rev-parse HEAD &gt;nul 2&gt;nul if errorlevel 1 ( set COMMIT_ID=0000000000000000000000000000000000000000 ) else ( for /f &#34;delims=&#34; %%b in (&#39;git rev-parse HEAD&#39;) do set COMMIT_ID=%%b ) ::写入文件 echo const &gt; ver."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Lazarus为应用添加版本信息",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/lazarus_add_appver/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Lazarus为应用添加版本信息",
+  "name": "Lazarus为应用添加版本信息",
+  "description": "需求背景 在开发过程中，我们经常需要给应用添加版本信息，以便于追踪和管理应用的版本。\n对于windows平台，直接在Project-\u0026gt;Project Options...对话框中的Project Options-\u0026gt;Version Info内进行设置即可。\n但是，对于非windows平台，该方案便不可行。\n而且，该方案还存在一个明显的问题：版本信息需要手动维护，未能与版本控制系统进行有效关联，很可能出现应用与源码不一致的情况。\n解决思路 不使用Version Info功能，但取其把版本信息编译到可执行文件中的思想。\n借鉴vscode的关于方案，版本信息中包含版本号和提交ID即可使应用和源码进行关联。\n只要解决了在构建时动态获取版本信息的问题，便可以解决该问题。\n解决方案 经多种尝试，最终确定的方案如下：\n在源码中添加ver.inc文件，用于存储版本信息，在关于界面等进行展示。\n编写脚本，获取版本信息并写入ver.inc文件。\n打开Project-\u0026gt;Project Options...对话框，在Compiler Options-\u0026gt;Compiler Commands-\u0026gt;Execute before中添加脚本的路径。\n正常构建应用即可。\n如要跨平台，可分别编写对应平台的脚本并创建对应的Build mode，在Build modes中选择对应的模式，然后配置对应的脚本，正常构建即可。\n附脚本 以使用git为例：\nwindows 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 @echo off ::获取版本号 git describe --tags \u0026gt;nul 2\u0026gt;nul if errorlevel 1 ( set VER_NO=0.0 ) else ( for /f \u0026#34;delims=\u0026#34; %%a in (\u0026#39;git describe --tags\u0026#39;) do set VER_NO=%%a ) ::获取提交id git rev-parse HEAD \u0026gt;nul 2\u0026gt;nul if errorlevel 1 ( set COMMIT_ID=0000000000000000000000000000000000000000 ) else ( for /f \u0026#34;delims=\u0026#34; %%b in (\u0026#39;git rev-parse HEAD\u0026#39;) do set COMMIT_ID=%%b ) ::写入文件 echo const \u0026gt; ver.",
+  "keywords": [
+    "lazarus", "pascal"
+  ],
+  "articleBody": "需求背景 在开发过程中，我们经常需要给应用添加版本信息，以便于追踪和管理应用的版本。\n对于windows平台，直接在Project-\u003eProject Options...对话框中的Project Options-\u003eVersion Info内进行设置即可。\n但是，对于非windows平台，该方案便不可行。\n而且，该方案还存在一个明显的问题：版本信息需要手动维护，未能与版本控制系统进行有效关联，很可能出现应用与源码不一致的情况。\n解决思路 不使用Version Info功能，但取其把版本信息编译到可执行文件中的思想。\n借鉴vscode的关于方案，版本信息中包含版本号和提交ID即可使应用和源码进行关联。\n只要解决了在构建时动态获取版本信息的问题，便可以解决该问题。\n解决方案 经多种尝试，最终确定的方案如下：\n在源码中添加ver.inc文件，用于存储版本信息，在关于界面等进行展示。\n编写脚本，获取版本信息并写入ver.inc文件。\n打开Project-\u003eProject Options...对话框，在Compiler Options-\u003eCompiler Commands-\u003eExecute before中添加脚本的路径。\n正常构建应用即可。\n如要跨平台，可分别编写对应平台的脚本并创建对应的Build mode，在Build modes中选择对应的模式，然后配置对应的脚本，正常构建即可。\n附脚本 以使用git为例：\nwindows 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 @echo off ::获取版本号 git describe --tags \u003enul 2\u003enul if errorlevel 1 ( set VER_NO=0.0 ) else ( for /f \"delims=\" %%a in ('git describe --tags') do set VER_NO=%%a ) ::获取提交id git rev-parse HEAD \u003enul 2\u003enul if errorlevel 1 ( set COMMIT_ID=0000000000000000000000000000000000000000 ) else ( for /f \"delims=\" %%b in ('git rev-parse HEAD') do set COMMIT_ID=%%b ) ::写入文件 echo const \u003e ver.inc echo VER_NO = '%VER_NO%'; \u003e\u003e ver.inc echo COMMIT_ID = '%COMMIT_ID%'; \u003e\u003e ver.inc linux 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 #!/bin/bash # 获取版本号 VER_NO=$(git describe --tags 2\u003e/dev/null) if [ $? -ne 0 ]; then VER_NO=\"0.0\" fi # 获取提交ID COMMIT_ID=$(git rev-parse HEAD 2\u003e/dev/null) if [ $? -ne 0 ]; then COMMIT_ID=\"0000000000000000000000000000000000000000\" fi # 写入文件 echo \"const\" \u003e ver.inc echo \"VER_NO = '$VER_NO';\" \u003e\u003e ver.inc echo \"COMMIT_ID = '$COMMIT_ID';\" \u003e\u003e ver.inc ",
+  "wordCount" : "192",
+  "inLanguage": "zh",
+  "datePublished": "2024-11-12T20:08:32+08:00",
+  "dateModified": "2024-11-12T20:08:32+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/pascal/lazarus_add_appver/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/pascal/">⚒️pascal</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Lazarus为应用添加版本信息
+    </h1>
+    <div class="post-meta"><span title='2024-11-12 20:08:32 +0800 CST'>2024-11-12 20:08:32</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e9%9c%80%e6%b1%82%e8%83%8c%e6%99%af" aria-label="需求背景">需求背景</a></li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3%e6%80%9d%e8%b7%af" aria-label="解决思路">解决思路</a></li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="解决方案">解决方案</a></li>
+                    <li>
+                        <a href="#%e9%99%84%e8%84%9a%e6%9c%ac" aria-label="附脚本">附脚本</a><ul>
+                            
+                    <li>
+                        <a href="#windows" aria-label="windows">windows</a></li>
+                    <li>
+                        <a href="#linux" aria-label="linux">linux</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="需求背景">需求背景<a hidden class="anchor" aria-hidden="true" href="#需求背景">#</a></h1>
+<p>在开发过程中，我们经常需要给应用添加版本信息，以便于追踪和管理应用的版本。</p>
+<p>对于<code>windows</code>平台，直接在<code>Project</code>-&gt;<code>Project Options...</code>对话框中的<code>Project Options</code>-&gt;<code>Version Info</code>内进行设置即可。</p>
+<p>但是，对于非<code>windows</code>平台，该方案便不可行。</p>
+<p>而且，该方案还存在一个明显的问题：版本信息需要手动维护，未能与<code>版本控制系统</code>进行有效关联，很可能出现<code>应用与源码不一致</code>的情况。</p>
+<h1 id="解决思路">解决思路<a hidden class="anchor" aria-hidden="true" href="#解决思路">#</a></h1>
+<ol>
+<li>
+<p>不使用<code>Version Info</code>功能，但取其<code>把版本信息编译到可执行文件中</code>的思想。</p>
+</li>
+<li>
+<p>借鉴<code>vscode</code>的<code>关于</code>方案，版本信息中包含<code>版本号</code>和<code>提交ID</code>即可使应用和源码进行关联。</p>
+</li>
+<li>
+<p>只要解决了<code>在构建时动态获取版本信息</code>的问题，便可以解决该问题。</p>
+</li>
+</ol>
+<h1 id="解决方案">解决方案<a hidden class="anchor" aria-hidden="true" href="#解决方案">#</a></h1>
+<p>经多种尝试，最终确定的方案如下：</p>
+<ol>
+<li>
+<p>在源码中添加<code>ver.inc</code>文件，用于存储版本信息，在<code>关于</code>界面等进行展示。</p>
+</li>
+<li>
+<p>编写脚本，获取版本信息并写入<code>ver.inc</code>文件。</p>
+</li>
+<li>
+<p>打开<code>Project</code>-&gt;<code>Project Options...</code>对话框，在<code>Compiler Options</code>-&gt;<code>Compiler Commands</code>-&gt;<code>Execute before</code>中添加脚本的路径。</p>
+</li>
+</ol>
+<p><img loading="lazy" src="../../../../blogpic/lazarus_add_appver1.jpg" alt=""  />
+</p>
+<ol start="4">
+<li>
+<p>正常构建应用即可。</p>
+</li>
+<li>
+<p>如要跨平台，可分别编写对应平台的脚本并创建对应的<code>Build mode</code>，在<code>Build modes</code>中选择对应的模式，然后配置对应的脚本，正常构建即可。</p>
+</li>
+</ol>
+<h1 id="附脚本">附脚本<a hidden class="anchor" aria-hidden="true" href="#附脚本">#</a></h1>
+<p>以使用<code>git</code>为例：</p>
+<h2 id="windows">windows<a hidden class="anchor" aria-hidden="true" href="#windows">#</a></h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bat" data-lang="bat"><span class="line"><span class="cl"><span class="p">@</span><span class="k">echo</span> off
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">:</span><span class="c1">:获取版本号</span>
+</span></span><span class="line"><span class="cl">git describe --tags <span class="p">&gt;</span>nul <span class="mi">2</span><span class="p">&gt;</span>nul
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="k">errorlevel</span> <span class="mi">1</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">set</span> <span class="nv">VER_NO</span><span class="p">=</span>0.0
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="k">else</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="k">/f</span> <span class="s2">&#34;delims=&#34;</span> <span class="se">%%</span>a <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;git describe --tags&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="k">set</span> <span class="nv">VER_NO</span><span class="p">=</span><span class="se">%%</span>a
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">:</span><span class="c1">:获取提交id</span>
+</span></span><span class="line"><span class="cl">git rev-parse HEAD <span class="p">&gt;</span>nul <span class="mi">2</span><span class="p">&gt;</span>nul
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="k">errorlevel</span> <span class="mi">1</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">set</span> <span class="nv">COMMIT_ID</span><span class="p">=</span>0000000000000000000000000000000000000000
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="k">else</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="k">/f</span> <span class="s2">&#34;delims=&#34;</span> <span class="se">%%</span>b <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;git rev-parse HEAD&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="k">set</span> <span class="nv">COMMIT_ID</span><span class="p">=</span><span class="se">%%</span>b
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">:</span><span class="c1">:写入文件</span>
+</span></span><span class="line"><span class="cl"><span class="k">echo</span> const <span class="p">&gt;</span> ver.inc
+</span></span><span class="line"><span class="cl"><span class="k">echo</span> VER_NO = &#39;<span class="nv">%VER_NO%</span>&#39;; <span class="p">&gt;&gt;</span> ver.inc
+</span></span><span class="line"><span class="cl"><span class="k">echo</span> COMMIT_ID = &#39;<span class="nv">%COMMIT_ID%</span>&#39;; <span class="p">&gt;&gt;</span> ver.inc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="linux">linux<a hidden class="anchor" aria-hidden="true" href="#linux">#</a></h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取版本号</span>
+</span></span><span class="line"><span class="cl"><span class="nv">VER_NO</span><span class="o">=</span><span class="k">$(</span>git describe --tags 2&gt;/dev/null<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">VER_NO</span><span class="o">=</span><span class="s2">&#34;0.0&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取提交ID</span>
+</span></span><span class="line"><span class="cl"><span class="nv">COMMIT_ID</span><span class="o">=</span><span class="k">$(</span>git rev-parse HEAD 2&gt;/dev/null<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">COMMIT_ID</span><span class="o">=</span><span class="s2">&#34;0000000000000000000000000000000000000000&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 写入文件</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;const&#34;</span> &gt; ver.inc
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;VER_NO = &#39;</span><span class="nv">$VER_NO</span><span class="s2">&#39;;&#34;</span> &gt;&gt; ver.inc
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;COMMIT_ID = &#39;</span><span class="nv">$COMMIT_ID</span><span class="s2">&#39;;&#34;</span> &gt;&gt; ver.inc
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/git/git_filemode/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Git管理文件权限</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_learn_path/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go path包</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

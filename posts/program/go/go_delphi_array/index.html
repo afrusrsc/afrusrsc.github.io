@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>从Delphi到Go——数组 | 慢步道人</title>
+<meta name="keywords" content="go, delphi, pascal">
+<meta name="description" content="从其它平台迁移而来
+静态数组 一维数组 声明 Delphi
+1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go
+1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、&#39;a&#39;..&#39;z&#39;等。子界元素就是数组元素的下标。
+Go的数组长度只能是整型，下标为0~数组长度-1。
+初始化 Delphi
+1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go
+1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_delphi_array/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_delphi_array/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="从Delphi到Go——数组" />
+<meta property="og:description" content="从其它平台迁移而来
+静态数组 一维数组 声明 Delphi
+1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go
+1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、&#39;a&#39;..&#39;z&#39;等。子界元素就是数组元素的下标。
+Go的数组长度只能是整型，下标为0~数组长度-1。
+初始化 Delphi
+1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go
+1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_delphi_array/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-10-08T22:03:53+08:00" />
+<meta property="article:modified_time" content="2019-10-08T22:03:53+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="从Delphi到Go——数组"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+静态数组 一维数组 声明 Delphi
+1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go
+1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、&#39;a&#39;..&#39;z&#39;等。子界元素就是数组元素的下标。
+Go的数组长度只能是整型，下标为0~数组长度-1。
+初始化 Delphi
+1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go
+1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "从Delphi到Go——数组",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_delphi_array/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从Delphi到Go——数组",
+  "name": "从Delphi到Go——数组",
+  "description": "从其它平台迁移而来\n静态数组 一维数组 声明 Delphi\n1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go\n1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、'a'..'z'等。子界元素就是数组元素的下标。\nGo的数组长度只能是整型，下标为0~数组长度-1。\n初始化 Delphi\n1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go\n1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [.",
+  "keywords": [
+    "go", "delphi", "pascal"
+  ],
+  "articleBody": " 从其它平台迁移而来\n静态数组 一维数组 声明 Delphi\n1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go\n1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、'a'..'z'等。子界元素就是数组元素的下标。\nGo的数组长度只能是整型，下标为0~数组长度-1。\n初始化 Delphi\n1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go\n1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //也可简写为： 数组名 := [...]元素类型{元素0, 元素1, ……, 元素N-1} //只初始化部分元素 数组名 := [N]元素类型{索引i: 元素i, 索引j: 元素j} 数组名 := [...]元素类型{索引i: 元素i, 索引j: 元素j} //不指定数据长度时，数组为包含初始化元素的最小的数组 元素操作 Delphi\n1 2 3 4 //取值 v := a[i]; //赋值 a[i] := v; Go\n1 2 3 4 //取值 v = a[i]; //赋值 a[i] = v; 遍历数组 Delphi\n1 2 3 4 5 6 var a : array[m..n] of Integer; for i := m to n do …… //XE之后（也可能更早）也支持以下语法 for v in a do …… Go\n1 2 3 4 5 var a [N]int for i, v := range a { …… } //也可以用传统写法，不过一般不那么写 比较数组 如果两个数组类型相同（包括数组的长度，数组中元素的类型）的情况下，如果两个数组的所有元素都是相等的时候数组才是相等的。\nDelphi需要手动遍历比较。Go可以直接用==、\u003c\u003e来比较。\n二维数组 声明 Delphi\n1 2 3 var 数组名 : array[第一维索引范围] of array[第二维索引范围] of 元素类型; 数组名 : array[第一维索引范围, 第二维索引范围] of 元素类型; //两种等效，一般使用这一种 Go\n1 var 数组名 [第一维长度][第二维长度]元素类型 事实上，Go只有一维数组，但是一维数组同时也是一种数据类型，通过组合也可以实现概念上的二维甚至多维数组。例如，上面的[第二维长度]元素类型就是该二维数组的数据类型，而该数据类型本身又是个一维数组。\n初始化 Delphi\n1 var a: array[0..1, 0..2] of Integer = ((1, 2, 3), (4, 5, 6)); Go\n1 2 3 4 5 6 7 8 9 var a [2][3]byte = [2][3]int{{1, 2, 3}, {4, 5, 6}} //可简写为 a := [2][3]int{{1, 2, 3}, {4, 5, 6}} //全部元素初始化时，第一维长度可以不指定，但第二维长度必须指定 a := [...][3]int{{1, 2, 3}, {4, 5, 6}} //只初始化部分元素 a := [2][3]int{0: {1, 2, 3}} //初始化第一维第0个元素的全部元素 a := [2][3]int{1: {2: 6}} //初始化第一维第1个元素的第二维第2个元素 a := [...][3]int{1: {2: 6}} //不指定第一维长度时，数组为包含初始化元素的最小的数组 元素操作 Delphi\n1 2 3 4 //取值 v := a[i, k]; //赋值 a[i, k] := v; Go\n1 2 3 4 //取值 v = a[i][j]; //赋值 a[i][j] = v; 遍历数组 Delphi\n1 2 3 4 5 6 7 var a : array[m..n, x..y] of Integer; for i := m to n do for j := x to y do …… //XE之后（也可能更早）也支持以下语法 for v in a do …… Go\n1 2 3 4 5 6 7 var a [M][N]int for i, ai := range a { for j, v := range ai { …… } } //也可以用传统写法，不过一般不那么写。另外可能有更好的方法而我不清楚 动态数组 Delphi\n1 2 3 4 5 6 7 //声明 var da: array of Integer; //构造 SetLength(da, 10); //首次调用会初始化元素，之后调用只分配长度不再初始化。 //具体使用与静态数组几乎完全一样 //静态数组的数组名事实上即指向该数组首地址的指针 //动态数组的数组名事实上指向该数组首地址的指针的指针 Go\nGo没有动态数组，但是有更为灵活的切片，切片完成可以实现动态数组的功能，而且更灵活更丰富。\n切片 声明 1 2 var s1 []元素类型 //一维切片 var s2 [][]元素类型 //二维切片 初始化 使用make()函数构造 1 2 3 4 5 6 切片名 = make([]元素类型, 元素个数, 切片容量) //len()函数返回切片的元素个数 //cap()函数返回切片的容量 //切片容量可以省略，省略后切片的容量=元素个数 //切片容量不能小于元素个数，否则会报运行时错误 //切片容量可以大于元素个数，意为一次性预先分配出至少可以容纳该数量元素的内存供使用，若不够时会自动扩容，一般按容量的2倍进行扩容 从已有数组或切片生成 1 2 3 4 5 6 7 8 9 10 切片名 = 已有切片[开始位置:结束位置] //该语句并没有发生内存分配，而只是将新的切片指向了已有的切片，两个切片共用一部分内存 //len()函数会返回切片元素个数 //开始位置、结束位置均为原切片的索引，且开始位置\u003c=结束位置 //新的切片包含开始位置，不包含结束位置，但结束位置可以等于元素个数，用于取出末位元素 //取出的元素数量为：结束位置-开始位置 //省略开始位置，表示从连续区域开头到结束位置 //省略结束位置，表示从开始位置到整个连续区域末尾 //两者同时省略，与切片本身等效 //两者相等，等效于空切片，一般用于切片复位 切片操作 添加元素 1 2 3 4 5 6 7 8 9 10 11 12 13 var s1, s2 []int //添加一个元素 s1 = append(s1, 1) //添加多个元素 s2 = append(s2, 2, 4, 6) //添加一个切片的元素，必须加...对切片进行解包 s1 = append(s1, s2...) //注意：不能同时既添加元素又添加切片 //第一个参数也可以是其它切片 s3 := append(s2, 8) //s2也发生了变化 //在切片首部添加元素 s1 = append([]int{3}, s1...) //必定发生内存重新分配 //在切片第i个位置添加元素 s1 = append(s1[:i], append([]int{5}, s1[i:]...)...) 切片拷贝 1 2 3 4 copy(目标切片, 源切片) //目标切片必须分配过空间，且与源切片类型一致。 //若两个切片大小不一致，则按较少元素的切片的个数进行复制 //返回值为实际发生复制的元素个数 删除元素 Go没有删除切片元素的语法或接口，但可以利用切片的特性。\n1 2 3 4 5 6 7 8 9 //删除开头N个元素 s = s[N:] //移动指针 s = append(s[:0], s[N:]...) //移动数据 s = s[:copy(s, s[N:])] //删除中间N个元素 s = append(s[:i], s[i+N:]...) s = s[:i+copy(s[i:], s[i+N:])] //删除尾部N个元素 s = s[:len(s)-N] 修改元素 切片底层是数组，可像操作数组一样直接使用下标进行操作。\n",
+  "wordCount" : "553",
+  "inLanguage": "zh",
+  "datePublished": "2019-10-08T22:03:53+08:00",
+  "dateModified": "2019-10-08T22:03:53+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_delphi_array/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      从Delphi到Go——数组
+    </h1>
+    <div class="post-meta"><span title='2019-10-08 22:03:53 +0800 CST'>2019-10-08 22:03:53</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e9%9d%99%e6%80%81%e6%95%b0%e7%bb%84" aria-label="静态数组">静态数组</a><ul>
+                            
+                    <li>
+                        <a href="#%e4%b8%80%e7%bb%b4%e6%95%b0%e7%bb%84" aria-label="一维数组">一维数组</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%a3%b0%e6%98%8e" aria-label="声明">声明</a></li>
+                    <li>
+                        <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96" aria-label="初始化">初始化</a></li>
+                    <li>
+                        <a href="#%e5%85%83%e7%b4%a0%e6%93%8d%e4%bd%9c" aria-label="元素操作">元素操作</a></li>
+                    <li>
+                        <a href="#%e9%81%8d%e5%8e%86%e6%95%b0%e7%bb%84" aria-label="遍历数组">遍历数组</a></li>
+                    <li>
+                        <a href="#%e6%af%94%e8%be%83%e6%95%b0%e7%bb%84" aria-label="比较数组">比较数组</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e4%ba%8c%e7%bb%b4%e6%95%b0%e7%bb%84" aria-label="二维数组">二维数组</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%a3%b0%e6%98%8e-1" aria-label="声明">声明</a></li>
+                    <li>
+                        <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96-1" aria-label="初始化">初始化</a></li>
+                    <li>
+                        <a href="#%e5%85%83%e7%b4%a0%e6%93%8d%e4%bd%9c-1" aria-label="元素操作">元素操作</a></li>
+                    <li>
+                        <a href="#%e9%81%8d%e5%8e%86%e6%95%b0%e7%bb%84-1" aria-label="遍历数组">遍历数组</a></li></ul>
+                    </li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e5%8a%a8%e6%80%81%e6%95%b0%e7%bb%84" aria-label="动态数组">动态数组</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%88%87%e7%89%87" aria-label="切片">切片</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%a3%b0%e6%98%8e-2" aria-label="声明">声明</a></li>
+                    <li>
+                        <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96-2" aria-label="初始化">初始化</a></li>
+                    <li>
+                        <a href="#%e5%88%87%e7%89%87%e6%93%8d%e4%bd%9c" aria-label="切片操作">切片操作</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<h1 id="静态数组">静态数组<a hidden class="anchor" aria-hidden="true" href="#静态数组">#</a></h1>
+<h2 id="一维数组">一维数组<a hidden class="anchor" aria-hidden="true" href="#一维数组">#</a></h2>
+<h3 id="声明">声明<a hidden class="anchor" aria-hidden="true" href="#声明">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">var</span> <span class="err">数组名</span> <span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="err">索引范围</span><span class="p">]</span> <span class="n">of</span> <span class="err">元素类型</span><span class="p">;</span> <span class="o">//</span><span class="err">索引范围是子界类型，格式为：下限</span><span class="o">..</span><span class="err">上限</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">数组名</span> <span class="p">[</span><span class="nx">数组长度</span><span class="p">]</span><span class="nx">元素类型</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>Delphi</code>的索引范围可以是任意的子界类型，而且是包含上下限的<strong>闭区间</strong>。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：<code>0..8</code>、<code>5..11</code>、<code>'a'..'z'</code>等。子界元素就是数组元素的下标。</p>
+<p><code>Go</code>的数组长度只能是整型，下标为<code>0~数组长度-1</code>。</p>
+<h3 id="初始化">初始化<a hidden class="anchor" aria-hidden="true" href="#初始化">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">var</span> <span class="err">数组名</span> <span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="mf">1.</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="n">of</span> <span class="err">元素类型</span> <span class="o">=</span> <span class="p">(</span><span class="err">元素</span><span class="mi">1</span><span class="p">,</span> <span class="err">元素</span><span class="mi">2</span><span class="p">,</span> <span class="err">……</span><span class="p">,</span> <span class="err">元素</span><span class="n">N</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">数组名</span> <span class="p">[</span><span class="nx">N</span><span class="p">]</span><span class="nx">元素类型</span> <span class="p">=</span> <span class="p">[</span><span class="nx">N</span><span class="p">]</span><span class="nx">元素类型</span><span class="p">{</span><span class="nx">元素0</span><span class="p">,</span> <span class="nx">元素1</span><span class="p">,</span> <span class="err">……</span><span class="p">,</span> <span class="nx">元素N</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//由于初始化时元素个数已知，以上代码也可写为：
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">数组名</span> <span class="p">[</span><span class="nx">N</span><span class="p">]</span><span class="nx">元素类型</span> <span class="p">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nx">元素类型</span><span class="p">{</span><span class="nx">元素0</span><span class="p">,</span> <span class="nx">元素1</span><span class="p">,</span> <span class="err">……</span><span class="p">,</span> <span class="nx">元素N</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//如果先声明后赋值的话，写法如下：
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">数组名</span> <span class="p">[</span><span class="nx">N</span><span class="p">]</span><span class="nx">元素类型</span>
+</span></span><span class="line"><span class="cl"><span class="nx">数组名</span> <span class="p">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nx">元素类型</span><span class="p">{</span><span class="nx">元素0</span><span class="p">,</span> <span class="nx">元素1</span><span class="p">,</span> <span class="err">……</span><span class="p">,</span> <span class="nx">元素N</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//也可简写为：
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">数组名</span> <span class="o">:=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nx">元素类型</span><span class="p">{</span><span class="nx">元素0</span><span class="p">,</span> <span class="nx">元素1</span><span class="p">,</span> <span class="err">……</span><span class="p">,</span> <span class="nx">元素N</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//只初始化部分元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">数组名</span> <span class="o">:=</span> <span class="p">[</span><span class="nx">N</span><span class="p">]</span><span class="nx">元素类型</span><span class="p">{</span><span class="nx">索引i</span><span class="p">:</span> <span class="nx">元素i</span><span class="p">,</span> <span class="nx">索引j</span><span class="p">:</span> <span class="nx">元素j</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">数组名</span> <span class="o">:=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nx">元素类型</span><span class="p">{</span><span class="nx">索引i</span><span class="p">:</span> <span class="nx">元素i</span><span class="p">,</span> <span class="nx">索引j</span><span class="p">:</span> <span class="nx">元素j</span><span class="p">}</span>  <span class="c1">//不指定数据长度时，数组为包含初始化元素的最小的数组
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="元素操作">元素操作<a hidden class="anchor" aria-hidden="true" href="#元素操作">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">//取值
+</span></span><span class="line"><span class="cl">v := a[i];
+</span></span><span class="line"><span class="cl">//赋值
+</span></span><span class="line"><span class="cl">a[i] := v;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">//取值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">v</span> <span class="p">=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//赋值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">v</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="遍历数组">遍历数组<a hidden class="anchor" aria-hidden="true" href="#遍历数组">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">var</span> <span class="n">a</span> <span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="n">m</span><span class="o">..</span><span class="n">n</span><span class="p">]</span> <span class="n">of</span> <span class="n">Integer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="n">to</span> <span class="n">n</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="err">……</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="n">XE之后</span><span class="err">（也可能更早）也支持以下语法</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="err">……</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="p">[</span><span class="nx">N</span><span class="p">]</span><span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">a</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="err">……</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//也可以用传统写法，不过一般不那么写
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="比较数组">比较数组<a hidden class="anchor" aria-hidden="true" href="#比较数组">#</a></h3>
+<p>如果两个数组类型相同（<strong>包括数组的长度，数组中元素的类型</strong>）的情况下，如果两个数组的所有元素都是相等的时候数组才是相等的。</p>
+<p><code>Delphi</code>需要手动遍历比较。<code>Go</code>可以直接用<code>==</code>、<code>&lt;&gt;</code>来比较。</p>
+<h2 id="二维数组">二维数组<a hidden class="anchor" aria-hidden="true" href="#二维数组">#</a></h2>
+<h3 id="声明-1">声明<a hidden class="anchor" aria-hidden="true" href="#声明-1">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">var</span>
+</span></span><span class="line"><span class="cl">  <span class="err">数组名</span> <span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="err">第一维索引范围</span><span class="p">]</span> <span class="n">of</span> <span class="n">array</span><span class="p">[</span><span class="err">第二维索引范围</span><span class="p">]</span> <span class="n">of</span> <span class="err">元素类型</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="err">数组名</span> <span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="err">第一维索引范围</span><span class="p">,</span> <span class="err">第二维索引范围</span><span class="p">]</span> <span class="n">of</span> <span class="err">元素类型</span><span class="p">;</span> <span class="o">//</span><span class="err">两种等效，一般使用这一种</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">数组名</span> <span class="p">[</span><span class="nx">第一维长度</span><span class="p">][</span><span class="nx">第二维长度</span><span class="p">]</span><span class="nx">元素类型</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>事实上，<code>Go</code>只有一维数组，但是一维数组同时也是一种数据类型，通过组合也可以实现概念上的二维甚至多维数组。例如，上面的<code>[第二维长度]元素类型</code>就是该二维数组的数据类型，而该数据类型本身又是个一维数组。</p>
+<h3 id="初始化-1">初始化<a hidden class="anchor" aria-hidden="true" href="#初始化-1">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">var</span> <span class="n">a</span><span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="mf">0.</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.</span><span class="o">.</span><span class="mi">2</span><span class="p">]</span> <span class="n">of</span> <span class="n">Integer</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="kt">byte</span> <span class="p">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">}}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//可简写为
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">}}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//全部元素初始化时，第一维长度可以不指定，但第二维长度必须指定
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span> <span class="o">:=</span> <span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">}}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//只初始化部分元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}}</span> <span class="c1">//初始化第一维第0个元素的全部元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mi">6</span><span class="p">}}</span>    <span class="c1">//初始化第一维第1个元素的第二维第2个元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span> <span class="o">:=</span> <span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mi">6</span><span class="p">}}</span>  <span class="c1">//不指定第一维长度时，数组为包含初始化元素的最小的数组
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="元素操作-1">元素操作<a hidden class="anchor" aria-hidden="true" href="#元素操作-1">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">//取值
+</span></span><span class="line"><span class="cl">v := a[i, k];
+</span></span><span class="line"><span class="cl">//赋值
+</span></span><span class="line"><span class="cl">a[i, k] := v;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">//取值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">v</span> <span class="p">=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//赋值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="nx">v</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="遍历数组-1">遍历数组<a hidden class="anchor" aria-hidden="true" href="#遍历数组-1">#</a></h3>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">var</span> <span class="n">a</span> <span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="n">m</span><span class="o">..</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="o">..</span><span class="n">y</span><span class="p">]</span> <span class="n">of</span> <span class="n">Integer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="n">to</span> <span class="n">n</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">j</span> <span class="p">:</span><span class="o">=</span> <span class="n">x</span> <span class="n">to</span> <span class="n">y</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="err">……</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="n">XE之后</span><span class="err">（也可能更早）也支持以下语法</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="err">……</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="p">[</span><span class="nx">M</span><span class="p">][</span><span class="nx">N</span><span class="p">]</span><span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">ai</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">a</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="nx">j</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">ai</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">……</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//也可以用传统写法，不过一般不那么写。另外可能有更好的方法而我不清楚
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="动态数组">动态数组<a hidden class="anchor" aria-hidden="true" href="#动态数组">#</a></h1>
+<p>Delphi</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">//</span><span class="err">声明</span>
+</span></span><span class="line"><span class="cl"><span class="k">var</span> <span class="n">da</span><span class="p">:</span> <span class="n">array</span> <span class="n">of</span> <span class="n">Integer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">构造</span>
+</span></span><span class="line"><span class="cl"><span class="n">SetLength</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span> <span class="o">//</span><span class="err">首次调用会初始化元素，之后调用只分配长度不再初始化。</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">具体使用与静态数组几乎完全一样</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">静态数组的数组名事实上即指向该数组首地址的指针</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">动态数组的数组名事实上指向该数组首地址的指针的指针</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Go</p>
+<p><code>Go</code>没有动态数组，但是有更为灵活的<code>切片</code>，<code>切片</code>完成可以实现动态数组的功能，而且更灵活更丰富。</p>
+<h2 id="切片">切片<a hidden class="anchor" aria-hidden="true" href="#切片">#</a></h2>
+<h3 id="声明-2">声明<a hidden class="anchor" aria-hidden="true" href="#声明-2">#</a></h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">s1</span> <span class="p">[]</span><span class="nx">元素类型</span>   <span class="c1">//一维切片
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">s2</span> <span class="p">[][]</span><span class="nx">元素类型</span> <span class="c1">//二维切片
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="初始化-2">初始化<a hidden class="anchor" aria-hidden="true" href="#初始化-2">#</a></h3>
+<ul>
+<li>使用make()函数构造</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">切片名</span> <span class="p">=</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">元素类型</span><span class="p">,</span> <span class="nx">元素个数</span><span class="p">,</span> <span class="nx">切片容量</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//len()函数返回切片的元素个数
+</span></span></span><span class="line"><span class="cl"><span class="c1">//cap()函数返回切片的容量
+</span></span></span><span class="line"><span class="cl"><span class="c1">//切片容量可以省略，省略后切片的容量=元素个数
+</span></span></span><span class="line"><span class="cl"><span class="c1">//切片容量不能小于元素个数，否则会报运行时错误
+</span></span></span><span class="line"><span class="cl"><span class="c1">//切片容量可以大于元素个数，意为一次性预先分配出至少可以容纳该数量元素的内存供使用，若不够时会自动扩容，一般按容量的2倍进行扩容
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>从已有数组或切片生成</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">切片名</span> <span class="p">=</span> <span class="nx">已有切片</span><span class="p">[</span><span class="nx">开始位置</span><span class="p">:</span><span class="nx">结束位置</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//该语句并没有发生内存分配，而只是将新的切片指向了已有的切片，两个切片共用一部分内存
+</span></span></span><span class="line"><span class="cl"><span class="c1">//len()函数会返回切片元素个数
+</span></span></span><span class="line"><span class="cl"><span class="c1">//开始位置、结束位置均为原切片的索引，且开始位置&lt;=结束位置
+</span></span></span><span class="line"><span class="cl"><span class="c1">//新的切片包含开始位置，不包含结束位置，但结束位置可以等于元素个数，用于取出末位元素
+</span></span></span><span class="line"><span class="cl"><span class="c1">//取出的元素数量为：结束位置-开始位置
+</span></span></span><span class="line"><span class="cl"><span class="c1">//省略开始位置，表示从连续区域开头到结束位置
+</span></span></span><span class="line"><span class="cl"><span class="c1">//省略结束位置，表示从开始位置到整个连续区域末尾
+</span></span></span><span class="line"><span class="cl"><span class="c1">//两者同时省略，与切片本身等效
+</span></span></span><span class="line"><span class="cl"><span class="c1">//两者相等，等效于空切片，一般用于切片复位
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="切片操作">切片操作<a hidden class="anchor" aria-hidden="true" href="#切片操作">#</a></h3>
+<ul>
+<li>添加元素</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">s1</span><span class="p">,</span> <span class="nx">s2</span> <span class="p">[]</span><span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//添加一个元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s1</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//添加多个元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s2</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//添加一个切片的元素，必须加...对切片进行解包
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s1</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s1</span><span class="p">,</span> <span class="nx">s2</span><span class="o">...</span><span class="p">)</span>       <span class="c1">//注意：不能同时既添加元素又添加切片
+</span></span></span><span class="line"><span class="cl"><span class="c1">//第一个参数也可以是其它切片
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s3</span> <span class="o">:=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>          <span class="c1">//s2也发生了变化
+</span></span></span><span class="line"><span class="cl"><span class="c1">//在切片首部添加元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s1</span> <span class="p">=</span> <span class="nb">append</span><span class="p">([]</span><span class="kt">int</span><span class="p">{</span><span class="mi">3</span><span class="p">},</span> <span class="nx">s1</span><span class="o">...</span><span class="p">)</span> <span class="c1">//必定发生内存重新分配
+</span></span></span><span class="line"><span class="cl"><span class="c1">//在切片第i个位置添加元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s1</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s1</span><span class="p">[:</span><span class="nx">i</span><span class="p">],</span> <span class="nb">append</span><span class="p">([]</span><span class="kt">int</span><span class="p">{</span><span class="mi">5</span><span class="p">},</span> <span class="nx">s1</span><span class="p">[</span><span class="nx">i</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>切片拷贝</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nb">copy</span><span class="p">(</span><span class="nx">目标切片</span><span class="p">,</span> <span class="nx">源切片</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//目标切片必须分配过空间，且与源切片类型一致。
+</span></span></span><span class="line"><span class="cl"><span class="c1">//若两个切片大小不一致，则按较少元素的切片的个数进行复制
+</span></span></span><span class="line"><span class="cl"><span class="c1">//返回值为实际发生复制的元素个数
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>删除元素</li>
+</ul>
+<p><code>Go</code>没有删除切片元素的语法或接口，但可以利用切片的特性。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">//删除开头N个元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">[</span><span class="nx">N</span><span class="p">:]</span>                   <span class="c1">//移动指针
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">[:</span><span class="mi">0</span><span class="p">],</span> <span class="nx">s</span><span class="p">[</span><span class="nx">N</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span> <span class="c1">//移动数据
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">[:</span><span class="nb">copy</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="nx">s</span><span class="p">[</span><span class="nx">N</span><span class="p">:])]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//删除中间N个元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">[:</span><span class="nx">i</span><span class="p">],</span> <span class="nx">s</span><span class="p">[</span><span class="nx">i</span><span class="o">+</span><span class="nx">N</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">[:</span><span class="nx">i</span><span class="o">+</span><span class="nb">copy</span><span class="p">(</span><span class="nx">s</span><span class="p">[</span><span class="nx">i</span><span class="p">:],</span> <span class="nx">s</span><span class="p">[</span><span class="nx">i</span><span class="o">+</span><span class="nx">N</span><span class="p">:])]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//删除尾部N个元素
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="o">-</span><span class="nx">N</span><span class="p">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>修改元素</li>
+</ul>
+<p>切片底层是数组，可像操作数组一样直接使用下标进行操作。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/delphi/">Delphi</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_delphi_map/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>从Delphi到Go——字典</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/delphi_string02/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>再探Delphi字符串</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

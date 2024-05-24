@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Cline使用初体验 | 慢步道人</title>
+<meta name="keywords" content="AI, cline">
+<meta name="description" content="背景 AI大行其道的当下，AI要取代程序员了、程序员这个职业要消失了之类的声音可谓是不绝于耳，所以就体验一把AI编程。
+体验过程 选型 首先是选模式，像代码补全这种辅助型的肯定是不在考虑范围内的。
+之前，同事使用智能体自动帮他改程序，结果被狠狠坑了一把：代码看起来很不错，但是测试后却发现很多问题，比如别的很多没让改的功能和原来的不一样了，比如多了一个假死的特性，比如再也不会触发docker的自动重启了……总之，甩手掌柜的方式是pass了。而Cline这种先规则再执行，而且中间必须要人工确认的方式，反倒是挻符合软件开发的核心流程。
+然后是选模型。国外的需要梯子，pass了。国内的，DeepSeek算是领军模型了吧，而且刚发了V4；另外一个，选了智谱GLM-5.1，无他，刚好有key而已。
+**说明：**刚开始时Cline默认只能接入deepseek-chat和deepseek-reasoner，后来才有deepseek-v4-flash和deepseek-v4-pro。
+使用 正式使用之前，还是做了一些功课，包括如何使用Cline，如何写提示词等。
+写函数 先写好函数的声明，定义好入参和返回值，然后让AI写具体实现。
+测试一 先来个简单的：给一个初始日期和周期，列出截止到当天的所有符合的日期。结果，很不错。
+测试二 来个现实场景的：输入N列数据，每个数据为电能表读数的k-v，要求得出有电量变化的时间段，多列之间取并集，同时要剔除掉电量为0等异常值。
+结果，很糟糕！粗看代码，很像回事，注释也把逻辑写得比较清楚，但是一给数据跑出来的结果就让人火大：有起止时间完全一样的时间段，还有电量根本没变化的时间段……
+据说AI很擅长写测试，那就先写测试再实现。结果，测试用例的数据跑出来是正确的，换一批数据又让人火大了……
+耐着性子交流了一下午，结果还是没达到预期的正确结果，怒了，丢掉AI采用已被称之为古法编程的纯手工编写方式，不到半小时，完美通过。
+测试三 根据当前日期和历史统计记录，把测试二的成果——时间段数据，按归属统计出每日时长，并依次统计出周、月、季、年对应的数据。
+结果，磕磕绊绊的总算把日统计做好了，周统计费了点工夫也搞定了，至于月、季、年倒是一次通过。呵，好吧，这写代码的能力也就那样吧，倒是抄代码的能力那真是顶呱呱！
+知识库 这此考察重点不是写代码，是知识库。
+var a *int = new(1) 这段go代码是否正确，这是go1.26.0的新特性，发布于2026-02-10。结果，只有deepseek-v4知道这个特性。 注意：后来又测试，发现deepseek-v4又不知道这个特性了，莫名其妙。
+为pg18创建一个最简用户表，要求主键用uuid v7，这是pg18.0的新特性，原生支持uuid v7，发布于2025-09-25。结果，全军覆没，要么让安装插件，要么就开始瞎猜。
+把上面两个发行日志的页面地址给AI，让它自己去提取新特性并写入规则文件。结果，跑了很长时间都还没跑完，强行给终止了。
+写项目 上面的测试其实都是小儿科，实实在在从0开始去写个项目，才更考验AI的能力。
+项目一 目标，写一个文件去重工具，要求支持tui和web两种操作界面，支持多种哈希算法。技术栈是go&#43;Bubble Tea&#43;templ&#43;Tailwind CSS&#43;Alpine.js。
+虽然有些小波折，但结果还算满意，比我写的强多了。一下午的时间，目标基本完成了，随后又抽空优化了几次，但仍有已知bug。
+项目地址如下：
+Gitee：https://gitee.com/afrusrsc/duplicate-cleaner
+Github：https://github.com/afrusrsc/duplicate-cleaner
+项目二 精心选择了pg&#43;pgx&#43;sqlc&#43;gin&#43;templ&#43;Tailwind CSS&#43;Alpine.js这个技术栈，前端、后端、数据库都有，主流、非主流也都有。
+目标，写一个精简版的ERP，因为有前同事刚用codex花了10元完成了一个内部使用的ERP，使用c#的技术栈，刚好可以进行对照。
+本想项目完成之后再写这一章节的，但是，现在放弃继续测试了。
+三天了，成果如下：
+功能 结果 备注 登录 通过 修改密码 通过 查看登录日志 基本能用 超时无操作后锁定 勉强通过 仍有bug 部门管理 进行中 在此放弃的，基本的CURD，前端都能bug满天飞，而且同一个bug，这次改没了，下次又改出来了，烦不胜烦 额外发现 deepseek比glm-5.1响应速度要快
+deepseek-v4在thinking中经常会狂飙英文
+deepseek-v4与Cline配合，经常会读不到终端的输出结果而死等">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/ai/first_experience_with_cline/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/ai/first_experience_with_cline/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Cline使用初体验" />
+<meta property="og:description" content="背景 AI大行其道的当下，AI要取代程序员了、程序员这个职业要消失了之类的声音可谓是不绝于耳，所以就体验一把AI编程。
+体验过程 选型 首先是选模式，像代码补全这种辅助型的肯定是不在考虑范围内的。
+之前，同事使用智能体自动帮他改程序，结果被狠狠坑了一把：代码看起来很不错，但是测试后却发现很多问题，比如别的很多没让改的功能和原来的不一样了，比如多了一个假死的特性，比如再也不会触发docker的自动重启了……总之，甩手掌柜的方式是pass了。而Cline这种先规则再执行，而且中间必须要人工确认的方式，反倒是挻符合软件开发的核心流程。
+然后是选模型。国外的需要梯子，pass了。国内的，DeepSeek算是领军模型了吧，而且刚发了V4；另外一个，选了智谱GLM-5.1，无他，刚好有key而已。
+**说明：**刚开始时Cline默认只能接入deepseek-chat和deepseek-reasoner，后来才有deepseek-v4-flash和deepseek-v4-pro。
+使用 正式使用之前，还是做了一些功课，包括如何使用Cline，如何写提示词等。
+写函数 先写好函数的声明，定义好入参和返回值，然后让AI写具体实现。
+测试一 先来个简单的：给一个初始日期和周期，列出截止到当天的所有符合的日期。结果，很不错。
+测试二 来个现实场景的：输入N列数据，每个数据为电能表读数的k-v，要求得出有电量变化的时间段，多列之间取并集，同时要剔除掉电量为0等异常值。
+结果，很糟糕！粗看代码，很像回事，注释也把逻辑写得比较清楚，但是一给数据跑出来的结果就让人火大：有起止时间完全一样的时间段，还有电量根本没变化的时间段……
+据说AI很擅长写测试，那就先写测试再实现。结果，测试用例的数据跑出来是正确的，换一批数据又让人火大了……
+耐着性子交流了一下午，结果还是没达到预期的正确结果，怒了，丢掉AI采用已被称之为古法编程的纯手工编写方式，不到半小时，完美通过。
+测试三 根据当前日期和历史统计记录，把测试二的成果——时间段数据，按归属统计出每日时长，并依次统计出周、月、季、年对应的数据。
+结果，磕磕绊绊的总算把日统计做好了，周统计费了点工夫也搞定了，至于月、季、年倒是一次通过。呵，好吧，这写代码的能力也就那样吧，倒是抄代码的能力那真是顶呱呱！
+知识库 这此考察重点不是写代码，是知识库。
+var a *int = new(1) 这段go代码是否正确，这是go1.26.0的新特性，发布于2026-02-10。结果，只有deepseek-v4知道这个特性。 注意：后来又测试，发现deepseek-v4又不知道这个特性了，莫名其妙。
+为pg18创建一个最简用户表，要求主键用uuid v7，这是pg18.0的新特性，原生支持uuid v7，发布于2025-09-25。结果，全军覆没，要么让安装插件，要么就开始瞎猜。
+把上面两个发行日志的页面地址给AI，让它自己去提取新特性并写入规则文件。结果，跑了很长时间都还没跑完，强行给终止了。
+写项目 上面的测试其实都是小儿科，实实在在从0开始去写个项目，才更考验AI的能力。
+项目一 目标，写一个文件去重工具，要求支持tui和web两种操作界面，支持多种哈希算法。技术栈是go&#43;Bubble Tea&#43;templ&#43;Tailwind CSS&#43;Alpine.js。
+虽然有些小波折，但结果还算满意，比我写的强多了。一下午的时间，目标基本完成了，随后又抽空优化了几次，但仍有已知bug。
+项目地址如下：
+Gitee：https://gitee.com/afrusrsc/duplicate-cleaner
+Github：https://github.com/afrusrsc/duplicate-cleaner
+项目二 精心选择了pg&#43;pgx&#43;sqlc&#43;gin&#43;templ&#43;Tailwind CSS&#43;Alpine.js这个技术栈，前端、后端、数据库都有，主流、非主流也都有。
+目标，写一个精简版的ERP，因为有前同事刚用codex花了10元完成了一个内部使用的ERP，使用c#的技术栈，刚好可以进行对照。
+本想项目完成之后再写这一章节的，但是，现在放弃继续测试了。
+三天了，成果如下：
+功能 结果 备注 登录 通过 修改密码 通过 查看登录日志 基本能用 超时无操作后锁定 勉强通过 仍有bug 部门管理 进行中 在此放弃的，基本的CURD，前端都能bug满天飞，而且同一个bug，这次改没了，下次又改出来了，烦不胜烦 额外发现 deepseek比glm-5.1响应速度要快
+deepseek-v4在thinking中经常会狂飙英文
+deepseek-v4与Cline配合，经常会读不到终端的输出结果而死等" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/ai/first_experience_with_cline/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-06-02T22:43:32+08:00" />
+<meta property="article:modified_time" content="2026-06-02T22:43:32+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Cline使用初体验"/>
+<meta name="twitter:description" content="背景 AI大行其道的当下，AI要取代程序员了、程序员这个职业要消失了之类的声音可谓是不绝于耳，所以就体验一把AI编程。
+体验过程 选型 首先是选模式，像代码补全这种辅助型的肯定是不在考虑范围内的。
+之前，同事使用智能体自动帮他改程序，结果被狠狠坑了一把：代码看起来很不错，但是测试后却发现很多问题，比如别的很多没让改的功能和原来的不一样了，比如多了一个假死的特性，比如再也不会触发docker的自动重启了……总之，甩手掌柜的方式是pass了。而Cline这种先规则再执行，而且中间必须要人工确认的方式，反倒是挻符合软件开发的核心流程。
+然后是选模型。国外的需要梯子，pass了。国内的，DeepSeek算是领军模型了吧，而且刚发了V4；另外一个，选了智谱GLM-5.1，无他，刚好有key而已。
+**说明：**刚开始时Cline默认只能接入deepseek-chat和deepseek-reasoner，后来才有deepseek-v4-flash和deepseek-v4-pro。
+使用 正式使用之前，还是做了一些功课，包括如何使用Cline，如何写提示词等。
+写函数 先写好函数的声明，定义好入参和返回值，然后让AI写具体实现。
+测试一 先来个简单的：给一个初始日期和周期，列出截止到当天的所有符合的日期。结果，很不错。
+测试二 来个现实场景的：输入N列数据，每个数据为电能表读数的k-v，要求得出有电量变化的时间段，多列之间取并集，同时要剔除掉电量为0等异常值。
+结果，很糟糕！粗看代码，很像回事，注释也把逻辑写得比较清楚，但是一给数据跑出来的结果就让人火大：有起止时间完全一样的时间段，还有电量根本没变化的时间段……
+据说AI很擅长写测试，那就先写测试再实现。结果，测试用例的数据跑出来是正确的，换一批数据又让人火大了……
+耐着性子交流了一下午，结果还是没达到预期的正确结果，怒了，丢掉AI采用已被称之为古法编程的纯手工编写方式，不到半小时，完美通过。
+测试三 根据当前日期和历史统计记录，把测试二的成果——时间段数据，按归属统计出每日时长，并依次统计出周、月、季、年对应的数据。
+结果，磕磕绊绊的总算把日统计做好了，周统计费了点工夫也搞定了，至于月、季、年倒是一次通过。呵，好吧，这写代码的能力也就那样吧，倒是抄代码的能力那真是顶呱呱！
+知识库 这此考察重点不是写代码，是知识库。
+var a *int = new(1) 这段go代码是否正确，这是go1.26.0的新特性，发布于2026-02-10。结果，只有deepseek-v4知道这个特性。 注意：后来又测试，发现deepseek-v4又不知道这个特性了，莫名其妙。
+为pg18创建一个最简用户表，要求主键用uuid v7，这是pg18.0的新特性，原生支持uuid v7，发布于2025-09-25。结果，全军覆没，要么让安装插件，要么就开始瞎猜。
+把上面两个发行日志的页面地址给AI，让它自己去提取新特性并写入规则文件。结果，跑了很长时间都还没跑完，强行给终止了。
+写项目 上面的测试其实都是小儿科，实实在在从0开始去写个项目，才更考验AI的能力。
+项目一 目标，写一个文件去重工具，要求支持tui和web两种操作界面，支持多种哈希算法。技术栈是go&#43;Bubble Tea&#43;templ&#43;Tailwind CSS&#43;Alpine.js。
+虽然有些小波折，但结果还算满意，比我写的强多了。一下午的时间，目标基本完成了，随后又抽空优化了几次，但仍有已知bug。
+项目地址如下：
+Gitee：https://gitee.com/afrusrsc/duplicate-cleaner
+Github：https://github.com/afrusrsc/duplicate-cleaner
+项目二 精心选择了pg&#43;pgx&#43;sqlc&#43;gin&#43;templ&#43;Tailwind CSS&#43;Alpine.js这个技术栈，前端、后端、数据库都有，主流、非主流也都有。
+目标，写一个精简版的ERP，因为有前同事刚用codex花了10元完成了一个内部使用的ERP，使用c#的技术栈，刚好可以进行对照。
+本想项目完成之后再写这一章节的，但是，现在放弃继续测试了。
+三天了，成果如下：
+功能 结果 备注 登录 通过 修改密码 通过 查看登录日志 基本能用 超时无操作后锁定 勉强通过 仍有bug 部门管理 进行中 在此放弃的，基本的CURD，前端都能bug满天飞，而且同一个bug，这次改没了，下次又改出来了，烦不胜烦 额外发现 deepseek比glm-5.1响应速度要快
+deepseek-v4在thinking中经常会狂飙英文
+deepseek-v4与Cline配合，经常会读不到终端的输出结果而死等"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🤖AI",
+      "item": "https://afrusrsc.github.io/posts/ai/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Cline使用初体验",
+      "item": "https://afrusrsc.github.io/posts/ai/first_experience_with_cline/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Cline使用初体验",
+  "name": "Cline使用初体验",
+  "description": "背景 AI大行其道的当下，AI要取代程序员了、程序员这个职业要消失了之类的声音可谓是不绝于耳，所以就体验一把AI编程。\n体验过程 选型 首先是选模式，像代码补全这种辅助型的肯定是不在考虑范围内的。\n之前，同事使用智能体自动帮他改程序，结果被狠狠坑了一把：代码看起来很不错，但是测试后却发现很多问题，比如别的很多没让改的功能和原来的不一样了，比如多了一个假死的特性，比如再也不会触发docker的自动重启了……总之，甩手掌柜的方式是pass了。而Cline这种先规则再执行，而且中间必须要人工确认的方式，反倒是挻符合软件开发的核心流程。\n然后是选模型。国外的需要梯子，pass了。国内的，DeepSeek算是领军模型了吧，而且刚发了V4；另外一个，选了智谱GLM-5.1，无他，刚好有key而已。\n**说明：**刚开始时Cline默认只能接入deepseek-chat和deepseek-reasoner，后来才有deepseek-v4-flash和deepseek-v4-pro。\n使用 正式使用之前，还是做了一些功课，包括如何使用Cline，如何写提示词等。\n写函数 先写好函数的声明，定义好入参和返回值，然后让AI写具体实现。\n测试一 先来个简单的：给一个初始日期和周期，列出截止到当天的所有符合的日期。结果，很不错。\n测试二 来个现实场景的：输入N列数据，每个数据为电能表读数的k-v，要求得出有电量变化的时间段，多列之间取并集，同时要剔除掉电量为0等异常值。\n结果，很糟糕！粗看代码，很像回事，注释也把逻辑写得比较清楚，但是一给数据跑出来的结果就让人火大：有起止时间完全一样的时间段，还有电量根本没变化的时间段……\n据说AI很擅长写测试，那就先写测试再实现。结果，测试用例的数据跑出来是正确的，换一批数据又让人火大了……\n耐着性子交流了一下午，结果还是没达到预期的正确结果，怒了，丢掉AI采用已被称之为古法编程的纯手工编写方式，不到半小时，完美通过。\n测试三 根据当前日期和历史统计记录，把测试二的成果——时间段数据，按归属统计出每日时长，并依次统计出周、月、季、年对应的数据。\n结果，磕磕绊绊的总算把日统计做好了，周统计费了点工夫也搞定了，至于月、季、年倒是一次通过。呵，好吧，这写代码的能力也就那样吧，倒是抄代码的能力那真是顶呱呱！\n知识库 这此考察重点不是写代码，是知识库。\nvar a *int = new(1) 这段go代码是否正确，这是go1.26.0的新特性，发布于2026-02-10。结果，只有deepseek-v4知道这个特性。 注意：后来又测试，发现deepseek-v4又不知道这个特性了，莫名其妙。\n为pg18创建一个最简用户表，要求主键用uuid v7，这是pg18.0的新特性，原生支持uuid v7，发布于2025-09-25。结果，全军覆没，要么让安装插件，要么就开始瞎猜。\n把上面两个发行日志的页面地址给AI，让它自己去提取新特性并写入规则文件。结果，跑了很长时间都还没跑完，强行给终止了。\n写项目 上面的测试其实都是小儿科，实实在在从0开始去写个项目，才更考验AI的能力。\n项目一 目标，写一个文件去重工具，要求支持tui和web两种操作界面，支持多种哈希算法。技术栈是go+Bubble Tea+templ+Tailwind CSS+Alpine.js。\n虽然有些小波折，但结果还算满意，比我写的强多了。一下午的时间，目标基本完成了，随后又抽空优化了几次，但仍有已知bug。\n项目地址如下：\nGitee：https://gitee.com/afrusrsc/duplicate-cleaner\nGithub：https://github.com/afrusrsc/duplicate-cleaner\n项目二 精心选择了pg+pgx+sqlc+gin+templ+Tailwind CSS+Alpine.js这个技术栈，前端、后端、数据库都有，主流、非主流也都有。\n目标，写一个精简版的ERP，因为有前同事刚用codex花了10元完成了一个内部使用的ERP，使用c#的技术栈，刚好可以进行对照。\n本想项目完成之后再写这一章节的，但是，现在放弃继续测试了。\n三天了，成果如下：\n功能 结果 备注 登录 通过 修改密码 通过 查看登录日志 基本能用 超时无操作后锁定 勉强通过 仍有bug 部门管理 进行中 在此放弃的，基本的CURD，前端都能bug满天飞，而且同一个bug，这次改没了，下次又改出来了，烦不胜烦 额外发现 deepseek比glm-5.1响应速度要快\ndeepseek-v4在thinking中经常会狂飙英文\ndeepseek-v4与Cline配合，经常会读不到终端的输出结果而死等",
+  "keywords": [
+    "AI", "cline"
+  ],
+  "articleBody": "背景 AI大行其道的当下，AI要取代程序员了、程序员这个职业要消失了之类的声音可谓是不绝于耳，所以就体验一把AI编程。\n体验过程 选型 首先是选模式，像代码补全这种辅助型的肯定是不在考虑范围内的。\n之前，同事使用智能体自动帮他改程序，结果被狠狠坑了一把：代码看起来很不错，但是测试后却发现很多问题，比如别的很多没让改的功能和原来的不一样了，比如多了一个假死的特性，比如再也不会触发docker的自动重启了……总之，甩手掌柜的方式是pass了。而Cline这种先规则再执行，而且中间必须要人工确认的方式，反倒是挻符合软件开发的核心流程。\n然后是选模型。国外的需要梯子，pass了。国内的，DeepSeek算是领军模型了吧，而且刚发了V4；另外一个，选了智谱GLM-5.1，无他，刚好有key而已。\n**说明：**刚开始时Cline默认只能接入deepseek-chat和deepseek-reasoner，后来才有deepseek-v4-flash和deepseek-v4-pro。\n使用 正式使用之前，还是做了一些功课，包括如何使用Cline，如何写提示词等。\n写函数 先写好函数的声明，定义好入参和返回值，然后让AI写具体实现。\n测试一 先来个简单的：给一个初始日期和周期，列出截止到当天的所有符合的日期。结果，很不错。\n测试二 来个现实场景的：输入N列数据，每个数据为电能表读数的k-v，要求得出有电量变化的时间段，多列之间取并集，同时要剔除掉电量为0等异常值。\n结果，很糟糕！粗看代码，很像回事，注释也把逻辑写得比较清楚，但是一给数据跑出来的结果就让人火大：有起止时间完全一样的时间段，还有电量根本没变化的时间段……\n据说AI很擅长写测试，那就先写测试再实现。结果，测试用例的数据跑出来是正确的，换一批数据又让人火大了……\n耐着性子交流了一下午，结果还是没达到预期的正确结果，怒了，丢掉AI采用已被称之为古法编程的纯手工编写方式，不到半小时，完美通过。\n测试三 根据当前日期和历史统计记录，把测试二的成果——时间段数据，按归属统计出每日时长，并依次统计出周、月、季、年对应的数据。\n结果，磕磕绊绊的总算把日统计做好了，周统计费了点工夫也搞定了，至于月、季、年倒是一次通过。呵，好吧，这写代码的能力也就那样吧，倒是抄代码的能力那真是顶呱呱！\n知识库 这此考察重点不是写代码，是知识库。\nvar a *int = new(1) 这段go代码是否正确，这是go1.26.0的新特性，发布于2026-02-10。结果，只有deepseek-v4知道这个特性。 注意：后来又测试，发现deepseek-v4又不知道这个特性了，莫名其妙。\n为pg18创建一个最简用户表，要求主键用uuid v7，这是pg18.0的新特性，原生支持uuid v7，发布于2025-09-25。结果，全军覆没，要么让安装插件，要么就开始瞎猜。\n把上面两个发行日志的页面地址给AI，让它自己去提取新特性并写入规则文件。结果，跑了很长时间都还没跑完，强行给终止了。\n写项目 上面的测试其实都是小儿科，实实在在从0开始去写个项目，才更考验AI的能力。\n项目一 目标，写一个文件去重工具，要求支持tui和web两种操作界面，支持多种哈希算法。技术栈是go+Bubble Tea+templ+Tailwind CSS+Alpine.js。\n虽然有些小波折，但结果还算满意，比我写的强多了。一下午的时间，目标基本完成了，随后又抽空优化了几次，但仍有已知bug。\n项目地址如下：\nGitee：https://gitee.com/afrusrsc/duplicate-cleaner\nGithub：https://github.com/afrusrsc/duplicate-cleaner\n项目二 精心选择了pg+pgx+sqlc+gin+templ+Tailwind CSS+Alpine.js这个技术栈，前端、后端、数据库都有，主流、非主流也都有。\n目标，写一个精简版的ERP，因为有前同事刚用codex花了10元完成了一个内部使用的ERP，使用c#的技术栈，刚好可以进行对照。\n本想项目完成之后再写这一章节的，但是，现在放弃继续测试了。\n三天了，成果如下：\n功能 结果 备注 登录 通过 修改密码 通过 查看登录日志 基本能用 超时无操作后锁定 勉强通过 仍有bug 部门管理 进行中 在此放弃的，基本的CURD，前端都能bug满天飞，而且同一个bug，这次改没了，下次又改出来了，烦不胜烦 额外发现 deepseek比glm-5.1响应速度要快\ndeepseek-v4在thinking中经常会狂飙英文\ndeepseek-v4与Cline配合，经常会读不到终端的输出结果而死等\n使用小结 从结果上来说，国产模型和国外模型的确是云泥之别\n从速度上来说，AI确实碾压程序员\n从质量上来说，AI和程序员算是打平吧，因为都有神和垃圾\n从效果上来说，AI更适合写静态页面、SQL、api接口、测试这一类基本只有固定范式的东西\n从能力上来说，AI的能力和技术栈是否主流呈正相关，也就是说，AI的能力和可用于训练的数据量呈正相关\n从性价比上来说，像工具这一类的小项目AI更占优，但上了点规模的项目AI只会让你口吐芬芳\n心得 前前后后、断断续续花了两周时间，有惊艳，也有抓狂，但更多的是口吐芬芳。无论如何，也算小有心得：\n一定要选顶尖模型，迫不得已也要瘸子里挑将军\n可以骂AI，但不要发给它，因为除了会让你更生气外，还会让你的钱包更瘦小\n不要把AI当人，因为它本质还是机器，冰冷、简要、命令式的语言往往更有效\n要把AI当人，因为它也会忘记（超出上下文）、会瞎猜（AI幻觉）、会钻牛角尖（死循环），当然还会摆烂（我怀疑这个才是AI真正从人类这里学到的）\n发现AI有以上行为了，果断换，换个新的会话，甚至换个模型，不然就会演变成你在钻牛角尖了\n使用Cline要善用.clinerules，定好规则，多用必须、禁止这类偏向两个极端的词汇\nAI写测试确实更成熟些，以后可以把测试放心交给AI写\n纯粹的码农一时半会还不会被AI替代，但不久的将来是必然会被替代的\n和早年随便个阿猫阿狗去培训班转一圈出来就能写代码一样，现在随便个阿猫阿狗也都能用AI写代码，但是，只有具有扎实编程基础的人才能高性价比的驾驭AI，也只有具有架构思维和产品思维的人才能把AI用成一把利剑\n",
+  "wordCount" : "88",
+  "inLanguage": "zh",
+  "datePublished": "2026-06-02T22:43:32+08:00",
+  "dateModified": "2026-06-02T22:43:32+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/ai/first_experience_with_cline/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/ai/">🤖AI</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Cline使用初体验
+    </h1>
+    <div class="post-meta"><span title='2026-06-02 22:43:32 +0800 CST'>2026-06-02 22:43:32</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e4%bd%93%e9%aa%8c%e8%bf%87%e7%a8%8b" aria-label="体验过程">体验过程</a><ul>
+                            
+                    <li>
+                        <a href="#%e9%80%89%e5%9e%8b" aria-label="选型">选型</a></li>
+                    <li>
+                        <a href="#%e4%bd%bf%e7%94%a8" aria-label="使用">使用</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%86%99%e5%87%bd%e6%95%b0" aria-label="写函数">写函数</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%b5%8b%e8%af%95%e4%b8%80" aria-label="测试一">测试一</a></li>
+                    <li>
+                        <a href="#%e6%b5%8b%e8%af%95%e4%ba%8c" aria-label="测试二">测试二</a></li>
+                    <li>
+                        <a href="#%e6%b5%8b%e8%af%95%e4%b8%89" aria-label="测试三">测试三</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e7%9f%a5%e8%af%86%e5%ba%93" aria-label="知识库">知识库</a></li>
+                    <li>
+                        <a href="#%e5%86%99%e9%a1%b9%e7%9b%ae" aria-label="写项目">写项目</a><ul>
+                            
+                    <li>
+                        <a href="#%e9%a1%b9%e7%9b%ae%e4%b8%80" aria-label="项目一">项目一</a></li>
+                    <li>
+                        <a href="#%e9%a1%b9%e7%9b%ae%e4%ba%8c" aria-label="项目二">项目二</a></li></ul>
+                    </li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e9%a2%9d%e5%a4%96%e5%8f%91%e7%8e%b0" aria-label="额外发现">额外发现</a></li>
+                    <li>
+                        <a href="#%e4%bd%bf%e7%94%a8%e5%b0%8f%e7%bb%93" aria-label="使用小结">使用小结</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e5%bf%83%e5%be%97" aria-label="心得">心得</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p><code>AI</code>大行其道的当下，<code>AI要取代程序员了</code>、<code>程序员这个职业要消失了</code>之类的声音可谓是不绝于耳，所以就体验一把<code>AI编程</code>。</p>
+<h1 id="体验过程">体验过程<a hidden class="anchor" aria-hidden="true" href="#体验过程">#</a></h1>
+<h2 id="选型">选型<a hidden class="anchor" aria-hidden="true" href="#选型">#</a></h2>
+<p>首先是选模式，像<code>代码补全</code>这种辅助型的肯定是不在考虑范围内的。</p>
+<p>之前，同事使用智能体自动帮他改程序，结果被狠狠坑了一把：代码看起来很不错，但是测试后却发现很多问题，比如别的很多没让改的功能和原来的不一样了，比如多了一个假死的特性，比如再也不会触发docker的自动重启了……总之，<code>甩手掌柜</code>的方式是pass了。而<code>Cline</code>这种先规则再执行，而且中间必须要人工确认的方式，反倒是挻符合软件开发的核心流程。</p>
+<p>然后是选模型。国外的需要梯子，pass了。国内的，<code>DeepSeek</code>算是领军模型了吧，而且刚发了<code>V4</code>；另外一个，选了<code>智谱GLM-5.1</code>，无他，刚好有<code>key</code>而已。</p>
+<p>**说明：**刚开始时<code>Cline</code>默认只能接入<code>deepseek-chat</code>和<code>deepseek-reasoner</code>，后来才有<code>deepseek-v4-flash</code>和<code>deepseek-v4-pro</code>。</p>
+<h2 id="使用">使用<a hidden class="anchor" aria-hidden="true" href="#使用">#</a></h2>
+<p>正式使用之前，还是做了一些功课，包括如何使用<code>Cline</code>，如何写提示词等。</p>
+<h3 id="写函数">写函数<a hidden class="anchor" aria-hidden="true" href="#写函数">#</a></h3>
+<p>先写好函数的声明，定义好入参和返回值，然后让<code>AI</code>写具体实现。</p>
+<h4 id="测试一">测试一<a hidden class="anchor" aria-hidden="true" href="#测试一">#</a></h4>
+<p>先来个简单的：给一个初始日期和周期，列出截止到当天的所有符合的日期。结果，很不错。</p>
+<h4 id="测试二">测试二<a hidden class="anchor" aria-hidden="true" href="#测试二">#</a></h4>
+<p>来个现实场景的：输入N列数据，每个数据为电能表读数的<code>k-v</code>，要求得出有电量变化的时间段，多列之间取并集，同时要剔除掉电量为0等异常值。</p>
+<p>结果，很糟糕！粗看代码，很像回事，注释也把逻辑写得比较清楚，但是一给数据跑出来的结果就让人火大：有起止时间完全一样的时间段，还有电量根本没变化的时间段……</p>
+<p>据说<code>AI</code>很擅长写测试，那就先写测试再实现。结果，测试用例的数据跑出来是正确的，换一批数据又让人火大了……</p>
+<p>耐着性子<code>交流</code>了一下午，结果还是没达到预期的正确结果，怒了，丢掉<code>AI</code>采用已被称之为<code>古法编程</code>的纯手工编写方式，不到半小时，完美通过。</p>
+<h4 id="测试三">测试三<a hidden class="anchor" aria-hidden="true" href="#测试三">#</a></h4>
+<p>根据当前日期和历史统计记录，把<code>测试二</code>的成果——时间段数据，按归属统计出每日时长，并依次统计出周、月、季、年对应的数据。</p>
+<p>结果，磕磕绊绊的总算把<code>日统计</code>做好了，<code>周统计</code>费了点工夫也搞定了，至于<code>月</code>、<code>季</code>、<code>年</code>倒是一次通过。呵，好吧，这<code>写</code>代码的能力也就那样吧，倒是<code>抄</code>代码的能力那真是顶呱呱！</p>
+<h3 id="知识库">知识库<a hidden class="anchor" aria-hidden="true" href="#知识库">#</a></h3>
+<p>这此考察重点不是<code>写代码</code>，是知识库。</p>
+<ol>
+<li><code>var a *int = new(1) 这段go代码是否正确</code>，这是<code>go1.26.0</code>的新特性，发布于<code>2026-02-10</code>。结果，只有<code>deepseek-v4</code>知道这个特性。</li>
+</ol>
+<p><strong>注意：后来又测试，发现<code>deepseek-v4</code>又不知道这个特性了，莫名其妙。</strong></p>
+<ol start="2">
+<li>
+<p><code>为pg18创建一个最简用户表，要求主键用uuid v7</code>，这是<code>pg18.0</code>的新特性，原生支持<code>uuid v7</code>，发布于<code>2025-09-25</code>。结果，全军覆没，要么让安装插件，要么就开始瞎猜。</p>
+</li>
+<li>
+<p>把上面两个发行日志的页面地址给<code>AI</code>，让它自己去提取新特性并写入规则文件。结果，跑了很长时间都还没跑完，强行给终止了。</p>
+</li>
+</ol>
+<h3 id="写项目">写项目<a hidden class="anchor" aria-hidden="true" href="#写项目">#</a></h3>
+<p>上面的测试其实都是小儿科，实实在在从0开始去写个项目，才更考验<code>AI</code>的能力。</p>
+<h4 id="项目一">项目一<a hidden class="anchor" aria-hidden="true" href="#项目一">#</a></h4>
+<p>目标，写一个<code>文件去重工具</code>，要求支持<code>tui</code>和<code>web</code>两种操作界面，支持多种哈希算法。技术栈是<code>go</code>+<code>Bubble Tea</code>+<code>templ</code>+<code>Tailwind CSS</code>+<code>Alpine.js</code>。</p>
+<p>虽然有些小波折，但结果还算满意，比我写的强多了。一下午的时间，目标基本完成了，随后又抽空优化了几次，但仍有已知<code>bug</code>。</p>
+<p>项目地址如下：</p>
+<ul>
+<li>
+<p>Gitee：https://gitee.com/afrusrsc/duplicate-cleaner</p>
+</li>
+<li>
+<p>Github：https://github.com/afrusrsc/duplicate-cleaner</p>
+</li>
+</ul>
+<h4 id="项目二">项目二<a hidden class="anchor" aria-hidden="true" href="#项目二">#</a></h4>
+<p>精心选择了<code>pg</code>+<code>pgx</code>+<code>sqlc</code>+<code>gin</code>+<code>templ</code>+<code>Tailwind CSS</code>+<code>Alpine.js</code>这个技术栈，前端、后端、数据库都有，主流、非主流也都有。</p>
+<p>目标，写一个精简版的<code>ERP</code>，因为有前同事刚用<code>codex</code>花了<code>10元</code>完成了一个内部使用的<code>ERP</code>，使用<code>c#</code>的技术栈，刚好可以进行对照。</p>
+<p>本想项目完成之后再写这一章节的，但是，现在放弃继续测试了。</p>
+<p>三天了，成果如下：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>结果</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>登录</td>
+<td>通过</td>
+<td></td>
+</tr>
+<tr>
+<td>修改密码</td>
+<td>通过</td>
+<td></td>
+</tr>
+<tr>
+<td>查看登录日志</td>
+<td>基本能用</td>
+<td></td>
+</tr>
+<tr>
+<td>超时无操作后锁定</td>
+<td>勉强通过</td>
+<td>仍有bug</td>
+</tr>
+<tr>
+<td>部门管理</td>
+<td>进行中</td>
+<td>在此放弃的，基本的CURD，前端都能bug满天飞，而且同一个bug，这次改没了，下次又改出来了，烦不胜烦</td>
+</tr>
+</tbody>
+</table>
+<h2 id="额外发现">额外发现<a hidden class="anchor" aria-hidden="true" href="#额外发现">#</a></h2>
+<ul>
+<li>
+<p><code>deepseek</code>比<code>glm-5.1</code>响应速度要快</p>
+</li>
+<li>
+<p><code>deepseek-v4</code>在<code>thinking</code>中经常会狂飙英文</p>
+</li>
+<li>
+<p><code>deepseek-v4</code>与<code>Cline</code>配合，经常会读不到终端的输出结果而死等</p>
+</li>
+</ul>
+<h2 id="使用小结">使用小结<a hidden class="anchor" aria-hidden="true" href="#使用小结">#</a></h2>
+<ul>
+<li>
+<p>从结果上来说，国产模型和国外模型的确是<code>云泥之别</code></p>
+</li>
+<li>
+<p>从速度上来说，<code>AI</code>确实<strong>碾压</strong><code>程序员</code></p>
+</li>
+<li>
+<p>从质量上来说，<code>AI</code>和<code>程序员</code>算是打平吧，因为都有<code>神</code>和<code>垃圾</code></p>
+</li>
+<li>
+<p>从效果上来说，<code>AI</code>更适合写静态页面、SQL、api接口、测试这一类基本只有固定范式的东西</p>
+</li>
+<li>
+<p>从能力上来说，<code>AI</code>的能力和技术栈是否主流呈正相关，也就是说，<code>AI</code>的能力和可用于训练的数据量呈正相关</p>
+</li>
+<li>
+<p>从性价比上来说，像工具这一类的小项目<code>AI</code>更占优，但上了点规模的项目<code>AI</code>只会让你口吐芬芳</p>
+</li>
+</ul>
+<h1 id="心得">心得<a hidden class="anchor" aria-hidden="true" href="#心得">#</a></h1>
+<p>前前后后、断断续续花了两周时间，有惊艳，也有抓狂，但更多的是口吐芬芳。无论如何，也算小有心得：</p>
+<ul>
+<li>
+<p>一定要选顶尖模型，迫不得已也要瘸子里挑将军</p>
+</li>
+<li>
+<p>可以骂<code>AI</code>，但不要发给它，因为除了会让你更生气外，还会让你的钱包更瘦小</p>
+</li>
+<li>
+<p>不要把<code>AI</code>当人，因为它本质还是机器，冰冷、简要、命令式的语言往往更有效</p>
+</li>
+<li>
+<p>要把<code>AI</code>当人，因为它也会忘记（超出上下文）、会瞎猜（AI幻觉）、会钻牛角尖（死循环），当然还会摆烂（我怀疑这个才是AI真正从人类这里学到的）</p>
+</li>
+<li>
+<p>发现<code>AI</code>有以上行为了，果断换，换个新的会话，甚至换个模型，不然就会演变成你在钻牛角尖了</p>
+</li>
+<li>
+<p>使用<code>Cline</code>要善用<code>.clinerules</code>，定好规则，多用<code>必须</code>、<code>禁止</code>这类偏向两个极端的词汇</p>
+</li>
+<li>
+<p><code>AI</code>写测试确实更成熟些，以后可以把测试放心交给<code>AI</code>写</p>
+</li>
+<li>
+<p>纯粹的<code>码农</code>一时半会还不会被<code>AI</code>替代，但不久的将来是必然会被替代的</p>
+</li>
+<li>
+<p>和早年随便个阿猫阿狗去培训班转一圈出来就能写代码一样，现在随便个阿猫阿狗也都能用<code>AI</code>写代码，但是，只有<code>具有扎实编程基础</code>的人才能<code>高性价比</code>的驾驭<code>AI</code>，也只有<code>具有架构思维和产品思维</code>的人才能把<code>AI</code>用成一把利剑</p>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/ai/">AI</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/cline/">Cline</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_gzip/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>使用Lazarus解压gzip</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/other/linux_mc_nvidia/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Linux下使用Nvidia驱动玩Minecraft</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

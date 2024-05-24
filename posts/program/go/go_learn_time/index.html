@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go time包 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="Time 方法 说明 Add 在该时间上加个时间得到新时间 AddDate 在该时间上加个日期得到新时间 After 判断该时间是否在另一个时间之后 AppendFormat 将该时间格式化为字符串并追加到字节切片中 Before 判断该时间是否在另一个时间之前 Clock 返回当前时间的时、分、秒 Compare 和另一个时间比较大小，返回-1、0、1 Date 返回该时间的年、月、日 Day 返回该时间的日 Equal 判断该时间是否和另一个时间相等 Format 将该时间格式化为字符串 GoString 返回该时间的字符串表示形式 GobDecode 从字节切片中解码该时间 GobEncode 将该时间编码为字节切片 Hour 返回该时间的小时 ISOWeek 返回该时间所在的ISO周 In 返回该时间在指定时区对应的时间 IsDST 判断该时间是否在夏令时 IsZero 判断一个时间值是否为零值 Local 返回该时间在本地时区对应的时间 Location 返回该时间所在的时区 MarshalBinary 将该时间序列化为二进制格式 MarshalJSON 将该时间序列化为JSON格式 MarshalText 将该时间序列化为文本格式 Minute 返回该时间的分钟 Month 返回该时间的月份 Nanosecond 返回该时间的纳秒 Round 将该时间舍入到指定的时间单位 Second 返回该时间的秒 String 返回该时间的字符串表示形式 Sub 在该时间上减去另一个时间得到新时间 Time 返回该时间的时间戳 Truncate 将该时间截断到指定的时间单位 UTC 返回该时间在UTC时区对应的时间 Unix 返回该时间的Unix时间戳，单位：秒 UnixMicro 返回该时间的Unix时间戳，单位：微秒 UnixMilli 返回该时间的Unix时间戳，单位：毫秒 UnixNano 返回该时间的Unix时间戳，单位：纳秒 UnmarshalBinary 从二进制格式反序列化该时间 UnmarshalJSON 从JSON格式反序列化该时间 UnmarshalText 从文本格式反序列化该时间 Weekday 返回该时间所在的星期几 Year 返回该时间的年份 YearDay 返回该时间所在的年中的第几天 Zone 返回该时间所在的时区名称和偏移量（单位：秒） ZoneBounds 返回该时间所在的时区的夏令时开始和结束时间 包函数 函数名 含义 说明 Now 返回当前时间 Date 构造指定的时间 FixedZone 构造一个指定偏移时的时区 LoadLocation 加载时区信息 LoadLocationFromTZData 从TZData文件加载时区信息 Parse 解析时间字符串 ParseDuration 解析时间间隔字符串 ParseInLocation 在指定时区解析时间字符串 Since 计算指定时间与现在的间隔 等同于time.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_learn_time/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_learn_time/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go time包" />
+<meta property="og:description" content="Time 方法 说明 Add 在该时间上加个时间得到新时间 AddDate 在该时间上加个日期得到新时间 After 判断该时间是否在另一个时间之后 AppendFormat 将该时间格式化为字符串并追加到字节切片中 Before 判断该时间是否在另一个时间之前 Clock 返回当前时间的时、分、秒 Compare 和另一个时间比较大小，返回-1、0、1 Date 返回该时间的年、月、日 Day 返回该时间的日 Equal 判断该时间是否和另一个时间相等 Format 将该时间格式化为字符串 GoString 返回该时间的字符串表示形式 GobDecode 从字节切片中解码该时间 GobEncode 将该时间编码为字节切片 Hour 返回该时间的小时 ISOWeek 返回该时间所在的ISO周 In 返回该时间在指定时区对应的时间 IsDST 判断该时间是否在夏令时 IsZero 判断一个时间值是否为零值 Local 返回该时间在本地时区对应的时间 Location 返回该时间所在的时区 MarshalBinary 将该时间序列化为二进制格式 MarshalJSON 将该时间序列化为JSON格式 MarshalText 将该时间序列化为文本格式 Minute 返回该时间的分钟 Month 返回该时间的月份 Nanosecond 返回该时间的纳秒 Round 将该时间舍入到指定的时间单位 Second 返回该时间的秒 String 返回该时间的字符串表示形式 Sub 在该时间上减去另一个时间得到新时间 Time 返回该时间的时间戳 Truncate 将该时间截断到指定的时间单位 UTC 返回该时间在UTC时区对应的时间 Unix 返回该时间的Unix时间戳，单位：秒 UnixMicro 返回该时间的Unix时间戳，单位：微秒 UnixMilli 返回该时间的Unix时间戳，单位：毫秒 UnixNano 返回该时间的Unix时间戳，单位：纳秒 UnmarshalBinary 从二进制格式反序列化该时间 UnmarshalJSON 从JSON格式反序列化该时间 UnmarshalText 从文本格式反序列化该时间 Weekday 返回该时间所在的星期几 Year 返回该时间的年份 YearDay 返回该时间所在的年中的第几天 Zone 返回该时间所在的时区名称和偏移量（单位：秒） ZoneBounds 返回该时间所在的时区的夏令时开始和结束时间 包函数 函数名 含义 说明 Now 返回当前时间 Date 构造指定的时间 FixedZone 构造一个指定偏移时的时区 LoadLocation 加载时区信息 LoadLocationFromTZData 从TZData文件加载时区信息 Parse 解析时间字符串 ParseDuration 解析时间间隔字符串 ParseInLocation 在指定时区解析时间字符串 Since 计算指定时间与现在的间隔 等同于time." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_learn_time/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-22T22:23:20+08:00" />
+<meta property="article:modified_time" content="2024-10-22T22:23:20+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go time包"/>
+<meta name="twitter:description" content="Time 方法 说明 Add 在该时间上加个时间得到新时间 AddDate 在该时间上加个日期得到新时间 After 判断该时间是否在另一个时间之后 AppendFormat 将该时间格式化为字符串并追加到字节切片中 Before 判断该时间是否在另一个时间之前 Clock 返回当前时间的时、分、秒 Compare 和另一个时间比较大小，返回-1、0、1 Date 返回该时间的年、月、日 Day 返回该时间的日 Equal 判断该时间是否和另一个时间相等 Format 将该时间格式化为字符串 GoString 返回该时间的字符串表示形式 GobDecode 从字节切片中解码该时间 GobEncode 将该时间编码为字节切片 Hour 返回该时间的小时 ISOWeek 返回该时间所在的ISO周 In 返回该时间在指定时区对应的时间 IsDST 判断该时间是否在夏令时 IsZero 判断一个时间值是否为零值 Local 返回该时间在本地时区对应的时间 Location 返回该时间所在的时区 MarshalBinary 将该时间序列化为二进制格式 MarshalJSON 将该时间序列化为JSON格式 MarshalText 将该时间序列化为文本格式 Minute 返回该时间的分钟 Month 返回该时间的月份 Nanosecond 返回该时间的纳秒 Round 将该时间舍入到指定的时间单位 Second 返回该时间的秒 String 返回该时间的字符串表示形式 Sub 在该时间上减去另一个时间得到新时间 Time 返回该时间的时间戳 Truncate 将该时间截断到指定的时间单位 UTC 返回该时间在UTC时区对应的时间 Unix 返回该时间的Unix时间戳，单位：秒 UnixMicro 返回该时间的Unix时间戳，单位：微秒 UnixMilli 返回该时间的Unix时间戳，单位：毫秒 UnixNano 返回该时间的Unix时间戳，单位：纳秒 UnmarshalBinary 从二进制格式反序列化该时间 UnmarshalJSON 从JSON格式反序列化该时间 UnmarshalText 从文本格式反序列化该时间 Weekday 返回该时间所在的星期几 Year 返回该时间的年份 YearDay 返回该时间所在的年中的第几天 Zone 返回该时间所在的时区名称和偏移量（单位：秒） ZoneBounds 返回该时间所在的时区的夏令时开始和结束时间 包函数 函数名 含义 说明 Now 返回当前时间 Date 构造指定的时间 FixedZone 构造一个指定偏移时的时区 LoadLocation 加载时区信息 LoadLocationFromTZData 从TZData文件加载时区信息 Parse 解析时间字符串 ParseDuration 解析时间间隔字符串 ParseInLocation 在指定时区解析时间字符串 Since 计算指定时间与现在的间隔 等同于time."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go time包",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_learn_time/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go time包",
+  "name": "Go time包",
+  "description": "Time 方法 说明 Add 在该时间上加个时间得到新时间 AddDate 在该时间上加个日期得到新时间 After 判断该时间是否在另一个时间之后 AppendFormat 将该时间格式化为字符串并追加到字节切片中 Before 判断该时间是否在另一个时间之前 Clock 返回当前时间的时、分、秒 Compare 和另一个时间比较大小，返回-1、0、1 Date 返回该时间的年、月、日 Day 返回该时间的日 Equal 判断该时间是否和另一个时间相等 Format 将该时间格式化为字符串 GoString 返回该时间的字符串表示形式 GobDecode 从字节切片中解码该时间 GobEncode 将该时间编码为字节切片 Hour 返回该时间的小时 ISOWeek 返回该时间所在的ISO周 In 返回该时间在指定时区对应的时间 IsDST 判断该时间是否在夏令时 IsZero 判断一个时间值是否为零值 Local 返回该时间在本地时区对应的时间 Location 返回该时间所在的时区 MarshalBinary 将该时间序列化为二进制格式 MarshalJSON 将该时间序列化为JSON格式 MarshalText 将该时间序列化为文本格式 Minute 返回该时间的分钟 Month 返回该时间的月份 Nanosecond 返回该时间的纳秒 Round 将该时间舍入到指定的时间单位 Second 返回该时间的秒 String 返回该时间的字符串表示形式 Sub 在该时间上减去另一个时间得到新时间 Time 返回该时间的时间戳 Truncate 将该时间截断到指定的时间单位 UTC 返回该时间在UTC时区对应的时间 Unix 返回该时间的Unix时间戳，单位：秒 UnixMicro 返回该时间的Unix时间戳，单位：微秒 UnixMilli 返回该时间的Unix时间戳，单位：毫秒 UnixNano 返回该时间的Unix时间戳，单位：纳秒 UnmarshalBinary 从二进制格式反序列化该时间 UnmarshalJSON 从JSON格式反序列化该时间 UnmarshalText 从文本格式反序列化该时间 Weekday 返回该时间所在的星期几 Year 返回该时间的年份 YearDay 返回该时间所在的年中的第几天 Zone 返回该时间所在的时区名称和偏移量（单位：秒） ZoneBounds 返回该时间所在的时区的夏令时开始和结束时间 包函数 函数名 含义 说明 Now 返回当前时间 Date 构造指定的时间 FixedZone 构造一个指定偏移时的时区 LoadLocation 加载时区信息 LoadLocationFromTZData 从TZData文件加载时区信息 Parse 解析时间字符串 ParseDuration 解析时间间隔字符串 ParseInLocation 在指定时区解析时间字符串 Since 计算指定时间与现在的间隔 等同于time.",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "Time 方法 说明 Add 在该时间上加个时间得到新时间 AddDate 在该时间上加个日期得到新时间 After 判断该时间是否在另一个时间之后 AppendFormat 将该时间格式化为字符串并追加到字节切片中 Before 判断该时间是否在另一个时间之前 Clock 返回当前时间的时、分、秒 Compare 和另一个时间比较大小，返回-1、0、1 Date 返回该时间的年、月、日 Day 返回该时间的日 Equal 判断该时间是否和另一个时间相等 Format 将该时间格式化为字符串 GoString 返回该时间的字符串表示形式 GobDecode 从字节切片中解码该时间 GobEncode 将该时间编码为字节切片 Hour 返回该时间的小时 ISOWeek 返回该时间所在的ISO周 In 返回该时间在指定时区对应的时间 IsDST 判断该时间是否在夏令时 IsZero 判断一个时间值是否为零值 Local 返回该时间在本地时区对应的时间 Location 返回该时间所在的时区 MarshalBinary 将该时间序列化为二进制格式 MarshalJSON 将该时间序列化为JSON格式 MarshalText 将该时间序列化为文本格式 Minute 返回该时间的分钟 Month 返回该时间的月份 Nanosecond 返回该时间的纳秒 Round 将该时间舍入到指定的时间单位 Second 返回该时间的秒 String 返回该时间的字符串表示形式 Sub 在该时间上减去另一个时间得到新时间 Time 返回该时间的时间戳 Truncate 将该时间截断到指定的时间单位 UTC 返回该时间在UTC时区对应的时间 Unix 返回该时间的Unix时间戳，单位：秒 UnixMicro 返回该时间的Unix时间戳，单位：微秒 UnixMilli 返回该时间的Unix时间戳，单位：毫秒 UnixNano 返回该时间的Unix时间戳，单位：纳秒 UnmarshalBinary 从二进制格式反序列化该时间 UnmarshalJSON 从JSON格式反序列化该时间 UnmarshalText 从文本格式反序列化该时间 Weekday 返回该时间所在的星期几 Year 返回该时间的年份 YearDay 返回该时间所在的年中的第几天 Zone 返回该时间所在的时区名称和偏移量（单位：秒） ZoneBounds 返回该时间所在的时区的夏令时开始和结束时间 包函数 函数名 含义 说明 Now 返回当前时间 Date 构造指定的时间 FixedZone 构造一个指定偏移时的时区 LoadLocation 加载时区信息 LoadLocationFromTZData 从TZData文件加载时区信息 Parse 解析时间字符串 ParseDuration 解析时间间隔字符串 ParseInLocation 在指定时区解析时间字符串 Since 计算指定时间与现在的间隔 等同于time.Now().Sub(t) Sleep 暂停当前协程指定的时间 Unix 从Unix时间戳构造时间 UnixMicro 从Unix微秒时间戳构造时间 UnixMilli 从Unix毫秒时间戳构造时间 Until 计算指定时间与现在的剩余时间 等同于t.Sub(time.Now()) NewTimer 构造一个单次定时器 执行一次 NewTicker 构造一个周期定时器 周期执行 After 在指定时间后返回一个time.Time类型的chan 执行一次 AfterFunc 返回一个Timer，并在指定时间后执行指定的函数 执行一次 Tick 按指定的周期返回一个time.Time类型的chan 周期执行 定时器 Timer是定时执行一次的定时器，Ticker是周期执行的定时器。\n成员 说明 C 一个chan，用于接收定时器触发的时间点 方法 说明 Stop 停止定时器 Reset 重置定时器 ",
+  "wordCount" : "156",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-22T22:23:20+08:00",
+  "dateModified": "2024-10-22T22:23:20+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_learn_time/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go time包
+    </h1>
+    <div class="post-meta"><span title='2024-10-22 22:23:20 +0800 CST'>2024-10-22 22:23:20</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#time" aria-label="Time">Time</a></li>
+                    <li>
+                        <a href="#%e5%8c%85%e5%87%bd%e6%95%b0" aria-label="包函数">包函数</a></li>
+                    <li>
+                        <a href="#%e5%ae%9a%e6%97%b6%e5%99%a8" aria-label="定时器">定时器</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="time">Time<a hidden class="anchor" aria-hidden="true" href="#time">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add</td>
+<td>在该时间上加个时间得到新时间</td>
+</tr>
+<tr>
+<td>AddDate</td>
+<td>在该时间上加个日期得到新时间</td>
+</tr>
+<tr>
+<td>After</td>
+<td>判断该时间是否在另一个时间之后</td>
+</tr>
+<tr>
+<td>AppendFormat</td>
+<td>将该时间格式化为字符串并追加到字节切片中</td>
+</tr>
+<tr>
+<td>Before</td>
+<td>判断该时间是否在另一个时间之前</td>
+</tr>
+<tr>
+<td>Clock</td>
+<td>返回当前时间的时、分、秒</td>
+</tr>
+<tr>
+<td>Compare</td>
+<td>和另一个时间比较大小，返回-1、0、1</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>返回该时间的年、月、日</td>
+</tr>
+<tr>
+<td>Day</td>
+<td>返回该时间的日</td>
+</tr>
+<tr>
+<td>Equal</td>
+<td>判断该时间是否和另一个时间相等</td>
+</tr>
+<tr>
+<td>Format</td>
+<td>将该时间格式化为字符串</td>
+</tr>
+<tr>
+<td>GoString</td>
+<td>返回该时间的字符串表示形式</td>
+</tr>
+<tr>
+<td>GobDecode</td>
+<td>从字节切片中解码该时间</td>
+</tr>
+<tr>
+<td>GobEncode</td>
+<td>将该时间编码为字节切片</td>
+</tr>
+<tr>
+<td>Hour</td>
+<td>返回该时间的小时</td>
+</tr>
+<tr>
+<td>ISOWeek</td>
+<td>返回该时间所在的ISO周</td>
+</tr>
+<tr>
+<td>In</td>
+<td>返回该时间在指定时区对应的时间</td>
+</tr>
+<tr>
+<td>IsDST</td>
+<td>判断该时间是否在夏令时</td>
+</tr>
+<tr>
+<td>IsZero</td>
+<td>判断一个时间值是否为零值</td>
+</tr>
+<tr>
+<td>Local</td>
+<td>返回该时间在本地时区对应的时间</td>
+</tr>
+<tr>
+<td>Location</td>
+<td>返回该时间所在的时区</td>
+</tr>
+<tr>
+<td>MarshalBinary</td>
+<td>将该时间序列化为二进制格式</td>
+</tr>
+<tr>
+<td>MarshalJSON</td>
+<td>将该时间序列化为JSON格式</td>
+</tr>
+<tr>
+<td>MarshalText</td>
+<td>将该时间序列化为文本格式</td>
+</tr>
+<tr>
+<td>Minute</td>
+<td>返回该时间的分钟</td>
+</tr>
+<tr>
+<td>Month</td>
+<td>返回该时间的月份</td>
+</tr>
+<tr>
+<td>Nanosecond</td>
+<td>返回该时间的纳秒</td>
+</tr>
+<tr>
+<td>Round</td>
+<td>将该时间舍入到指定的时间单位</td>
+</tr>
+<tr>
+<td>Second</td>
+<td>返回该时间的秒</td>
+</tr>
+<tr>
+<td>String</td>
+<td>返回该时间的字符串表示形式</td>
+</tr>
+<tr>
+<td>Sub</td>
+<td>在该时间上减去另一个时间得到新时间</td>
+</tr>
+<tr>
+<td>Time</td>
+<td>返回该时间的时间戳</td>
+</tr>
+<tr>
+<td>Truncate</td>
+<td>将该时间截断到指定的时间单位</td>
+</tr>
+<tr>
+<td>UTC</td>
+<td>返回该时间在UTC时区对应的时间</td>
+</tr>
+<tr>
+<td>Unix</td>
+<td>返回该时间的Unix时间戳，单位：秒</td>
+</tr>
+<tr>
+<td>UnixMicro</td>
+<td>返回该时间的Unix时间戳，单位：微秒</td>
+</tr>
+<tr>
+<td>UnixMilli</td>
+<td>返回该时间的Unix时间戳，单位：毫秒</td>
+</tr>
+<tr>
+<td>UnixNano</td>
+<td>返回该时间的Unix时间戳，单位：纳秒</td>
+</tr>
+<tr>
+<td>UnmarshalBinary</td>
+<td>从二进制格式反序列化该时间</td>
+</tr>
+<tr>
+<td>UnmarshalJSON</td>
+<td>从JSON格式反序列化该时间</td>
+</tr>
+<tr>
+<td>UnmarshalText</td>
+<td>从文本格式反序列化该时间</td>
+</tr>
+<tr>
+<td>Weekday</td>
+<td>返回该时间所在的星期几</td>
+</tr>
+<tr>
+<td>Year</td>
+<td>返回该时间的年份</td>
+</tr>
+<tr>
+<td>YearDay</td>
+<td>返回该时间所在的年中的第几天</td>
+</tr>
+<tr>
+<td>Zone</td>
+<td>返回该时间所在的时区名称和偏移量（单位：秒）</td>
+</tr>
+<tr>
+<td>ZoneBounds</td>
+<td>返回该时间所在的时区的夏令时开始和结束时间</td>
+</tr>
+</tbody>
+</table>
+<h1 id="包函数">包函数<a hidden class="anchor" aria-hidden="true" href="#包函数">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Now</td>
+<td>返回当前时间</td>
+<td></td>
+</tr>
+<tr>
+<td>Date</td>
+<td>构造指定的时间</td>
+<td></td>
+</tr>
+<tr>
+<td>FixedZone</td>
+<td>构造一个指定偏移时的时区</td>
+<td></td>
+</tr>
+<tr>
+<td>LoadLocation</td>
+<td>加载时区信息</td>
+<td></td>
+</tr>
+<tr>
+<td>LoadLocationFromTZData</td>
+<td>从TZData文件加载时区信息</td>
+<td></td>
+</tr>
+<tr>
+<td>Parse</td>
+<td>解析时间字符串</td>
+<td></td>
+</tr>
+<tr>
+<td>ParseDuration</td>
+<td>解析时间间隔字符串</td>
+<td></td>
+</tr>
+<tr>
+<td>ParseInLocation</td>
+<td>在指定时区解析时间字符串</td>
+<td></td>
+</tr>
+<tr>
+<td>Since</td>
+<td>计算指定时间与现在的间隔</td>
+<td>等同于<code>time.Now().Sub(t)</code></td>
+</tr>
+<tr>
+<td>Sleep</td>
+<td>暂停当前协程指定的时间</td>
+<td></td>
+</tr>
+<tr>
+<td>Unix</td>
+<td>从Unix时间戳构造时间</td>
+<td></td>
+</tr>
+<tr>
+<td>UnixMicro</td>
+<td>从Unix微秒时间戳构造时间</td>
+<td></td>
+</tr>
+<tr>
+<td>UnixMilli</td>
+<td>从Unix毫秒时间戳构造时间</td>
+<td></td>
+</tr>
+<tr>
+<td>Until</td>
+<td>计算指定时间与现在的剩余时间</td>
+<td>等同于<code>t.Sub(time.Now())</code></td>
+</tr>
+<tr>
+<td>NewTimer</td>
+<td>构造一个单次定时器</td>
+<td>执行一次</td>
+</tr>
+<tr>
+<td>NewTicker</td>
+<td>构造一个周期定时器</td>
+<td>周期执行</td>
+</tr>
+<tr>
+<td>After</td>
+<td>在指定时间后返回一个<code>time.Time</code>类型的<code>chan</code></td>
+<td>执行一次</td>
+</tr>
+<tr>
+<td>AfterFunc</td>
+<td>返回一个<code>Timer</code>，并在指定时间后执行指定的函数</td>
+<td>执行一次</td>
+</tr>
+<tr>
+<td>Tick</td>
+<td>按指定的周期返回一个<code>time.Time</code>类型的<code>chan</code></td>
+<td>周期执行</td>
+</tr>
+</tbody>
+</table>
+<h1 id="定时器">定时器<a hidden class="anchor" aria-hidden="true" href="#定时器">#</a></h1>
+<p><code>Timer</code>是定时执行一次的定时器，<code>Ticker</code>是周期执行的定时器。</p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>一个<code>chan</code>，用于接收定时器触发的时间点</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stop</td>
+<td>停止定时器</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>重置定时器</td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_learn_os/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go os包</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_learn_strings/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go strings包</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

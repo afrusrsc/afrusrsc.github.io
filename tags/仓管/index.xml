@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>仓管 on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/%E4%BB%93%E7%AE%A1/</link>
+    <description>Recent content in 仓管 on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 26 Nov 2025 21:55:37 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/%E4%BB%93%E7%AE%A1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>仓库管理模型</title>
+      <link>https://afrusrsc.github.io/posts/other/warehouse_management_model/</link>
+      <pubDate>Wed, 26 Nov 2025 21:55:37 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/other/warehouse_management_model/</guid>
+      <description>前言 最近，给同事讲解了一下仓库管理系统的基本模型，然后又花了几天时间深度思考总结了一番，梳理出了一套个人理解的仓管模型的演化。
+模型演化 核心版 核心中的核心就是进/入、销/出、存，以及对应的退货。
+关系模型 graph o[本仓库] s[供货方] c[使用方] s --&gt;|入库| o --&gt;|出库| c --&gt;|出库退| o --&gt;|入库退| s 单据/表模型 mindmap 核心版 进/入 入库单（+） 入库明细 入库退货单（-） 入库退货明细 销/出 出库单（-） 出库明细 出库退货单（+） 出库退货明细 存 库存明细 盘点版 核心版加上盘点功能，有盘点就有可能出现物品多了（溢）或少了（损）的情况。
+盘点流程 graph LR s1([封账]) s2[盘点数量] s3[盘点汇总] s4[报损/报溢] s5([解封]) s1 --&gt; s2 --&gt; s3 --&gt; s4 --&gt; s5 单据/表模型 mindmap 盘点版 核心版 盘点 盘点记录 盘点明细 损溢单（损-溢+） 损溢明细 多级版 当仓库有上下级之分时，每个仓库都有自己的一套子系统，同级仓库之间还会出现平调的情况。
+关系模型 graph o[一级仓库] o1[二级仓库1] o2[二级仓库2] o &lt;--&gt; o1 &lt;--&gt;|平调| o2 &lt;--&gt; o 单据/表模型 mindmap 多级版 盘点版 平调 调货单 调货明细 审批版 当管理上要求标准化、规范化，需要走审批流程时，每个环节都开始之前都要加个申请单（如：采购申请单、使用申请单、退货申请单、调货申请单、报废申请单等），审批通过之后再进行具体业务。</description>
+    </item>
+  </channel>
+</rss>
