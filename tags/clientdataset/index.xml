@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>ClientDataSet on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/clientdataset/</link>
+    <description>Recent content in ClientDataSet on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sat, 12 Jan 2019 14:43:15 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/clientdataset/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TClientDataSet的使用以及遇到的坑</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/delphi_clientdataset/</link>
+      <pubDate>Sat, 12 Jan 2019 14:43:15 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/delphi_clientdataset/</guid>
+      <description>从其它平台迁移而来
+在Delphi未加入FireDAC之前，似乎是没有内存表控件的（也许有，可能我不知道吧），但是可以用TClientDataSet控件来做内存表使用，即使有了FireDAC可以使用TFDMemTable，我还是觉得TClientDataSet更好用一些。
+做内存表使用 创建 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 with ClientDataSet do begin Close; //定义字段 with FieldDefs do begin Clear; Add(&amp;#39;Field1&amp;#39;, ftInteger, 0, False); Add(&amp;#39;Field2&amp;#39;, ftString, 0, False); ...... end; //创建结构 CreateDataSet; Open; end; 排序 在定义字段后，创建结构前，也可以指定排序字段。
+1 IndexFieldNames := &amp;#39;Field1&amp;#39;; 做缓存使用 需要结合TDataSetProvider来使用。以下示例以使用ADO组件为例。
+拉取数据 方法1 TDBGrid-&amp;gt;TDataSource-&amp;gt;TClientDataSet-&amp;gt;TDataSetProvider-&amp;gt;TADOQuery-&amp;gt;TADOConnection
+1 2 3 4 5 6 7 ClientDataSet.ProviderName := DataSetProvider.Name; //设计器里设置过就不需要了 with ClientDataSet do begin Close; CommandText:=&amp;#39;select * from T_Table&amp;#39;; Open; end; 方法2 TDBGrid-&amp;gt;TDataSource</description>
+    </item>
+  </channel>
+</rss>

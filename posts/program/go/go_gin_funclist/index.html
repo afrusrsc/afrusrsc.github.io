@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Gin功能列表 | 慢步道人</title>
+<meta name="keywords" content="go, gin">
+<meta name="description" content="gin版本v1.10.0
+包函数 方法 含义 说明 BasicAuth 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 底层调用BasicAuthForRealm BasicAuthForProxy 创建一个HTTP代理基本认证（Basic HTTP Proxy - Authorization）的中间件 BasicAuthForRealm 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 Bind 创建一个用于将请求中的数据绑定到指定的接口对象上的中间件 CreateTestContext 创建一个干净的Engine实例和一个与之关联的上下文对象用于测试 CreateTestContextOnly 在已有的Engine实例基础上创建一个独立的上下文用于测试 CustomRecovery 根据自定义的处理函数创建一个恢复中间件 底层调用CustomRecoveryWithWriter CustomRecoveryWithWriter 创建一个自定义的恢复中间件 Default 返回一个默认的Engine实例 默认含Logger和Recovery两个中间件 Dir 返回一个http.FileSystem接口的实现，该实现可被http.FileServer使用 DisableBindValidation 关闭默认的验证器 DisableConsoleColor 禁用控制台的颜色输出 EnableJsonDecoderDisallowUnknownFields 开启JSON解码器的DisallowUnknownFields功能 即遇到未知字段时就报错 EnableJsonDecoderUseNumber 开启JSON解码器的UseNumber功能 即将数字解码为json.Number类型，而不是float64，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题 ErrorLogger 创建一个能够处理任意类型的错误的中间件 底层调用ErrorLoggerT ErrorLoggerT 创建一个能够处理指定类型的错误的中间件 ForceConsoleColor 强制在控制台输出带有颜色的内容 IsDebugging 判断当前框架是否处于调试模式 Logger 使用默认配置来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithConfig 根据传入的配置来创建一个日志中间件 LoggerWithFormatter 根据指定的格式来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithWriter 根据指定的输出目标创建一个日志中间件 底层调用LoggerWithConfig Mode 返回当前Gin框架的运行模式 有debug、release和test三种模式 New 返回一个全新的、没有任何中间件的Engine实例 Recovery 使用默认配置创建一个恢复中间件 底层调用RecoveryWithWriter RecoveryWithWriter 根据指定输出目标创建一个恢复中间件 底层调用CustomRecoveryWithWriter SetMode 设置gin框架的运行模式 WrapF 将标准的http.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_gin_funclist/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_gin_funclist/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Gin功能列表" />
+<meta property="og:description" content="gin版本v1.10.0
+包函数 方法 含义 说明 BasicAuth 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 底层调用BasicAuthForRealm BasicAuthForProxy 创建一个HTTP代理基本认证（Basic HTTP Proxy - Authorization）的中间件 BasicAuthForRealm 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 Bind 创建一个用于将请求中的数据绑定到指定的接口对象上的中间件 CreateTestContext 创建一个干净的Engine实例和一个与之关联的上下文对象用于测试 CreateTestContextOnly 在已有的Engine实例基础上创建一个独立的上下文用于测试 CustomRecovery 根据自定义的处理函数创建一个恢复中间件 底层调用CustomRecoveryWithWriter CustomRecoveryWithWriter 创建一个自定义的恢复中间件 Default 返回一个默认的Engine实例 默认含Logger和Recovery两个中间件 Dir 返回一个http.FileSystem接口的实现，该实现可被http.FileServer使用 DisableBindValidation 关闭默认的验证器 DisableConsoleColor 禁用控制台的颜色输出 EnableJsonDecoderDisallowUnknownFields 开启JSON解码器的DisallowUnknownFields功能 即遇到未知字段时就报错 EnableJsonDecoderUseNumber 开启JSON解码器的UseNumber功能 即将数字解码为json.Number类型，而不是float64，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题 ErrorLogger 创建一个能够处理任意类型的错误的中间件 底层调用ErrorLoggerT ErrorLoggerT 创建一个能够处理指定类型的错误的中间件 ForceConsoleColor 强制在控制台输出带有颜色的内容 IsDebugging 判断当前框架是否处于调试模式 Logger 使用默认配置来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithConfig 根据传入的配置来创建一个日志中间件 LoggerWithFormatter 根据指定的格式来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithWriter 根据指定的输出目标创建一个日志中间件 底层调用LoggerWithConfig Mode 返回当前Gin框架的运行模式 有debug、release和test三种模式 New 返回一个全新的、没有任何中间件的Engine实例 Recovery 使用默认配置创建一个恢复中间件 底层调用RecoveryWithWriter RecoveryWithWriter 根据指定输出目标创建一个恢复中间件 底层调用CustomRecoveryWithWriter SetMode 设置gin框架的运行模式 WrapF 将标准的http." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_gin_funclist/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-02-23T19:48:17+08:00" />
+<meta property="article:modified_time" content="2025-02-23T19:48:17+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Gin功能列表"/>
+<meta name="twitter:description" content="gin版本v1.10.0
+包函数 方法 含义 说明 BasicAuth 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 底层调用BasicAuthForRealm BasicAuthForProxy 创建一个HTTP代理基本认证（Basic HTTP Proxy - Authorization）的中间件 BasicAuthForRealm 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 Bind 创建一个用于将请求中的数据绑定到指定的接口对象上的中间件 CreateTestContext 创建一个干净的Engine实例和一个与之关联的上下文对象用于测试 CreateTestContextOnly 在已有的Engine实例基础上创建一个独立的上下文用于测试 CustomRecovery 根据自定义的处理函数创建一个恢复中间件 底层调用CustomRecoveryWithWriter CustomRecoveryWithWriter 创建一个自定义的恢复中间件 Default 返回一个默认的Engine实例 默认含Logger和Recovery两个中间件 Dir 返回一个http.FileSystem接口的实现，该实现可被http.FileServer使用 DisableBindValidation 关闭默认的验证器 DisableConsoleColor 禁用控制台的颜色输出 EnableJsonDecoderDisallowUnknownFields 开启JSON解码器的DisallowUnknownFields功能 即遇到未知字段时就报错 EnableJsonDecoderUseNumber 开启JSON解码器的UseNumber功能 即将数字解码为json.Number类型，而不是float64，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题 ErrorLogger 创建一个能够处理任意类型的错误的中间件 底层调用ErrorLoggerT ErrorLoggerT 创建一个能够处理指定类型的错误的中间件 ForceConsoleColor 强制在控制台输出带有颜色的内容 IsDebugging 判断当前框架是否处于调试模式 Logger 使用默认配置来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithConfig 根据传入的配置来创建一个日志中间件 LoggerWithFormatter 根据指定的格式来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithWriter 根据指定的输出目标创建一个日志中间件 底层调用LoggerWithConfig Mode 返回当前Gin框架的运行模式 有debug、release和test三种模式 New 返回一个全新的、没有任何中间件的Engine实例 Recovery 使用默认配置创建一个恢复中间件 底层调用RecoveryWithWriter RecoveryWithWriter 根据指定输出目标创建一个恢复中间件 底层调用CustomRecoveryWithWriter SetMode 设置gin框架的运行模式 WrapF 将标准的http."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Gin功能列表",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_gin_funclist/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Gin功能列表",
+  "name": "Gin功能列表",
+  "description": "gin版本v1.10.0\n包函数 方法 含义 说明 BasicAuth 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 底层调用BasicAuthForRealm BasicAuthForProxy 创建一个HTTP代理基本认证（Basic HTTP Proxy - Authorization）的中间件 BasicAuthForRealm 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 Bind 创建一个用于将请求中的数据绑定到指定的接口对象上的中间件 CreateTestContext 创建一个干净的Engine实例和一个与之关联的上下文对象用于测试 CreateTestContextOnly 在已有的Engine实例基础上创建一个独立的上下文用于测试 CustomRecovery 根据自定义的处理函数创建一个恢复中间件 底层调用CustomRecoveryWithWriter CustomRecoveryWithWriter 创建一个自定义的恢复中间件 Default 返回一个默认的Engine实例 默认含Logger和Recovery两个中间件 Dir 返回一个http.FileSystem接口的实现，该实现可被http.FileServer使用 DisableBindValidation 关闭默认的验证器 DisableConsoleColor 禁用控制台的颜色输出 EnableJsonDecoderDisallowUnknownFields 开启JSON解码器的DisallowUnknownFields功能 即遇到未知字段时就报错 EnableJsonDecoderUseNumber 开启JSON解码器的UseNumber功能 即将数字解码为json.Number类型，而不是float64，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题 ErrorLogger 创建一个能够处理任意类型的错误的中间件 底层调用ErrorLoggerT ErrorLoggerT 创建一个能够处理指定类型的错误的中间件 ForceConsoleColor 强制在控制台输出带有颜色的内容 IsDebugging 判断当前框架是否处于调试模式 Logger 使用默认配置来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithConfig 根据传入的配置来创建一个日志中间件 LoggerWithFormatter 根据指定的格式来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithWriter 根据指定的输出目标创建一个日志中间件 底层调用LoggerWithConfig Mode 返回当前Gin框架的运行模式 有debug、release和test三种模式 New 返回一个全新的、没有任何中间件的Engine实例 Recovery 使用默认配置创建一个恢复中间件 底层调用RecoveryWithWriter RecoveryWithWriter 根据指定输出目标创建一个恢复中间件 底层调用CustomRecoveryWithWriter SetMode 设置gin框架的运行模式 WrapF 将标准的http.",
+  "keywords": [
+    "go", "gin"
+  ],
+  "articleBody": "gin版本v1.10.0\n包函数 方法 含义 说明 BasicAuth 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 底层调用BasicAuthForRealm BasicAuthForProxy 创建一个HTTP代理基本认证（Basic HTTP Proxy - Authorization）的中间件 BasicAuthForRealm 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 Bind 创建一个用于将请求中的数据绑定到指定的接口对象上的中间件 CreateTestContext 创建一个干净的Engine实例和一个与之关联的上下文对象用于测试 CreateTestContextOnly 在已有的Engine实例基础上创建一个独立的上下文用于测试 CustomRecovery 根据自定义的处理函数创建一个恢复中间件 底层调用CustomRecoveryWithWriter CustomRecoveryWithWriter 创建一个自定义的恢复中间件 Default 返回一个默认的Engine实例 默认含Logger和Recovery两个中间件 Dir 返回一个http.FileSystem接口的实现，该实现可被http.FileServer使用 DisableBindValidation 关闭默认的验证器 DisableConsoleColor 禁用控制台的颜色输出 EnableJsonDecoderDisallowUnknownFields 开启JSON解码器的DisallowUnknownFields功能 即遇到未知字段时就报错 EnableJsonDecoderUseNumber 开启JSON解码器的UseNumber功能 即将数字解码为json.Number类型，而不是float64，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题 ErrorLogger 创建一个能够处理任意类型的错误的中间件 底层调用ErrorLoggerT ErrorLoggerT 创建一个能够处理指定类型的错误的中间件 ForceConsoleColor 强制在控制台输出带有颜色的内容 IsDebugging 判断当前框架是否处于调试模式 Logger 使用默认配置来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithConfig 根据传入的配置来创建一个日志中间件 LoggerWithFormatter 根据指定的格式来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithWriter 根据指定的输出目标创建一个日志中间件 底层调用LoggerWithConfig Mode 返回当前Gin框架的运行模式 有debug、release和test三种模式 New 返回一个全新的、没有任何中间件的Engine实例 Recovery 使用默认配置创建一个恢复中间件 底层调用RecoveryWithWriter RecoveryWithWriter 根据指定输出目标创建一个恢复中间件 底层调用CustomRecoveryWithWriter SetMode 设置gin框架的运行模式 WrapF 将标准的http.HandlerFunc类型的处理函数包装成Gin框架的中间件 WrapH 将标准的http.Handler类型的对象包装成Gin框架的中间件 IRouter接口 IRouter定义了所有的路由处理接口，包括单个路由和分组路由的处理接口。\n方法 含义 说明 Any 注册一个能匹配所有HTTP方法的路由 DELETE 注册一个DELETE方法的路由 GET 注册一个GET方法的路由 Group 创建一个路由组，可以将所有具有共同中间件或相同路径前缀的路由添加到这个组中 HEAD 注册一个HEAD方法的路由 Handle 根据给定的路径和HTTP方法注册一个新的请求处理函数和中间件 Match 注册一个能匹配指定HTTP方法的路由 通常用于多个方法 OPTIONS 注册一个OPTIONS方法的路由 PATCH 注册一个PATCH方法的路由 POST 注册一个POST方法的路由 PUT 注册一个PUT方法的路由 Static 从指定的文件系统根目录提供静态文件服务 底层调用StaticFS StaticFS 从自定义的http.FileSystem接口实现提供静态文件服务 StaticFile 注册一个单独的路由，以提供本地文件系统中的单个文件的服务 如favicon.ico StaticFileFS 从自定义的http.FileSystem接口实现提供单个文件的服务 Use 为路由组添加中间件 RouterGroup RouterGroup实现了IRouter接口。\n方法 含义 说明 BasePath 返回路由组的基础路径 Engine Engine是框架的实例（基于RouterGroup），包含了路由多路复用器、中间件和配置设置。\n方法 含义 说明 Delims 用于设置模板的左右分隔符 HandleContext 用于重新处理一个已被重写的上下文 可能会陷入循环处理的情况，慎用 Handler LoadHTMLFiles 加载一个HTML文件切片，并将加载结果与HTML渲染器关联起来 LoadHTMLGlob 通过glob模式来识别并加载HTML文件，然后将加载结果与HTML渲染器关联起来 NoMethod 设置当Engine.HandleMethodNotAllowed=true时被调用的处理函数 当出现方法不允许的情况时，这些处理函数会被调用，从而可以返回自定义的错误信息、页面或执行其他逻辑 NoRoute 为未匹配到路由的情况添加处理函数 Routes 返回一个已注册路由的切片 Run 根据指定的网络地址启动http服务 RunFd 根据指定的文件描述符启动http服务 底层调用RunListener RunListener 根据已有的net.Listener接口启动http服务 RunTLS 根据指定的网络地址、证书等启动https服务 RunUnix 根据指定的Unix套接字文件启动http服务 SecureJsonPrefix 用于设置c.SecureJSON方法中所使用的安全JSON前缀 在调用c.SecureJSON返回JSON数组时生效 ServeHTTP SetFuncMap 用于设置template.FuncMap所使用的函数映射 SetHTMLTemplate 用于将一个模板与HTML渲染器关联起来 SetTrustedProxies 用于设置一个受信任的网络源列表 With 使用所提供的选项创建并返回一个新的Engine实例 Context 方法 含义 说明 Abort 中断请求的后续处理链，但不影响当前正在执行的处理 AbortWithError 中断请求的后续处理链，并将错误信息记录到c.Errors切片中 内部调用AbortWithStatus和Error AbortWithStatus 中断请求的后续处理链，并在响应头中返回指定的HTTP状态码 内部调用Status和Abort AbortWithStatusJSON 中断请求的后续处理链，并在响应头中返回指定的HTTP状态码，响应体中返回指定的JSON 内部调用Abort和JSON AddParam 将参数添加到Gin的上下文对象中；另一个重要作用是为了端到端测试 AsciiJSON 将一个结构体序列化为JSON格式（其中的Unicode字符转换为ASCII字符）响应 Bind 根据请求的方法和Content-Type头信息自动选择合适的绑定引擎，将请求体中的数据解析并绑定到指定的结构体指针中 内部调用MustBindWith BindHeader 使用binding.Header绑定请求的数据 内部调用MustBindWith BindJSON 使用binding.JSON绑定请求的数据 内部调用MustBindWith BindQuery 使用binding.Query绑定请求的数据 内部调用MustBindWith BindTOML 使用binding.TOML绑定请求的数据 内部调用MustBindWith BindUri 将请求的URI（统一资源标识符）中的参数绑定到传入的结构体指针指向的结构体上 内部调用ShouldBindUri BindWith 使用指定的绑定引擎将请求的数据绑定到传入的结构体指针指向的结构体上 已弃用，建议使用MustBindWith或ShouldBindWith BindXML 使用binding.XML绑定请求的数据 内部调用MustBindWith BindYAML 使用binding.YAML绑定请求的数据 内部调用MustBindWith ClientIP 通过一种尽力而为的算法来获取发起请求的真实客户端IP地址 ContentType 返回请求中Content-Type请求头的值 Cookie 从请求中获取指定名称的Cookie值 返回的Cookie值是经过反编码处理的，且同名的Cookie只会返回其中一个 Copy 返回当前上下文的一个副本 需要将上下文传递给一个新的goroutine时必须使用 Data 将指定的数据写入响应的主体流中，同时更新响应的状态码 内部调用Render DataFromReader 将指定的io.Reader中的数据写入到响应的主体流中，同时更新响应的状态码 内部调用Render Deadline 返回该上下文的截止时间 DefaultPostForm 从POST请求的application/x-www-form-urlencoded格式表单或multipart/form-data格式表单中获取指定键对应的值，若不存在则使用默认值 内部使用GetPostForm DefaultQuery 从请求的URL查询字符串中获取指定键对应的值，若不存在则使用默认值 内部使用GetQuery Done 返回一个只读通道，当上下文被取消（比如调用c.CancelFunc）或者超时（使用c.WithTimeout等方法）时，该通道会被关闭。可以通过监听这个通道来感知上下文的状态变化，从而做出相应的处理 Err 用于获取上下文被取消或超时时的错误信息 Error 将错误信息附加到当前的上下文（Context）中的错误列表里，以便后续统一处理 传入nil错误会导致panic File 将指定的文件以高效的方式写入响应的主体流中 FileAttachment 将指定的文件以高效的方式写入响应的主体流中，并设置响应头中的Content-Disposition字段 FileFromFS 从指定的http.FileSystem中读取文件，并将文件内容以高效的方式写入响应的主体流中 FormFile 从POST请求的表单数据（通常是multipart/form-data格式）中获取指定表单键对应的第一个文件 FullPath 返回当前请求所匹配到的路由的完整路径 Get 从上下文中获取指定键对应的值，同时返回该键是否存在 GetBool 从上下文中获取指定键对应的值，并将其转换为bool类型返回 内部调用Get GetDuration 从上下文中获取指定键对应的值，并将其转换为duration类型返回 内部调用Get GetFloat64 从上下文中获取指定键对应的值，并将其转换为float64类型返回 内部调用Get GetHeader 从请求头中获取指定键对应的值 GetInt 从上下文中获取指定键对应的值，并将其转换为int类型返回 内部调用Get GetInt64 从上下文中获取指定键对应的值，并将其转换为int64类型返回 内部调用Get GetPostForm 从POST请求的application/x-www-form-urlencoded格式表单或multipart/form-data格式表单中获取指定键对应的值 内部调用GetPostFormArray GetPostFormArray 从POST请求的application/x-www-form-urlencoded格式表单或multipart/form-data格式表单中获取指定键对应的所有值，并以字符串切片的形式返回；同时返回该键是否至少存在一个与之对应的值 GetPostFormMap 从POST请求的表单数据里获取指定键对应的map类型的值，并返回该键是否存在 GetQuery 从请求的URL查询字符串中获取指定键对应的值，并返回该键是否存在 内部调用GetQueryArray GetQueryArray 从请求的URL查询字符串中获取指定键对应的所有值，并以字符串切片的形式返回；同时返回该键是否至少存在一个与之对应的值 GetQueryMap 从请求的URL查询字符串里获取指定键对应的map类型的值，并返回该键是否存在 GetRawData 获取请求体中的原始数据流数据 GetString 从上下文中获取指定键对应的值，并将其转换为string类型返回 内部调用Get GetStringMap 从上下文中获取指定键对应的值，并将其转换为map[string]any类型返回 内部调用Get GetStringMapString 从上下文中获取指定键对应的值，并将其转换为map[string]string类型返回 内部调用Get GetStringMapStringSlice 从上下文中获取指定键对应的值，并将其转换为map[string][]string类型返回 内部调用Get GetStringSlice 从上下文中获取指定键对应的值，并将其转换为[]string类型返回 内部调用Get GetTime 从上下文中获取指定键对应的值，并将其转换为time.Time类型返回 内部调用Get GetUint 从上下文中获取指定键对应的值，并将其转换为uint类型返回 内部调用Get GetUint64 从上下文中获取指定键对应的值，并将其转换为uint64类型返回 内部调用Get HTML 渲染指定文件名的HTTP模板，同时更新响应状态码 Handler 返回主处理器，即最后一个处理函数 HandlerName 返回主处理器的名称 名称会包含包名 HandlerNames 返回当前上下文中所有已注册处理器的名称列表 Header 设置响应头信息，若值为空字符串则删除对应项 IndentedJSON 将给定的结构体序列化为格式化后的JSON（带有缩进和换行符）写入响应体 比较消耗资源和带宽 IsAborted 判断当前的上下文是否已经被中止 IsWebsocket 判断客户端发送的请求是否是WebSocket握手 JSON 将给定的结构体序列化为JSON写入响应体 响应的Content-Type为application/json JSONP 将给定的结构体序列化为JSON格式，并在响应体中添加填充以实现从与客户端不同域名的服务器请求数据 响应的Content-Type为application/javascript MultipartForm 获取multipart/form-data类型的表单请求的解析结果，包含了表单中的所有字段和上传的文件信息 MustBindWith 使用指定的绑定引擎将请求的数据绑定到传入的结构体指针上 内部调用ShouldBindWith MustGet 从上下文中获取指定键对应的值，若不存在则触发panic 内部调用Get Negotiate 根据客户端请求头中Accept字段指定的可接受格式，调用不同的渲染器生成合适的响应内容 内部用到了NegotiateFormat NegotiateFormat 从客户端请求头的Accept字段里，结合服务器所支持的格式，协商出一个可接受的响应格式并返回 Next 用于中间件中，让当前处理流程继续执行后续的中间件和最终的处理函数，当后续的处理完成后，控制权会返回到调用Next方法的位置，继续执行该中间件剩余的代码 专为中间件设计，不应在普通的路由处理函数中使用 Param 从URL路径中提取指定参数的值 PostForm 从POST请求的application/x-www-form-urlencoded格式表单或multipart/form-data格式表单中获取指定键对应的值 内部调用GetPostForm PostFormArray 从POST请求的application/x-www-form-urlencoded格式表单或multipart/form-data格式表单中获取指定键对应的所有值 内部调用GetPostFormArray PostFormMap 从POST请求的表单数据中获取指定表单键所对应的map[string]string类型的值 内部调用GetPostFormMap ProtoBuf 将给定的结构体序列化为ProtoBuf写入响应体 PureJSON 将给定的结构体序列化为JSON写入响应体，但会直接保留原始的特殊HTML字符 Query 从请求的URL查询字符串中获取指定键对应的值，若不存在返回空字符串 内部调用GetQuery QueryArray 从请求的URL查询字符串中获取指定键对应的所有值，并以字符串切片的形式返回 内部调用GetQueryArray QueryMap 从请求的URL查询字符串中获取指定键对应的map[string]string值 内部调用GetQuery Redirect 将客户端的请求重定向到指定的位置 RemoteIP 从请求的Request.RemoteAddr字段中解析出客户端的IP地址 Render 设置响应头信息，然后调用传入的渲染器的Render方法来将数据渲染到响应体中 SSEvent 向响应的主体流中写入一个服务器发送事件SSE 单向通信，即只能服务器向客户端推送数据 SaveUploadedFile 将客户端通过表单上传的文件保存到服务器指定的目标路径 SecureJSON 将给定的结构体序列化为JSON写入响应体，若数据为数组则在前面添加安全前缀 默认前缀为while(1), Set 在当前的上下文中存储一个新的键值对 常用于在不同中间件和处理函数之间方便地共享数据 SetAccepted 设置请求头中的Accept字段的数据 SetCookie 在响应头中添加Set-Cookie字段，从而在客户端浏览器中设置Cookie SetSameSite 设置Cookie的SameSite属性 ShouldBind 依据请求的方法和Content-Type头，自动挑选合适的绑定引擎，把请求体中的数据绑定到指定的结构体指针上 绑定失败不会自动设置响应状态码或终止请求处理。内部调用ShouldBindWith ShouldBindBodyWith 使用指定的绑定引擎将请求中的数据绑定到传入的结构体指针上，但会将请求体的数据存储在上下文中 ShouldBindBodyWithJSON 使用binding.JSON绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中 内部调用ShouldBindBodyWith ShouldBindBodyWithTOML 使用binding.TOML绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中 内部调用ShouldBindBodyWith ShouldBindBodyWithXML 使用binding.XML绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中 内部调用ShouldBindBodyWith ShouldBindBodyWithYAML 使用binding.YAML绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中 内部调用ShouldBindBodyWith ShouldBindHeader 使用binding.Header绑定引擎将请求中的数据绑定到传入的结构体指针上 内部调用ShouldBindWith ShouldBindJSON 使用binding.JSON绑定引擎将请求中的数据绑定到传入的结构体指针上 内部调用ShouldBindWith ShouldBindQuery 使用binding.Query绑定引擎将请求中的数据绑定到传入的结构体指针上 内部调用ShouldBindWith ShouldBindTOML 使用binding.TOML绑定引擎将请求中的数据绑定到传入的结构体指针上 内部调用ShouldBindWith ShouldBindUri 使用指定的绑定引擎将请求的URI中的参数绑定到传入的结构体指针所指向的结构体实例上 ShouldBindWith 使用指定的绑定引擎将请求中的数据绑定到传入的结构体指针上 ShouldBindXML 使用binding.XML绑定引擎将请求中的数据绑定到传入的结构体指针上 内部调用ShouldBindWith ShouldBindYAML 使用binding.YAML绑定引擎将请求中的数据绑定到传入的结构体指针上 内部调用ShouldBindWith Status 设置响应的状态码 Stream 用于发送流式响应 String 将给定的字符串写入响应体中 TOML 将给定的结构体序列化为TOML写入响应体 Value 从当前的Context中获取与指定键关联的值 内部调用Get XML 将给定的结构体序列化为XML写入响应体 YAML 将给定的结构体序列化为YAML写入响应体 使用小结 读取请求 来源 详情 方法 备注 请求路径 路由参数 Param、BindUri、ShouldBindUri、FullPath 适用于RESTful参数，如：http://localhost/user/123 - 查询参数 Query、DefaultQuery、GetQuery、QueryArray、GetQueryArray、QueryMap、GetQueryMap 适用于传统查询参数，如：http://localhost/user?id=123 请求体 表单 DefaultPostForm、GetPostForm、GetPostFormArray、GetPostFormMap、MultipartForm application/x-www-form-urlencoded或multipart/form-data - 文件 FormFile、SaveUploadedFile multipart/form-data - 原始流 GetRawData - json BindJSON、ShouldBindBodyWithJSON - xml BindXML、ShouldBindBodyWithXML - toml BindTOML、ShouldBindBodyWithTOML - yaml BindYAML、ShouldBindBodyWithYAML 请求头 Cookies Cookie - Content-Type ContentType - 普通头 GetHeader、BindHeader、ShouldBindHeader 响应 位置 详情 方法 备注 响应状态码 Status 响应头 普通头 Header - Accept SetAccepted - Cookies SetCookie 响应体 普通文本 String - 页面 HTML - json JSON、JSONP、IndentedJSON、AsciiJSON、PureJSON、SecureJSON - xml XML - ProtoBuf ProtoBuf - toml TOML - yaml YAML - 流 Stream - 文件 File、FileAttachment、FileFromFS - SSE事件 SSEvent 流程控制 类型 方法 备注 中止 Abort、AbortWithError、AbortWithStatus、AbortWithStatusJSON 继续下一个 Next 对中间件很重要 重定向 Redirect ",
+  "wordCount" : "565",
+  "inLanguage": "zh",
+  "datePublished": "2025-02-23T19:48:17+08:00",
+  "dateModified": "2025-02-23T19:48:17+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_gin_funclist/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Gin功能列表
+    </h1>
+    <div class="post-meta"><span title='2025-02-23 19:48:17 +0800 CST'>2025-02-23 19:48:17</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%8c%85%e5%87%bd%e6%95%b0" aria-label="包函数">包函数</a></li>
+                    <li>
+                        <a href="#irouter%e6%8e%a5%e5%8f%a3" aria-label="IRouter接口">IRouter接口</a></li>
+                    <li>
+                        <a href="#routergroup" aria-label="RouterGroup">RouterGroup</a></li>
+                    <li>
+                        <a href="#engine" aria-label="Engine">Engine</a></li>
+                    <li>
+                        <a href="#context" aria-label="Context">Context</a><ul>
+                            
+                    <li>
+                        <a href="#%e4%bd%bf%e7%94%a8%e5%b0%8f%e7%bb%93" aria-label="使用小结">使用小结</a><ul>
+                            
+                    <li>
+                        <a href="#%e8%af%bb%e5%8f%96%e8%af%b7%e6%b1%82" aria-label="读取请求">读取请求</a></li>
+                    <li>
+                        <a href="#%e5%93%8d%e5%ba%94" aria-label="响应">响应</a></li>
+                    <li>
+                        <a href="#%e6%b5%81%e7%a8%8b%e6%8e%a7%e5%88%b6" aria-label="流程控制">流程控制</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><p>gin版本<code>v1.10.0</code></p>
+<h1 id="包函数">包函数<a hidden class="anchor" aria-hidden="true" href="#包函数">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BasicAuth</td>
+<td>创建一个<code>HTTP基本认证（Basic HTTP Authorization）</code>的中间件</td>
+<td>底层调用<code>BasicAuthForRealm</code></td>
+</tr>
+<tr>
+<td>BasicAuthForProxy</td>
+<td>创建一个<code>HTTP代理基本认证（Basic HTTP Proxy - Authorization）</code>的中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>BasicAuthForRealm</td>
+<td>创建一个<code>HTTP基本认证（Basic HTTP Authorization）</code>的中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>Bind</td>
+<td>创建一个用于将请求中的数据绑定到指定的接口对象上的中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>CreateTestContext</td>
+<td>创建一个干净的<code>Engine</code>实例和一个与之关联的上下文对象用于测试</td>
+<td></td>
+</tr>
+<tr>
+<td>CreateTestContextOnly</td>
+<td>在已有的<code>Engine</code>实例基础上创建一个独立的上下文用于测试</td>
+<td></td>
+</tr>
+<tr>
+<td>CustomRecovery</td>
+<td>根据自定义的处理函数创建一个恢复中间件</td>
+<td>底层调用<code>CustomRecoveryWithWriter</code></td>
+</tr>
+<tr>
+<td>CustomRecoveryWithWriter</td>
+<td>创建一个自定义的恢复中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>Default</td>
+<td>返回一个默认的<code>Engine</code>实例</td>
+<td>默认含<code>Logger</code>和<code>Recovery</code>两个中间件</td>
+</tr>
+<tr>
+<td>Dir</td>
+<td>返回一个<code>http.FileSystem</code>接口的实现，该实现可被<code>http.FileServer</code>使用</td>
+<td></td>
+</tr>
+<tr>
+<td>DisableBindValidation</td>
+<td>关闭默认的验证器</td>
+<td></td>
+</tr>
+<tr>
+<td>DisableConsoleColor</td>
+<td>禁用控制台的颜色输出</td>
+<td></td>
+</tr>
+<tr>
+<td>EnableJsonDecoderDisallowUnknownFields</td>
+<td>开启<code>JSON</code>解码器的<code>DisallowUnknownFields</code>功能</td>
+<td>即遇到未知字段时就报错</td>
+</tr>
+<tr>
+<td>EnableJsonDecoderUseNumber</td>
+<td>开启<code>JSON</code>解码器的<code>UseNumber</code>功能</td>
+<td>即将数字解码为<code>json.Number</code>类型，而不是<code>float64</code>，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题</td>
+</tr>
+<tr>
+<td>ErrorLogger</td>
+<td>创建一个能够处理任意类型的错误的中间件</td>
+<td>底层调用<code>ErrorLoggerT</code></td>
+</tr>
+<tr>
+<td>ErrorLoggerT</td>
+<td>创建一个能够处理指定类型的错误的中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>ForceConsoleColor</td>
+<td>强制在控制台输出带有颜色的内容</td>
+<td></td>
+</tr>
+<tr>
+<td>IsDebugging</td>
+<td>判断当前框架是否处于调试模式</td>
+<td></td>
+</tr>
+<tr>
+<td>Logger</td>
+<td>使用默认配置来创建一个日志中间件</td>
+<td>底层调用<code>LoggerWithConfig</code></td>
+</tr>
+<tr>
+<td>LoggerWithConfig</td>
+<td>根据传入的配置来创建一个日志中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>LoggerWithFormatter</td>
+<td>根据指定的格式来创建一个日志中间件</td>
+<td>底层调用<code>LoggerWithConfig</code></td>
+</tr>
+<tr>
+<td>LoggerWithWriter</td>
+<td>根据指定的输出目标创建一个日志中间件</td>
+<td>底层调用<code>LoggerWithConfig</code></td>
+</tr>
+<tr>
+<td>Mode</td>
+<td>返回当前<code>Gin</code>框架的运行模式</td>
+<td>有<code>debug</code>、<code>release</code>和<code>test</code>三种模式</td>
+</tr>
+<tr>
+<td>New</td>
+<td>返回一个全新的、没有任何中间件的<code>Engine</code>实例</td>
+<td></td>
+</tr>
+<tr>
+<td>Recovery</td>
+<td>使用默认配置创建一个恢复中间件</td>
+<td>底层调用<code>RecoveryWithWriter</code></td>
+</tr>
+<tr>
+<td>RecoveryWithWriter</td>
+<td>根据指定输出目标创建一个恢复中间件</td>
+<td>底层调用<code>CustomRecoveryWithWriter</code></td>
+</tr>
+<tr>
+<td>SetMode</td>
+<td>设置<code>gin</code>框架的运行模式</td>
+<td></td>
+</tr>
+<tr>
+<td>WrapF</td>
+<td>将标准的<code>http.HandlerFunc</code>类型的处理函数包装成<code>Gin</code>框架的中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>WrapH</td>
+<td>将标准的<code>http.Handler</code>类型的对象包装成<code>Gin</code>框架的中间件</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="irouter接口">IRouter接口<a hidden class="anchor" aria-hidden="true" href="#irouter接口">#</a></h1>
+<p><code>IRouter</code>定义了所有的路由处理接口，包括单个路由和分组路由的处理接口。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Any</td>
+<td>注册一个能匹配所有<code>HTTP</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>注册一个<code>DELETE</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>GET</td>
+<td>注册一个<code>GET</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>Group</td>
+<td>创建一个路由组，可以将所有具有共同中间件或相同路径前缀的路由添加到这个组中</td>
+<td></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td>注册一个<code>HEAD</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>Handle</td>
+<td>根据给定的路径和<code>HTTP</code>方法注册一个新的请求处理函数和中间件</td>
+<td></td>
+</tr>
+<tr>
+<td>Match</td>
+<td>注册一个能匹配指定<code>HTTP</code>方法的路由</td>
+<td>通常用于多个方法</td>
+</tr>
+<tr>
+<td>OPTIONS</td>
+<td>注册一个<code>OPTIONS</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>注册一个<code>PATCH</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>注册一个<code>POST</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>注册一个<code>PUT</code>方法的路由</td>
+<td></td>
+</tr>
+<tr>
+<td>Static</td>
+<td>从指定的文件系统根目录提供静态文件服务</td>
+<td>底层调用<code>StaticFS</code></td>
+</tr>
+<tr>
+<td>StaticFS</td>
+<td>从自定义的<code>http.FileSystem</code>接口实现提供静态文件服务</td>
+<td></td>
+</tr>
+<tr>
+<td>StaticFile</td>
+<td>注册一个单独的路由，以提供本地文件系统中的单个文件的服务</td>
+<td>如<code>favicon.ico</code></td>
+</tr>
+<tr>
+<td>StaticFileFS</td>
+<td>从自定义的<code>http.FileSystem</code>接口实现提供单个文件的服务</td>
+<td></td>
+</tr>
+<tr>
+<td>Use</td>
+<td>为路由组添加中间件</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="routergroup">RouterGroup<a hidden class="anchor" aria-hidden="true" href="#routergroup">#</a></h1>
+<p><code>RouterGroup</code>实现了<code>IRouter</code>接口。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BasePath</td>
+<td>返回路由组的基础路径</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="engine">Engine<a hidden class="anchor" aria-hidden="true" href="#engine">#</a></h1>
+<p><code>Engine</code>是框架的实例（基于<code>RouterGroup</code>），包含了路由多路复用器、中间件和配置设置。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Delims</td>
+<td>用于设置模板的左右分隔符</td>
+<td></td>
+</tr>
+<tr>
+<td>HandleContext</td>
+<td>用于重新处理一个已被重写的上下文</td>
+<td>可能会陷入循环处理的情况，慎用</td>
+</tr>
+<tr>
+<td>Handler</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>LoadHTMLFiles</td>
+<td>加载一个<code>HTML文件切片</code>，并将加载结果与<code>HTML渲染器</code>关联起来</td>
+<td></td>
+</tr>
+<tr>
+<td>LoadHTMLGlob</td>
+<td>通过<code>glob模式</code>来识别并加载<code>HTML文件</code>，然后将加载结果与<code>HTML渲染器</code>关联起来</td>
+<td></td>
+</tr>
+<tr>
+<td>NoMethod</td>
+<td>设置当<code>Engine.HandleMethodNotAllowed=true</code>时被调用的处理函数</td>
+<td>当出现方法不允许的情况时，这些处理函数会被调用，从而可以返回自定义的错误信息、页面或执行其他逻辑</td>
+</tr>
+<tr>
+<td>NoRoute</td>
+<td>为未匹配到路由的情况添加处理函数</td>
+<td></td>
+</tr>
+<tr>
+<td>Routes</td>
+<td>返回一个已注册路由的切片</td>
+<td></td>
+</tr>
+<tr>
+<td>Run</td>
+<td>根据指定的网络地址启动<code>http服务</code></td>
+<td></td>
+</tr>
+<tr>
+<td>RunFd</td>
+<td>根据指定的文件描述符启动<code>http服务</code></td>
+<td>底层调用<code>RunListener</code></td>
+</tr>
+<tr>
+<td>RunListener</td>
+<td>根据已有的<code>net.Listener</code>接口启动<code>http服务</code></td>
+<td></td>
+</tr>
+<tr>
+<td>RunTLS</td>
+<td>根据指定的网络地址、证书等启动<code>https服务</code></td>
+<td></td>
+</tr>
+<tr>
+<td>RunUnix</td>
+<td>根据指定的<code>Unix套接字</code>文件启动<code>http服务</code></td>
+<td></td>
+</tr>
+<tr>
+<td>SecureJsonPrefix</td>
+<td>用于设置<code>c.SecureJSON</code>方法中所使用的安全<code>JSON</code>前缀</td>
+<td>在调用<code>c.SecureJSON</code>返回<code>JSON数组</code>时生效</td>
+</tr>
+<tr>
+<td>ServeHTTP</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SetFuncMap</td>
+<td>用于设置<code>template.FuncMap</code>所使用的函数映射</td>
+<td></td>
+</tr>
+<tr>
+<td>SetHTMLTemplate</td>
+<td>用于将一个模板与<code>HTML渲染器</code>关联起来</td>
+<td></td>
+</tr>
+<tr>
+<td>SetTrustedProxies</td>
+<td>用于设置一个受信任的网络源列表</td>
+<td></td>
+</tr>
+<tr>
+<td>With</td>
+<td>使用所提供的选项创建并返回一个新的<code>Engine</code>实例</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="context">Context<a hidden class="anchor" aria-hidden="true" href="#context">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abort</td>
+<td>中断请求的后续处理链，但不影响当前正在执行的处理</td>
+<td></td>
+</tr>
+<tr>
+<td>AbortWithError</td>
+<td>中断请求的后续处理链，并将错误信息记录到<code>c.Errors</code>切片中</td>
+<td>内部调用<code>AbortWithStatus</code>和<code>Error</code></td>
+</tr>
+<tr>
+<td>AbortWithStatus</td>
+<td>中断请求的后续处理链，并在响应头中返回指定的<code>HTTP状态码</code></td>
+<td>内部调用<code>Status</code>和<code>Abort</code></td>
+</tr>
+<tr>
+<td>AbortWithStatusJSON</td>
+<td>中断请求的后续处理链，并在响应头中返回指定的<code>HTTP状态码</code>，响应体中返回指定的<code>JSON</code></td>
+<td>内部调用<code>Abort</code>和<code>JSON</code></td>
+</tr>
+<tr>
+<td>AddParam</td>
+<td>将参数添加到<code>Gin</code>的上下文对象中；另一个重要作用是为了端到端测试</td>
+<td></td>
+</tr>
+<tr>
+<td>AsciiJSON</td>
+<td>将一个结构体序列化为<code>JSON</code>格式（其中的<code>Unicode</code>字符转换为<code>ASCII</code>字符）响应</td>
+<td></td>
+</tr>
+<tr>
+<td>Bind</td>
+<td>根据请求的方法和<code>Content-Type</code>头信息自动选择合适的绑定引擎，将请求体中的数据解析并绑定到指定的结构体指针中</td>
+<td>内部调用<code>MustBindWith</code></td>
+</tr>
+<tr>
+<td>BindHeader</td>
+<td>使用<code>binding.Header</code>绑定请求的数据</td>
+<td>内部调用<code>MustBindWith</code></td>
+</tr>
+<tr>
+<td>BindJSON</td>
+<td>使用<code>binding.JSON</code>绑定请求的数据</td>
+<td>内部调用<code>MustBindWith</code></td>
+</tr>
+<tr>
+<td>BindQuery</td>
+<td>使用<code>binding.Query</code>绑定请求的数据</td>
+<td>内部调用<code>MustBindWith</code></td>
+</tr>
+<tr>
+<td>BindTOML</td>
+<td>使用<code>binding.TOML</code>绑定请求的数据</td>
+<td>内部调用<code>MustBindWith</code></td>
+</tr>
+<tr>
+<td>BindUri</td>
+<td>将请求的<code>URI</code>（统一资源标识符）中的参数绑定到传入的结构体指针指向的结构体上</td>
+<td>内部调用<code>ShouldBindUri</code></td>
+</tr>
+<tr>
+<td>BindWith</td>
+<td>使用指定的绑定引擎将请求的数据绑定到传入的结构体指针指向的结构体上</td>
+<td>已弃用，建议使用<code>MustBindWith</code>或<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>BindXML</td>
+<td>使用<code>binding.XML</code>绑定请求的数据</td>
+<td>内部调用<code>MustBindWith</code></td>
+</tr>
+<tr>
+<td>BindYAML</td>
+<td>使用<code>binding.YAML</code>绑定请求的数据</td>
+<td>内部调用<code>MustBindWith</code></td>
+</tr>
+<tr>
+<td>ClientIP</td>
+<td>通过一种尽力而为的算法来获取发起请求的真实客户端<code>IP地址</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ContentType</td>
+<td>返回请求中<code>Content-Type</code>请求头的值</td>
+<td></td>
+</tr>
+<tr>
+<td>Cookie</td>
+<td>从请求中获取指定名称的<code>Cookie</code>值</td>
+<td>返回的<code>Cookie</code>值是经过反编码处理的，且同名的<code>Cookie</code>只会返回其中一个</td>
+</tr>
+<tr>
+<td>Copy</td>
+<td>返回当前上下文的一个副本</td>
+<td>需要将上下文传递给一个新的<code>goroutine</code>时必须使用</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>将指定的数据写入响应的主体流中，同时更新响应的状态码</td>
+<td>内部调用<code>Render</code></td>
+</tr>
+<tr>
+<td>DataFromReader</td>
+<td>将指定的<code>io.Reader</code>中的数据写入到响应的主体流中，同时更新响应的状态码</td>
+<td>内部调用<code>Render</code></td>
+</tr>
+<tr>
+<td>Deadline</td>
+<td>返回该上下文的截止时间</td>
+<td></td>
+</tr>
+<tr>
+<td>DefaultPostForm</td>
+<td>从<code>POST</code>请求的<code>application/x-www-form-urlencoded</code>格式表单或<code>multipart/form-data</code>格式表单中获取指定键对应的值，若不存在则使用默认值</td>
+<td>内部使用<code>GetPostForm</code></td>
+</tr>
+<tr>
+<td>DefaultQuery</td>
+<td>从请求的<code>URL</code>查询字符串中获取指定键对应的值，若不存在则使用默认值</td>
+<td>内部使用<code>GetQuery</code></td>
+</tr>
+<tr>
+<td>Done</td>
+<td>返回一个只读通道，当上下文被取消（比如调用<code>c.CancelFunc</code>）或者超时（使用<code>c.WithTimeout</code>等方法）时，该通道会被关闭。可以通过监听这个通道来感知上下文的状态变化，从而做出相应的处理</td>
+<td></td>
+</tr>
+<tr>
+<td>Err</td>
+<td>用于获取上下文被取消或超时时的错误信息</td>
+<td></td>
+</tr>
+<tr>
+<td>Error</td>
+<td>将错误信息附加到当前的上下文（Context）中的错误列表里，以便后续统一处理</td>
+<td>传入<code>nil</code>错误会导致<code>panic</code></td>
+</tr>
+<tr>
+<td>File</td>
+<td>将指定的文件以高效的方式写入响应的主体流中</td>
+<td></td>
+</tr>
+<tr>
+<td>FileAttachment</td>
+<td>将指定的文件以高效的方式写入响应的主体流中，并设置响应头中的<code>Content-Disposition</code>字段</td>
+<td></td>
+</tr>
+<tr>
+<td>FileFromFS</td>
+<td>从指定的<code>http.FileSystem</code>中读取文件，并将文件内容以高效的方式写入响应的主体流中</td>
+<td></td>
+</tr>
+<tr>
+<td>FormFile</td>
+<td>从<code>POST</code>请求的表单数据（通常是<code>multipart/form-data</code>格式）中获取指定表单键对应的第一个文件</td>
+<td></td>
+</tr>
+<tr>
+<td>FullPath</td>
+<td>返回当前请求所匹配到的路由的完整路径</td>
+<td></td>
+</tr>
+<tr>
+<td>Get</td>
+<td>从上下文中获取指定键对应的值，同时返回该键是否存在</td>
+<td></td>
+</tr>
+<tr>
+<td>GetBool</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>bool</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetDuration</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>duration</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetFloat64</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>float64</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetHeader</td>
+<td>从请求头中获取指定键对应的值</td>
+<td></td>
+</tr>
+<tr>
+<td>GetInt</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>int</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetInt64</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>int64</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetPostForm</td>
+<td>从<code>POST</code>请求的<code>application/x-www-form-urlencoded</code>格式表单或<code>multipart/form-data</code>格式表单中获取指定键对应的值</td>
+<td>内部调用<code>GetPostFormArray</code></td>
+</tr>
+<tr>
+<td>GetPostFormArray</td>
+<td>从<code>POST</code>请求的<code>application/x-www-form-urlencoded</code>格式表单或<code>multipart/form-data</code>格式表单中获取指定键对应的所有值，并以字符串切片的形式返回；同时返回该键是否至少存在一个与之对应的值</td>
+<td></td>
+</tr>
+<tr>
+<td>GetPostFormMap</td>
+<td>从<code>POST</code>请求的表单数据里获取指定键对应的<code>map</code>类型的值，并返回该键是否存在</td>
+<td></td>
+</tr>
+<tr>
+<td>GetQuery</td>
+<td>从请求的<code>URL</code>查询字符串中获取指定键对应的值，并返回该键是否存在</td>
+<td>内部调用<code>GetQueryArray</code></td>
+</tr>
+<tr>
+<td>GetQueryArray</td>
+<td>从请求的<code>URL</code>查询字符串中获取指定键对应的所有值，并以字符串切片的形式返回；同时返回该键是否至少存在一个与之对应的值</td>
+<td></td>
+</tr>
+<tr>
+<td>GetQueryMap</td>
+<td>从请求的<code>URL</code>查询字符串里获取指定键对应的<code>map</code>类型的值，并返回该键是否存在</td>
+<td></td>
+</tr>
+<tr>
+<td>GetRawData</td>
+<td>获取请求体中的原始数据流数据</td>
+<td></td>
+</tr>
+<tr>
+<td>GetString</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>string</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetStringMap</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>map[string]any</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetStringMapString</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>map[string]string</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetStringMapStringSlice</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>map[string][]string</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetStringSlice</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>[]string</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetTime</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>time.Time</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetUint</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>uint</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>GetUint64</td>
+<td>从上下文中获取指定键对应的值，并将其转换为<code>uint64</code>类型返回</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>HTML</td>
+<td>渲染指定文件名的<code>HTTP</code>模板，同时更新响应状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>Handler</td>
+<td>返回主处理器，即最后一个处理函数</td>
+<td></td>
+</tr>
+<tr>
+<td>HandlerName</td>
+<td>返回主处理器的名称</td>
+<td>名称会包含包名</td>
+</tr>
+<tr>
+<td>HandlerNames</td>
+<td>返回当前上下文中所有已注册处理器的名称列表</td>
+<td></td>
+</tr>
+<tr>
+<td>Header</td>
+<td>设置响应头信息，若值为空字符串则删除对应项</td>
+<td></td>
+</tr>
+<tr>
+<td>IndentedJSON</td>
+<td>将给定的结构体序列化为格式化后的<code>JSON</code>（带有缩进和换行符）写入响应体</td>
+<td>比较消耗资源和带宽</td>
+</tr>
+<tr>
+<td>IsAborted</td>
+<td>判断当前的上下文是否已经被中止</td>
+<td></td>
+</tr>
+<tr>
+<td>IsWebsocket</td>
+<td>判断客户端发送的请求是否是<code>WebSocket</code>握手</td>
+<td></td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>将给定的结构体序列化为<code>JSON</code>写入响应体</td>
+<td>响应的<code>Content-Type</code>为<code>application/json</code></td>
+</tr>
+<tr>
+<td>JSONP</td>
+<td>将给定的结构体序列化为<code>JSON</code>格式，并在响应体中添加填充以实现从与客户端不同域名的服务器请求数据</td>
+<td>响应的<code>Content-Type</code>为<code>application/javascript</code></td>
+</tr>
+<tr>
+<td>MultipartForm</td>
+<td>获取<code>multipart/form-data</code>类型的表单请求的解析结果，包含了表单中的所有字段和上传的文件信息</td>
+<td></td>
+</tr>
+<tr>
+<td>MustBindWith</td>
+<td>使用指定的绑定引擎将请求的数据绑定到传入的结构体指针上</td>
+<td>内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>MustGet</td>
+<td>从上下文中获取指定键对应的值，若不存在则触发<code>panic</code></td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>Negotiate</td>
+<td>根据客户端请求头中<code>Accept</code>字段指定的可接受格式，调用不同的渲染器生成合适的响应内容</td>
+<td>内部用到了<code>NegotiateFormat</code></td>
+</tr>
+<tr>
+<td>NegotiateFormat</td>
+<td>从客户端请求头的<code>Accept</code>字段里，结合服务器所支持的格式，协商出一个可接受的响应格式并返回</td>
+<td></td>
+</tr>
+<tr>
+<td>Next</td>
+<td>用于中间件中，让当前处理流程继续执行后续的中间件和最终的处理函数，当后续的处理完成后，控制权会返回到调用<code>Next</code>方法的位置，继续执行该中间件剩余的代码</td>
+<td>专为中间件设计，不应在普通的路由处理函数中使用</td>
+</tr>
+<tr>
+<td>Param</td>
+<td>从<code>URL</code>路径中提取指定参数的值</td>
+<td></td>
+</tr>
+<tr>
+<td>PostForm</td>
+<td>从<code>POST</code>请求的<code>application/x-www-form-urlencoded</code>格式表单或<code>multipart/form-data</code>格式表单中获取指定键对应的值</td>
+<td>内部调用<code>GetPostForm</code></td>
+</tr>
+<tr>
+<td>PostFormArray</td>
+<td>从<code>POST</code>请求的<code>application/x-www-form-urlencoded</code>格式表单或<code>multipart/form-data</code>格式表单中获取指定键对应的所有值</td>
+<td>内部调用<code>GetPostFormArray</code></td>
+</tr>
+<tr>
+<td>PostFormMap</td>
+<td>从<code>POST</code>请求的表单数据中获取指定表单键所对应的<code>map[string]string</code>类型的值</td>
+<td>内部调用<code>GetPostFormMap</code></td>
+</tr>
+<tr>
+<td>ProtoBuf</td>
+<td>将给定的结构体序列化为<code>ProtoBuf</code>写入响应体</td>
+<td></td>
+</tr>
+<tr>
+<td>PureJSON</td>
+<td>将给定的结构体序列化为<code>JSON</code>写入响应体，但会直接保留原始的特殊<code>HTML</code>字符</td>
+<td></td>
+</tr>
+<tr>
+<td>Query</td>
+<td>从请求的<code>URL</code>查询字符串中获取指定键对应的值，若不存在返回空字符串</td>
+<td>内部调用<code>GetQuery</code></td>
+</tr>
+<tr>
+<td>QueryArray</td>
+<td>从请求的<code>URL</code>查询字符串中获取指定键对应的所有值，并以字符串切片的形式返回</td>
+<td>内部调用<code>GetQueryArray</code></td>
+</tr>
+<tr>
+<td>QueryMap</td>
+<td>从请求的<code>URL</code>查询字符串中获取指定键对应的<code>map[string]string</code>值</td>
+<td>内部调用<code>GetQuery</code></td>
+</tr>
+<tr>
+<td>Redirect</td>
+<td>将客户端的请求重定向到指定的位置</td>
+<td></td>
+</tr>
+<tr>
+<td>RemoteIP</td>
+<td>从请求的<code>Request.RemoteAddr</code>字段中解析出客户端的<code>IP地址</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Render</td>
+<td>设置响应头信息，然后调用传入的渲染器的<code>Render</code>方法来将数据渲染到响应体中</td>
+<td></td>
+</tr>
+<tr>
+<td>SSEvent</td>
+<td>向响应的主体流中写入一个服务器发送事件<code>SSE</code></td>
+<td>单向通信，即只能服务器向客户端推送数据</td>
+</tr>
+<tr>
+<td>SaveUploadedFile</td>
+<td>将客户端通过表单上传的文件保存到服务器指定的目标路径</td>
+<td></td>
+</tr>
+<tr>
+<td>SecureJSON</td>
+<td>将给定的结构体序列化为<code>JSON</code>写入响应体，若数据为数组则在前面添加安全前缀</td>
+<td>默认前缀为<code>while(1),</code></td>
+</tr>
+<tr>
+<td>Set</td>
+<td>在当前的上下文中存储一个新的键值对</td>
+<td>常用于在不同中间件和处理函数之间方便地共享数据</td>
+</tr>
+<tr>
+<td>SetAccepted</td>
+<td>设置请求头中的<code>Accept</code>字段的数据</td>
+<td></td>
+</tr>
+<tr>
+<td>SetCookie</td>
+<td>在响应头中添加<code>Set-Cookie</code>字段，从而在客户端浏览器中设置<code>Cookie</code></td>
+<td></td>
+</tr>
+<tr>
+<td>SetSameSite</td>
+<td>设置<code>Cookie</code>的<code>SameSite</code>属性</td>
+<td></td>
+</tr>
+<tr>
+<td>ShouldBind</td>
+<td>依据请求的方法和<code>Content-Type</code>头，自动挑选合适的绑定引擎，把请求体中的数据绑定到指定的结构体指针上</td>
+<td>绑定失败不会自动设置响应状态码或终止请求处理。内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindBodyWith</td>
+<td>使用指定的绑定引擎将请求中的数据绑定到传入的结构体指针上，但会将请求体的数据存储在上下文中</td>
+<td></td>
+</tr>
+<tr>
+<td>ShouldBindBodyWithJSON</td>
+<td>使用<code>binding.JSON</code>绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中</td>
+<td>内部调用<code>ShouldBindBodyWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindBodyWithTOML</td>
+<td>使用<code>binding.TOML</code>绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中</td>
+<td>内部调用<code>ShouldBindBodyWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindBodyWithXML</td>
+<td>使用<code>binding.XML</code>绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中</td>
+<td>内部调用<code>ShouldBindBodyWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindBodyWithYAML</td>
+<td>使用<code>binding.YAML</code>绑定引擎将请求中的数据绑定到传入的结构体指针上，并将请求体的数据存储在上下文中</td>
+<td>内部调用<code>ShouldBindBodyWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindHeader</td>
+<td>使用<code>binding.Header</code>绑定引擎将请求中的数据绑定到传入的结构体指针上</td>
+<td>内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindJSON</td>
+<td>使用<code>binding.JSON</code>绑定引擎将请求中的数据绑定到传入的结构体指针上</td>
+<td>内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindQuery</td>
+<td>使用<code>binding.Query</code>绑定引擎将请求中的数据绑定到传入的结构体指针上</td>
+<td>内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindTOML</td>
+<td>使用<code>binding.TOML</code>绑定引擎将请求中的数据绑定到传入的结构体指针上</td>
+<td>内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindUri</td>
+<td>使用指定的绑定引擎将请求的<code>URI</code>中的参数绑定到传入的结构体指针所指向的结构体实例上</td>
+<td></td>
+</tr>
+<tr>
+<td>ShouldBindWith</td>
+<td>使用指定的绑定引擎将请求中的数据绑定到传入的结构体指针上</td>
+<td></td>
+</tr>
+<tr>
+<td>ShouldBindXML</td>
+<td>使用<code>binding.XML</code>绑定引擎将请求中的数据绑定到传入的结构体指针上</td>
+<td>内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>ShouldBindYAML</td>
+<td>使用<code>binding.YAML</code>绑定引擎将请求中的数据绑定到传入的结构体指针上</td>
+<td>内部调用<code>ShouldBindWith</code></td>
+</tr>
+<tr>
+<td>Status</td>
+<td>设置响应的状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>Stream</td>
+<td>用于发送流式响应</td>
+<td></td>
+</tr>
+<tr>
+<td>String</td>
+<td>将给定的字符串写入响应体中</td>
+<td></td>
+</tr>
+<tr>
+<td>TOML</td>
+<td>将给定的结构体序列化为<code>TOML</code>写入响应体</td>
+<td></td>
+</tr>
+<tr>
+<td>Value</td>
+<td>从当前的<code>Context</code>中获取与指定键关联的值</td>
+<td>内部调用<code>Get</code></td>
+</tr>
+<tr>
+<td>XML</td>
+<td>将给定的结构体序列化为<code>XML</code>写入响应体</td>
+<td></td>
+</tr>
+<tr>
+<td>YAML</td>
+<td>将给定的结构体序列化为<code>YAML</code>写入响应体</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="使用小结">使用小结<a hidden class="anchor" aria-hidden="true" href="#使用小结">#</a></h2>
+<h3 id="读取请求">读取请求<a hidden class="anchor" aria-hidden="true" href="#读取请求">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>来源</th>
+<th>详情</th>
+<th>方法</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>请求路径</td>
+<td>路由参数</td>
+<td><code>Param</code>、<code>BindUri</code>、<code>ShouldBindUri</code>、<code>FullPath</code></td>
+<td>适用于<code>RESTful</code>参数，如：<code>http://localhost/user/123</code></td>
+</tr>
+<tr>
+<td>-</td>
+<td>查询参数</td>
+<td><code>Query</code>、<code>DefaultQuery</code>、<code>GetQuery</code>、<code>QueryArray</code>、<code>GetQueryArray</code>、<code>QueryMap</code>、<code>GetQueryMap</code></td>
+<td>适用于传统查询参数，如：<code>http://localhost/user?id=123</code></td>
+</tr>
+<tr>
+<td>请求体</td>
+<td>表单</td>
+<td><code>DefaultPostForm</code>、<code>GetPostForm</code>、<code>GetPostFormArray</code>、<code>GetPostFormMap</code>、<code>MultipartForm</code></td>
+<td><code>application/x-www-form-urlencoded</code>或<code>multipart/form-data</code></td>
+</tr>
+<tr>
+<td>-</td>
+<td>文件</td>
+<td><code>FormFile</code>、<code>SaveUploadedFile</code></td>
+<td><code>multipart/form-data</code></td>
+</tr>
+<tr>
+<td>-</td>
+<td>原始流</td>
+<td><code>GetRawData</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>json</td>
+<td><code>BindJSON</code>、<code>ShouldBindBodyWithJSON</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>xml</td>
+<td><code>BindXML</code>、<code>ShouldBindBodyWithXML</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>toml</td>
+<td><code>BindTOML</code>、<code>ShouldBindBodyWithTOML</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>yaml</td>
+<td><code>BindYAML</code>、<code>ShouldBindBodyWithYAML</code></td>
+<td></td>
+</tr>
+<tr>
+<td>请求头</td>
+<td>Cookies</td>
+<td><code>Cookie</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>Content-Type</td>
+<td><code>ContentType</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>普通头</td>
+<td><code>GetHeader</code>、<code>BindHeader</code>、<code>ShouldBindHeader</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="响应">响应<a hidden class="anchor" aria-hidden="true" href="#响应">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>详情</th>
+<th>方法</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>响应状态码</td>
+<td></td>
+<td><code>Status</code></td>
+<td></td>
+</tr>
+<tr>
+<td>响应头</td>
+<td>普通头</td>
+<td><code>Header</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td><code>Accept</code></td>
+<td><code>SetAccepted</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>Cookies</td>
+<td><code>SetCookie</code></td>
+<td></td>
+</tr>
+<tr>
+<td>响应体</td>
+<td>普通文本</td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>页面</td>
+<td><code>HTML</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>json</td>
+<td><code>JSON</code>、<code>JSONP</code>、<code>IndentedJSON</code>、<code>AsciiJSON</code>、<code>PureJSON</code>、<code>SecureJSON</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>xml</td>
+<td><code>XML</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>ProtoBuf</td>
+<td><code>ProtoBuf</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>toml</td>
+<td><code>TOML</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>yaml</td>
+<td><code>YAML</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>流</td>
+<td><code>Stream</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>文件</td>
+<td><code>File</code>、<code>FileAttachment</code>、<code>FileFromFS</code></td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>SSE事件</td>
+<td><code>SSEvent</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="流程控制">流程控制<a hidden class="anchor" aria-hidden="true" href="#流程控制">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>方法</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>中止</td>
+<td><code>Abort</code>、<code>AbortWithError</code>、<code>AbortWithStatus</code>、<code>AbortWithStatusJSON</code></td>
+<td></td>
+</tr>
+<tr>
+<td>继续下一个</td>
+<td><code>Next</code></td>
+<td>对中间件很重要</td>
+</tr>
+<tr>
+<td>重定向</td>
+<td><code>Redirect</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/gin/">Gin</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/os/win_efi/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>祼盘安装win10时调整EFI分区大小</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_dll_linux/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Lazarus在Linux上使用自定义动态库</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
