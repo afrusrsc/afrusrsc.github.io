@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Papermod on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/papermod/</link>
+    <description>Recent content in Papermod on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2024 Jesse Jin</copyright>
+    <lastBuildDate>Sat, 01 Jun 2024 20:45:01 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/papermod/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>用Hugo搭建个人博客——配置</title>
+      <link>https://afrusrsc.github.io/posts/blog/hugo02/</link>
+      <pubDate>Sat, 01 Jun 2024 20:45:01 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/blog/hugo02/</guid>
+      <description>空空如也的页面，需要好好配置一番才能丰富多彩。
+配置config.yml 隐性配置 在上一篇config.yml的基础上先加入以下内容：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 copyright: &amp;#34;© 20xx [xxx](https://github.com/xxx)&amp;#34; # 版权说明 paginate: 5 # 每页文章数 enableInlineShortcodes: true # 是否使用短码 enableRobotsTXT: true # 是否允许被搜索引擎收录 buildDrafts: false buildFuture: false buildExpired: false enableEmoji: true # 是否使用emoji表情 pygmentsUseClasses: true mainsections: [&amp;#34;posts&amp;#34;, &amp;#34;papermod&amp;#34;] minify: disableXML: true outputs: home: - HTML - RSS - JSON markup: goldmark: renderer: unsafe: true highlight: noClasses: false codeFences: true guessSyntax: true lineNos: true services: instagram: disableInlineCSS: true twitter: disableInlineCSS: true params: env: production description: &amp;#34;xxx&amp;#39;s blog&amp;#34; author: xxx # 作者 defaultTheme: auto ShowShareButtons: false # 是否显示分享按钮 ShowReadingTime: true # 是否显示阅读时间 displayFullLangName: true ShowPostNavLinks: true # 是否显示上一页下一页 ShowBreadCrumbs: true ShowCodeCopyButtons: true # 是否在代码上显示复制按钮 ShowRssButtonInSectionTermList: false ShowAllPagesInArchive: true ShowPageNums: true # 是否显示页数 ShowToc: false # 是否显示目录 DateFormat: &amp;#34;2006-01-02 15:04:05&amp;#34; # 时间格式 socialIcons: - name: github title: View Source on Github url: &amp;#34;https://github.</description>
+    </item>
+  </channel>
+</rss>
