@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go sync包 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="Mutex 无需显式初始化，直接声明变量即可使用。
+互斥锁，同一时刻只能有一个协程持有锁，不分读写。
+方法 含义 说明 Lock 加锁 Unlock 解锁 未加锁时调用会导致panic TryLock 尝试加锁 立即返回，成功返回true，失败返回false RWMutex 无需显式初始化，直接声明变量即可使用。
+读写锁，同一时刻可以有多个协程持有读锁，但是只能有一个协程持有写锁。
+有写锁时，其他协程无法获取读锁和写锁。
+有读锁时，其他协程可以获取读锁，但是无法获取写锁。
+方法 含义 说明 RLock 加读锁 RUnlock 解读锁 未加读锁时调用会导致panic TryRLock 尝试加读锁 立即返回，成功返回true，失败返回false Lock 加写锁 Unlock 解写锁 未加写锁时调用会导致panic TryLock 尝试加写锁 立即返回，成功返回true，失败返回false Map 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Store 存储键值对 Load 加载键对应的值 Delete 删除键对应的值 Clear 清除所有键值对 Swap 交换指定键对应的旧值和新值，并返回旧值和操作之前键是否存在 LoadAndDelete 加载键对应的值并删除键值对 LoadOrStore 加载键对应的值，如果键不存在则存储键值对 CompareAndDelete 比较键对应的值是否等于指定值，如果相等则删除键值对 CompareAndSwap 比较键对应的值是否等于指定值，如果相等则替换键对应的值 Range 遍历键值对 传入函数返回false时停止遍历 WaitGroup 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Add 添加计数器 启动协程前调用，传入协程数量 Done 减少计数器 协程执行完毕后调用 Wait 等待计数器变为0 主协程调用，等待所有协程执行完毕 Once 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Do 执行函数 传入函数，只会执行一次 Pool 需显式初始化，为New指定创建对象的函数。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_learn_sync/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_learn_sync/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go sync包" />
+<meta property="og:description" content="Mutex 无需显式初始化，直接声明变量即可使用。
+互斥锁，同一时刻只能有一个协程持有锁，不分读写。
+方法 含义 说明 Lock 加锁 Unlock 解锁 未加锁时调用会导致panic TryLock 尝试加锁 立即返回，成功返回true，失败返回false RWMutex 无需显式初始化，直接声明变量即可使用。
+读写锁，同一时刻可以有多个协程持有读锁，但是只能有一个协程持有写锁。
+有写锁时，其他协程无法获取读锁和写锁。
+有读锁时，其他协程可以获取读锁，但是无法获取写锁。
+方法 含义 说明 RLock 加读锁 RUnlock 解读锁 未加读锁时调用会导致panic TryRLock 尝试加读锁 立即返回，成功返回true，失败返回false Lock 加写锁 Unlock 解写锁 未加写锁时调用会导致panic TryLock 尝试加写锁 立即返回，成功返回true，失败返回false Map 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Store 存储键值对 Load 加载键对应的值 Delete 删除键对应的值 Clear 清除所有键值对 Swap 交换指定键对应的旧值和新值，并返回旧值和操作之前键是否存在 LoadAndDelete 加载键对应的值并删除键值对 LoadOrStore 加载键对应的值，如果键不存在则存储键值对 CompareAndDelete 比较键对应的值是否等于指定值，如果相等则删除键值对 CompareAndSwap 比较键对应的值是否等于指定值，如果相等则替换键对应的值 Range 遍历键值对 传入函数返回false时停止遍历 WaitGroup 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Add 添加计数器 启动协程前调用，传入协程数量 Done 减少计数器 协程执行完毕后调用 Wait 等待计数器变为0 主协程调用，等待所有协程执行完毕 Once 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Do 执行函数 传入函数，只会执行一次 Pool 需显式初始化，为New指定创建对象的函数。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_learn_sync/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-30T22:45:48+08:00" />
+<meta property="article:modified_time" content="2024-10-30T22:45:48+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go sync包"/>
+<meta name="twitter:description" content="Mutex 无需显式初始化，直接声明变量即可使用。
+互斥锁，同一时刻只能有一个协程持有锁，不分读写。
+方法 含义 说明 Lock 加锁 Unlock 解锁 未加锁时调用会导致panic TryLock 尝试加锁 立即返回，成功返回true，失败返回false RWMutex 无需显式初始化，直接声明变量即可使用。
+读写锁，同一时刻可以有多个协程持有读锁，但是只能有一个协程持有写锁。
+有写锁时，其他协程无法获取读锁和写锁。
+有读锁时，其他协程可以获取读锁，但是无法获取写锁。
+方法 含义 说明 RLock 加读锁 RUnlock 解读锁 未加读锁时调用会导致panic TryRLock 尝试加读锁 立即返回，成功返回true，失败返回false Lock 加写锁 Unlock 解写锁 未加写锁时调用会导致panic TryLock 尝试加写锁 立即返回，成功返回true，失败返回false Map 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Store 存储键值对 Load 加载键对应的值 Delete 删除键对应的值 Clear 清除所有键值对 Swap 交换指定键对应的旧值和新值，并返回旧值和操作之前键是否存在 LoadAndDelete 加载键对应的值并删除键值对 LoadOrStore 加载键对应的值，如果键不存在则存储键值对 CompareAndDelete 比较键对应的值是否等于指定值，如果相等则删除键值对 CompareAndSwap 比较键对应的值是否等于指定值，如果相等则替换键对应的值 Range 遍历键值对 传入函数返回false时停止遍历 WaitGroup 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Add 添加计数器 启动协程前调用，传入协程数量 Done 减少计数器 协程执行完毕后调用 Wait 等待计数器变为0 主协程调用，等待所有协程执行完毕 Once 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Do 执行函数 传入函数，只会执行一次 Pool 需显式初始化，为New指定创建对象的函数。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go sync包",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_learn_sync/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go sync包",
+  "name": "Go sync包",
+  "description": "Mutex 无需显式初始化，直接声明变量即可使用。\n互斥锁，同一时刻只能有一个协程持有锁，不分读写。\n方法 含义 说明 Lock 加锁 Unlock 解锁 未加锁时调用会导致panic TryLock 尝试加锁 立即返回，成功返回true，失败返回false RWMutex 无需显式初始化，直接声明变量即可使用。\n读写锁，同一时刻可以有多个协程持有读锁，但是只能有一个协程持有写锁。\n有写锁时，其他协程无法获取读锁和写锁。\n有读锁时，其他协程可以获取读锁，但是无法获取写锁。\n方法 含义 说明 RLock 加读锁 RUnlock 解读锁 未加读锁时调用会导致panic TryRLock 尝试加读锁 立即返回，成功返回true，失败返回false Lock 加写锁 Unlock 解写锁 未加写锁时调用会导致panic TryLock 尝试加写锁 立即返回，成功返回true，失败返回false Map 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Store 存储键值对 Load 加载键对应的值 Delete 删除键对应的值 Clear 清除所有键值对 Swap 交换指定键对应的旧值和新值，并返回旧值和操作之前键是否存在 LoadAndDelete 加载键对应的值并删除键值对 LoadOrStore 加载键对应的值，如果键不存在则存储键值对 CompareAndDelete 比较键对应的值是否等于指定值，如果相等则删除键值对 CompareAndSwap 比较键对应的值是否等于指定值，如果相等则替换键对应的值 Range 遍历键值对 传入函数返回false时停止遍历 WaitGroup 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Add 添加计数器 启动协程前调用，传入协程数量 Done 减少计数器 协程执行完毕后调用 Wait 等待计数器变为0 主协程调用，等待所有协程执行完毕 Once 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Do 执行函数 传入函数，只会执行一次 Pool 需显式初始化，为New指定创建对象的函数。",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "Mutex 无需显式初始化，直接声明变量即可使用。\n互斥锁，同一时刻只能有一个协程持有锁，不分读写。\n方法 含义 说明 Lock 加锁 Unlock 解锁 未加锁时调用会导致panic TryLock 尝试加锁 立即返回，成功返回true，失败返回false RWMutex 无需显式初始化，直接声明变量即可使用。\n读写锁，同一时刻可以有多个协程持有读锁，但是只能有一个协程持有写锁。\n有写锁时，其他协程无法获取读锁和写锁。\n有读锁时，其他协程可以获取读锁，但是无法获取写锁。\n方法 含义 说明 RLock 加读锁 RUnlock 解读锁 未加读锁时调用会导致panic TryRLock 尝试加读锁 立即返回，成功返回true，失败返回false Lock 加写锁 Unlock 解写锁 未加写锁时调用会导致panic TryLock 尝试加写锁 立即返回，成功返回true，失败返回false Map 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Store 存储键值对 Load 加载键对应的值 Delete 删除键对应的值 Clear 清除所有键值对 Swap 交换指定键对应的旧值和新值，并返回旧值和操作之前键是否存在 LoadAndDelete 加载键对应的值并删除键值对 LoadOrStore 加载键对应的值，如果键不存在则存储键值对 CompareAndDelete 比较键对应的值是否等于指定值，如果相等则删除键值对 CompareAndSwap 比较键对应的值是否等于指定值，如果相等则替换键对应的值 Range 遍历键值对 传入函数返回false时停止遍历 WaitGroup 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Add 添加计数器 启动协程前调用，传入协程数量 Done 减少计数器 协程执行完毕后调用 Wait 等待计数器变为0 主协程调用，等待所有协程执行完毕 Once 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Do 执行函数 传入函数，只会执行一次 Pool 需显式初始化，为New指定创建对象的函数。\n主要目的是缓存已分配但未使用的对象以便后续重用。\n池中的对象为临时对象，可能随时消失，不能依赖其中对象一直存在。\n首次使用后不能被复制。\n方法 含义 说明 Get 从池中获取对象 无可用对象时会调用New（不为nil）创建一个新对象 Put 把对象放回池中 Cond 需显式初始化，指定一个锁。\n用于协调协程的执行顺序，常用于生产者/消费者模型。\n方法 含义 说明 Broadcast 广播唤醒所有等待的协程 Signal 唤醒一个等待的协程 Wait 将协程持有的锁释放，同时将协程加入等待队列并阻塞协程，等待唤醒 调用时必需在循环中检查条件 包函数 方法 含义 说明 NewCond 创建一个新的条件变量 需指定一个锁 OnceFunc 创建一个只执行一次的无返回值的函数 调用返回函数时，传入函数只会执行一次 OnceValue 创建一个只执行一次的只有一个返回值的函数 调用返回函数时，传入函数只会执行一次 OnceValues 创建一个只执行一次的有两个返回值的函数 调用返回函数时，传入函数只会执行一次 ",
+  "wordCount" : "128",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-30T22:45:48+08:00",
+  "dateModified": "2024-10-30T22:45:48+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_learn_sync/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go sync包
+    </h1>
+    <div class="post-meta"><span title='2024-10-30 22:45:48 +0800 CST'>2024-10-30 22:45:48</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#mutex" aria-label="Mutex">Mutex</a></li>
+                    <li>
+                        <a href="#rwmutex" aria-label="RWMutex">RWMutex</a></li>
+                    <li>
+                        <a href="#map" aria-label="Map">Map</a></li>
+                    <li>
+                        <a href="#waitgroup" aria-label="WaitGroup">WaitGroup</a></li>
+                    <li>
+                        <a href="#once" aria-label="Once">Once</a></li>
+                    <li>
+                        <a href="#pool" aria-label="Pool">Pool</a></li>
+                    <li>
+                        <a href="#cond" aria-label="Cond">Cond</a></li>
+                    <li>
+                        <a href="#%e5%8c%85%e5%87%bd%e6%95%b0" aria-label="包函数">包函数</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="mutex">Mutex<a hidden class="anchor" aria-hidden="true" href="#mutex">#</a></h1>
+<ul>
+<li>
+<p>无需显式初始化，直接声明变量即可使用。</p>
+</li>
+<li>
+<p>互斥锁，同一时刻只能有一个协程持有锁，不分读写。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lock</td>
+<td>加锁</td>
+<td></td>
+</tr>
+<tr>
+<td>Unlock</td>
+<td>解锁</td>
+<td>未加锁时调用会导致<code>panic</code></td>
+</tr>
+<tr>
+<td>TryLock</td>
+<td>尝试加锁</td>
+<td>立即返回，成功返回<code>true</code>，失败返回<code>false</code></td>
+</tr>
+</tbody>
+</table>
+<h1 id="rwmutex">RWMutex<a hidden class="anchor" aria-hidden="true" href="#rwmutex">#</a></h1>
+<ul>
+<li>
+<p>无需显式初始化，直接声明变量即可使用。</p>
+</li>
+<li>
+<p>读写锁，同一时刻可以有多个协程持有读锁，但是只能有一个协程持有写锁。</p>
+</li>
+<li>
+<p>有写锁时，其他协程无法获取读锁和写锁。</p>
+</li>
+<li>
+<p>有读锁时，其他协程可以获取读锁，但是无法获取写锁。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RLock</td>
+<td>加读锁</td>
+<td></td>
+</tr>
+<tr>
+<td>RUnlock</td>
+<td>解读锁</td>
+<td>未加读锁时调用会导致<code>panic</code></td>
+</tr>
+<tr>
+<td>TryRLock</td>
+<td>尝试加读锁</td>
+<td>立即返回，成功返回<code>true</code>，失败返回<code>false</code></td>
+</tr>
+<tr>
+<td>Lock</td>
+<td>加写锁</td>
+<td></td>
+</tr>
+<tr>
+<td>Unlock</td>
+<td>解写锁</td>
+<td>未加写锁时调用会导致<code>panic</code></td>
+</tr>
+<tr>
+<td>TryLock</td>
+<td>尝试加写锁</td>
+<td>立即返回，成功返回<code>true</code>，失败返回<code>false</code></td>
+</tr>
+</tbody>
+</table>
+<h1 id="map">Map<a hidden class="anchor" aria-hidden="true" href="#map">#</a></h1>
+<ul>
+<li>无需显式初始化，直接声明变量即可使用。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Store</td>
+<td>存储键值对</td>
+<td></td>
+</tr>
+<tr>
+<td>Load</td>
+<td>加载键对应的值</td>
+<td></td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>删除键对应的值</td>
+<td></td>
+</tr>
+<tr>
+<td>Clear</td>
+<td>清除所有键值对</td>
+<td></td>
+</tr>
+<tr>
+<td>Swap</td>
+<td>交换指定键对应的旧值和新值，并返回旧值和操作之前键是否存在</td>
+<td></td>
+</tr>
+<tr>
+<td>LoadAndDelete</td>
+<td>加载键对应的值并删除键值对</td>
+<td></td>
+</tr>
+<tr>
+<td>LoadOrStore</td>
+<td>加载键对应的值，如果键不存在则存储键值对</td>
+<td></td>
+</tr>
+<tr>
+<td>CompareAndDelete</td>
+<td>比较键对应的值是否等于指定值，如果相等则删除键值对</td>
+<td></td>
+</tr>
+<tr>
+<td>CompareAndSwap</td>
+<td>比较键对应的值是否等于指定值，如果相等则替换键对应的值</td>
+<td></td>
+</tr>
+<tr>
+<td>Range</td>
+<td>遍历键值对</td>
+<td>传入函数返回<code>false</code>时停止遍历</td>
+</tr>
+</tbody>
+</table>
+<h1 id="waitgroup">WaitGroup<a hidden class="anchor" aria-hidden="true" href="#waitgroup">#</a></h1>
+<ul>
+<li>无需显式初始化，直接声明变量即可使用。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add</td>
+<td>添加计数器</td>
+<td>启动协程前调用，传入协程数量</td>
+</tr>
+<tr>
+<td>Done</td>
+<td>减少计数器</td>
+<td>协程执行完毕后调用</td>
+</tr>
+<tr>
+<td>Wait</td>
+<td>等待计数器变为<code>0</code></td>
+<td>主协程调用，等待所有协程执行完毕</td>
+</tr>
+</tbody>
+</table>
+<h1 id="once">Once<a hidden class="anchor" aria-hidden="true" href="#once">#</a></h1>
+<ul>
+<li>无需显式初始化，直接声明变量即可使用。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Do</td>
+<td>执行函数</td>
+<td>传入函数，只会执行一次</td>
+</tr>
+</tbody>
+</table>
+<h1 id="pool">Pool<a hidden class="anchor" aria-hidden="true" href="#pool">#</a></h1>
+<ul>
+<li>
+<p>需显式初始化，为<code>New</code>指定创建对象的函数。</p>
+</li>
+<li>
+<p>主要目的是缓存已分配但未使用的对象以便后续重用。</p>
+</li>
+<li>
+<p>池中的对象为<code>临时对象</code>，<strong>可能随时消失</strong>，不能依赖其中对象一直存在。</p>
+</li>
+<li>
+<p>首次使用后不能被复制。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Get</td>
+<td>从池中获取对象</td>
+<td>无可用对象时会调用<code>New</code>（不为<code>nil</code>）创建一个新对象</td>
+</tr>
+<tr>
+<td>Put</td>
+<td>把对象放回池中</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="cond">Cond<a hidden class="anchor" aria-hidden="true" href="#cond">#</a></h1>
+<ul>
+<li>
+<p>需显式初始化，指定一个锁。</p>
+</li>
+<li>
+<p>用于协调协程的执行顺序，常用于生产者/消费者模型。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Broadcast</td>
+<td>广播唤醒所有等待的协程</td>
+<td></td>
+</tr>
+<tr>
+<td>Signal</td>
+<td>唤醒一个等待的协程</td>
+<td></td>
+</tr>
+<tr>
+<td>Wait</td>
+<td>将协程持有的锁释放，同时将协程加入等待队列并阻塞协程，等待唤醒</td>
+<td>调用时必需在循环中检查条件</td>
+</tr>
+</tbody>
+</table>
+<h1 id="包函数">包函数<a hidden class="anchor" aria-hidden="true" href="#包函数">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NewCond</td>
+<td>创建一个新的条件变量</td>
+<td>需指定一个<code>锁</code></td>
+</tr>
+<tr>
+<td>OnceFunc</td>
+<td>创建一个只执行一次的无返回值的函数</td>
+<td>调用<code>返回函数</code>时，<code>传入函数</code>只会执行一次</td>
+</tr>
+<tr>
+<td>OnceValue</td>
+<td>创建一个只执行一次的只有一个返回值的函数</td>
+<td>调用<code>返回函数</code>时，<code>传入函数</code>只会执行一次</td>
+</tr>
+<tr>
+<td>OnceValues</td>
+<td>创建一个只执行一次的有两个返回值的函数</td>
+<td>调用<code>返回函数</code>时，<code>传入函数</code>只会执行一次</td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_learn_path/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go path包</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_learn_flag/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go flag包</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
