@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Zip on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/zip/</link>
+    <description>Recent content in Zip on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sat, 29 Jul 2023 21:31:15 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/zip/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用Lazarus压缩/解压zip</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/lazarus_zip02/</link>
+      <pubDate>Sat, 29 Jul 2023 21:31:15 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/lazarus_zip02/</guid>
+      <description>从其它平台迁移而来
+Lazarus默认已经提供了zip文件的压缩和解压功能，在Zipper单元中，不过，使用过程中还是有一些细节需要注意。
+压缩 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 uses Zipper; { 使用类方法进行压缩 } //压缩单个文件 TZipper.Zip(&amp;#39;压缩后的文件.zip&amp;#39;, &amp;#39;待压缩的文件.txt&amp;#39;); //压缩多个文件 TZipper.Zip(&amp;#39;压缩后的文件.zip&amp;#39;, [&amp;#39;待压缩的文件1.txt&amp;#39;, &amp;#39;待压缩的文件2.pdf&amp;#39;]); { 使用实例对象进行压缩 } var zip: TZipper; zip := TZipper.Create; try //压缩单个文件 zip.ZipFile(&amp;#39;压缩后的文件.zip&amp;#39;, &amp;#39;待压缩的文件.txt&amp;#39;); //压缩多个文件 zip.ZipFiles(&amp;#39;压缩后的文件.zip&amp;#39;, [&amp;#39;待压缩的文件1.txt&amp;#39;, &amp;#39;待压缩的文件2.pdf&amp;#39;]); finally zip.Free; end; 以上为比较方便的使用方法，但是还存在一些问题：
+以上仅限于文件名为英文的情况，若文件名为中文则会出现乱码（主要是在windows平台上，用专门的压缩/解压工具打开查看列表和解压时）。查看解决方案。
+若待压缩的文件包括路径，则压缩后的文件内也会包含传参时传入的路径。查看解决方案。
+另外，也可以配合FileName（压缩后的文件名）和Entries（待压缩的文件）属性使用ZipAllFiles方法；或者配合Entries（待压缩的文件）属性使用SaveToFile方法。不过，多次调用前一定要调用Clear方法，否则就会受前一次压缩操作的影响。
+解压 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 uses Zipper; { 使用类方法进行解压 } //解压出全部文件 TUnZipper.</description>
+    </item>
+    <item>
+      <title>Lazarus压缩/解压zip乱码问题</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/lazarus_zip01/</link>
+      <pubDate>Wed, 24 Aug 2022 22:10:38 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/lazarus_zip01/</guid>
+      <description>从其它平台迁移而来
+Lazarus压缩/解压zip文件可以使用Zipper单元中的TZipper/TUnZipper类来实现，但是在有中文文件名时需要注意，否则会出现乱码。
+压缩 TZipper的Zip类方法无需创建实例即可直接生成zip压缩文件。
+TZipper实例的ZipFile方法是压缩一个指定的文件生成zip压缩文件，ZipFiles方法是压缩多个指定的文件生成zip压缩文件，UnZipAllFiles方法是配合Entries等属性生成zip压缩文件。
+解压 TUnZipper的UnZip类方法无需创建实例即可直接解压zip文件。
+TUnZipper实例的UnZipFile方法是解压出一个指定的文件，UnZipFiles方法是解压出多个指定的文件，UnZipAllFiles方法可以从zip文件中解压出所有文件。
+乱码 无中文文件名的情况下，以上类方法和实例方法使用都是正常的，与其它压缩/解压工具交叉使用也不会出现问题。
+当存在中文文件名时，成对使用以上压缩/解压方法，从结果上来说是没什么问题的，但与其它压缩/解压工具交叉使用时就会出现文件名乱码问题。
+乱码其实还是字符编码的问题，Lazarus默认使用UTF8编码，windows默认使用OEM对应的编码，对于中文windows就是GBK编码，于是就出问题了。
+解决方案 TZipper有UseLanguageEncoding属性，TUnZipper有UseUTF8属性，均设置为True，再进行压缩/解压即可，因此，类方法是肯定不行的了。
+不过，这两个属性在语意上却十分让人费解，因为属性为False时，zip文件头里的文件名实际使用的是UTF8编码，而当属性为True时，zip文件头里的文件名实际使用的却是GBK编码，搞不懂这些老外的想法。
+对了，好像要使用FPC 3.2.0+的编译器版本才可以。</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Docker on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/docker/</link>
+    <description>Recent content in Docker on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 04 Mar 2026 21:53:18 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用Docker&#43;vscode搭建离线的go开发调试环境</title>
+      <link>https://afrusrsc.github.io/posts/other/docker_vscode_go/</link>
+      <pubDate>Wed, 04 Mar 2026 21:53:18 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/other/docker_vscode_go/</guid>
+      <description>背景 受项目及信创环境影响，导致debug极不方便，主要限制如下：
+无法连接互联网
+客户端只能使用win7或国产系统，受使用习惯及生态影响，实际只能使用win7
+无法debug终究不是个事，还是需要有一个解决方案的。
+解决过程 方案1 首先想到的方案便是在某一客户端上安装vscode+go搭建一个简易的开发环境。
+vscode支持win7的最后一个版本是1.70.3，搞定这个安装包还是不难的；但go支持win7的最后一个版本是1.20.x，为了使用一些新的特性，至少得是1.23.x以上。
+方案2 方案1行不通，那就只能打服务器的主意了。在win7上装vscode及相关插件，在linux服务器上装go，进行远程调试。
+评估过程中发现，既要搞win7的插件，又要搞linux的服务，还要处理go的依赖……麻烦！
+方案3 既然服务器是linux系统，应用部署使用的是docker，而且vscode是有web版的（叫code server），那么使用docker来搞定这个开发环境应该问题不大的，而且这个镜像还可以到其它同类项目上直接使用！
+尝试1 go的镜像有，code server的镜像也好办，但搞两个镜像……算了，太麻烦！
+尝试2 把code server集成到go的镜像里，由于一直追求小体积镜像，使用的是alpine版，但code server使用到了glibc，应该能改，但还是太麻烦了。
+尝试3 既然把code server集成到go的镜像里太麻烦，那就把go集成到code server的镜像里。思路也很简单：集成go-&amp;gt;导入插件-&amp;gt;导入依赖-&amp;gt;配置环境。
+由于本机的环境就是linux+go，也有docker，而且尝试时也已安装过code server并且安装了插件，所以很多东西可以直接打包进镜像里。
+几番尝试后，最终打了个开箱即用的镜像，自我感觉良好，但也有几个地方值得拿出来说一下：
+由于code server的镜像里没有中文环境，所以中文语言包插件就不必折腾了，只要客户端支持中文，完全不影响使用
+由于本机就是linux+vscode+go的开发环境，所以直接打包了，Dockerfile并不通用
+由于追求开箱即用，是把所有所需都打进了镜像中，若需要灵活，可使用挂载卷的形式
+为了降低性能损耗，同时避免调试端口的映射，容器的网络使用host模式
+总结 搭建本地开发环境，安装插件，更新依赖
+编写Dockerfile
+1 2 3 4 5 6 7 8 9 10 FROM codercom/code-server:4.109.5 # go 插件 COPY --chown=coder:coder ./.local/share/code-server/extensions /home/coder/.local/share/code-server/extensions # go sdk COPY --chown=coder:coder ./go1.2x.x /home/coder/.local/go # go 依赖 COPY --chown=coder:coder ./go /home/coder/go # 必要的配置 RUN echo &amp;#39;export PATH=&amp;#34;$PATH:$HOME/.</description>
+    </item>
+    <item>
+      <title>Docker容器日志配置</title>
+      <link>https://afrusrsc.github.io/posts/devops/docker_log_opt/</link>
+      <pubDate>Sat, 01 Nov 2025 15:43:00 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/devops/docker_log_opt/</guid>
+      <description>事件 有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是CPU或内存被拉満了，top查看后是正常的，那问题可能出在磁盘上。
+服务器上暂时没有合适的查看磁盘I/O的工具，只好先看下容量：
+1 df -h 瞬间发现磁盘使用率达到了95%以上，铁定有问题了！
+1 du -h -d 1 / 发现/var目录巨大无比！
+1 du -h -t 10G /var 发现有几个/var/lib/docker/containers/xxxxxx的文件特别大，问了deepseek，得到的回答是：docker默认会将容器内应用产生的日志记录在json日志文件里，且默认没有大小限制！
+查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。
+方案 全局配置 全局配置适用于所有之后新建的容器。
+修改/etc/docker/daemon.json，添加日志限制：
+1 2 3 4 5 6 7 { &amp;#34;log-driver&amp;#34;: &amp;#34;json-file&amp;#34;, &amp;#34;log-opts&amp;#34;: { &amp;#34;max-size&amp;#34;: &amp;#34;10m&amp;#34;, &amp;#34;max-file&amp;#34;: &amp;#34;5&amp;#34; } } 单容器配置 启动时通过参数直接限制：
+1 docker run --log-opt max-size=10m --log-opt max-file=5 ... docker-compose.yaml配置 使用docker compose时，可以在docker-compose.yaml里配置：
+1 2 3 4 5 6 7 8 services: your-service: image: your-image logging: driver: &amp;#34;json-file&amp;#34; options: max-size: &amp;#34;10m&amp;#34; max-file: &amp;#34;5&amp;#34; 也可以使用yaml锚点避免重复配置：</description>
+    </item>
+    <item>
+      <title>安装Docker</title>
+      <link>https://afrusrsc.github.io/posts/devops/docker_install/</link>
+      <pubDate>Wed, 21 May 2025 08:48:00 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/devops/docker_install/</guid>
+      <description>前言 做了十多年桌面开发，虽然也会写一些服务端的东西，但毕竟不是主力，而且体量和规模也是极小的，所以很少接触docker这类。云原生已经普及很久了，而且桌面开发的路也越来越窄，是时候转变下方向了。
+docker应该算是云原生的基石吧，但刚接触，光安装就够喝一壶了，多次尝试后终于成功，记录一下。
+安装 准备 linux环境，linux发行版或wsl都可以
+网络，有时候无法安装，仅仅是因为宽带运营商（此处点名批评下一动不动的移动）的不可知问题，换个网络即可
+安装Docker 直接下载官方安装脚本进行安装 1 2 curl -fsSL https://get.docker.com -o get-docker.sh sudo sh get-docker.sh 检查是否安装成功 1 docker -v 如果无权限则增加权限 1 sudo usermod -aG docker xxx 增加国内镜像源 执行以下命令
+1 sudo vi /etc/docker/daemon.json 添加类似以下内容，可添加其它已知可用的镜像源地址
+1 2 3 4 5 6 { &amp;#34;registry-mirrors&amp;#34;: [ &amp;#34;https://docker.1ms.run&amp;#34;, &amp;#34;https://docker.xuanyuan.me&amp;#34; ] } 基本使用 命令 功能 示例 docker images 列出本地存储的所有镜像 docker images docker pull 从仓库拉取镜像 docker pull ubuntu docker load -i 从tar文件导入镜像 docker load -i xx.</description>
+    </item>
+  </channel>
+</rss>

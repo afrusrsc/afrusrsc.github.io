@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>使用Docker&#43;vscode搭建离线的go开发调试环境 | 慢步道人</title>
+<meta name="keywords" content="docker, vscode, go">
+<meta name="description" content="背景 受项目及信创环境影响，导致debug极不方便，主要限制如下：
+无法连接互联网
+客户端只能使用win7或国产系统，受使用习惯及生态影响，实际只能使用win7
+无法debug终究不是个事，还是需要有一个解决方案的。
+解决过程 方案1 首先想到的方案便是在某一客户端上安装vscode&#43;go搭建一个简易的开发环境。
+vscode支持win7的最后一个版本是1.70.3，搞定这个安装包还是不难的；但go支持win7的最后一个版本是1.20.x，为了使用一些新的特性，至少得是1.23.x以上。
+方案2 方案1行不通，那就只能打服务器的主意了。在win7上装vscode及相关插件，在linux服务器上装go，进行远程调试。
+评估过程中发现，既要搞win7的插件，又要搞linux的服务，还要处理go的依赖……麻烦！
+方案3 既然服务器是linux系统，应用部署使用的是docker，而且vscode是有web版的（叫code server），那么使用docker来搞定这个开发环境应该问题不大的，而且这个镜像还可以到其它同类项目上直接使用！
+尝试1 go的镜像有，code server的镜像也好办，但搞两个镜像……算了，太麻烦！
+尝试2 把code server集成到go的镜像里，由于一直追求小体积镜像，使用的是alpine版，但code server使用到了glibc，应该能改，但还是太麻烦了。
+尝试3 既然把code server集成到go的镜像里太麻烦，那就把go集成到code server的镜像里。思路也很简单：集成go-&gt;导入插件-&gt;导入依赖-&gt;配置环境。
+由于本机的环境就是linux&#43;go，也有docker，而且尝试时也已安装过code server并且安装了插件，所以很多东西可以直接打包进镜像里。
+几番尝试后，最终打了个开箱即用的镜像，自我感觉良好，但也有几个地方值得拿出来说一下：
+由于code server的镜像里没有中文环境，所以中文语言包插件就不必折腾了，只要客户端支持中文，完全不影响使用
+由于本机就是linux&#43;vscode&#43;go的开发环境，所以直接打包了，Dockerfile并不通用
+由于追求开箱即用，是把所有所需都打进了镜像中，若需要灵活，可使用挂载卷的形式
+为了降低性能损耗，同时避免调试端口的映射，容器的网络使用host模式
+总结 搭建本地开发环境，安装插件，更新依赖
+编写Dockerfile
+1 2 3 4 5 6 7 8 9 10 FROM codercom/code-server:4.109.5 # go 插件 COPY --chown=coder:coder ./.local/share/code-server/extensions /home/coder/.local/share/code-server/extensions # go sdk COPY --chown=coder:coder ./go1.2x.x /home/coder/.local/go # go 依赖 COPY --chown=coder:coder ./go /home/coder/go # 必要的配置 RUN echo &#39;export PATH=&#34;$PATH:$HOME/.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/other/docker_vscode_go/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/other/docker_vscode_go/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="使用Docker&#43;vscode搭建离线的go开发调试环境" />
+<meta property="og:description" content="背景 受项目及信创环境影响，导致debug极不方便，主要限制如下：
+无法连接互联网
+客户端只能使用win7或国产系统，受使用习惯及生态影响，实际只能使用win7
+无法debug终究不是个事，还是需要有一个解决方案的。
+解决过程 方案1 首先想到的方案便是在某一客户端上安装vscode&#43;go搭建一个简易的开发环境。
+vscode支持win7的最后一个版本是1.70.3，搞定这个安装包还是不难的；但go支持win7的最后一个版本是1.20.x，为了使用一些新的特性，至少得是1.23.x以上。
+方案2 方案1行不通，那就只能打服务器的主意了。在win7上装vscode及相关插件，在linux服务器上装go，进行远程调试。
+评估过程中发现，既要搞win7的插件，又要搞linux的服务，还要处理go的依赖……麻烦！
+方案3 既然服务器是linux系统，应用部署使用的是docker，而且vscode是有web版的（叫code server），那么使用docker来搞定这个开发环境应该问题不大的，而且这个镜像还可以到其它同类项目上直接使用！
+尝试1 go的镜像有，code server的镜像也好办，但搞两个镜像……算了，太麻烦！
+尝试2 把code server集成到go的镜像里，由于一直追求小体积镜像，使用的是alpine版，但code server使用到了glibc，应该能改，但还是太麻烦了。
+尝试3 既然把code server集成到go的镜像里太麻烦，那就把go集成到code server的镜像里。思路也很简单：集成go-&gt;导入插件-&gt;导入依赖-&gt;配置环境。
+由于本机的环境就是linux&#43;go，也有docker，而且尝试时也已安装过code server并且安装了插件，所以很多东西可以直接打包进镜像里。
+几番尝试后，最终打了个开箱即用的镜像，自我感觉良好，但也有几个地方值得拿出来说一下：
+由于code server的镜像里没有中文环境，所以中文语言包插件就不必折腾了，只要客户端支持中文，完全不影响使用
+由于本机就是linux&#43;vscode&#43;go的开发环境，所以直接打包了，Dockerfile并不通用
+由于追求开箱即用，是把所有所需都打进了镜像中，若需要灵活，可使用挂载卷的形式
+为了降低性能损耗，同时避免调试端口的映射，容器的网络使用host模式
+总结 搭建本地开发环境，安装插件，更新依赖
+编写Dockerfile
+1 2 3 4 5 6 7 8 9 10 FROM codercom/code-server:4.109.5 # go 插件 COPY --chown=coder:coder ./.local/share/code-server/extensions /home/coder/.local/share/code-server/extensions # go sdk COPY --chown=coder:coder ./go1.2x.x /home/coder/.local/go # go 依赖 COPY --chown=coder:coder ./go /home/coder/go # 必要的配置 RUN echo &#39;export PATH=&#34;$PATH:$HOME/." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/other/docker_vscode_go/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-03-04T21:53:18+08:00" />
+<meta property="article:modified_time" content="2026-03-04T21:53:18+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用Docker&#43;vscode搭建离线的go开发调试环境"/>
+<meta name="twitter:description" content="背景 受项目及信创环境影响，导致debug极不方便，主要限制如下：
+无法连接互联网
+客户端只能使用win7或国产系统，受使用习惯及生态影响，实际只能使用win7
+无法debug终究不是个事，还是需要有一个解决方案的。
+解决过程 方案1 首先想到的方案便是在某一客户端上安装vscode&#43;go搭建一个简易的开发环境。
+vscode支持win7的最后一个版本是1.70.3，搞定这个安装包还是不难的；但go支持win7的最后一个版本是1.20.x，为了使用一些新的特性，至少得是1.23.x以上。
+方案2 方案1行不通，那就只能打服务器的主意了。在win7上装vscode及相关插件，在linux服务器上装go，进行远程调试。
+评估过程中发现，既要搞win7的插件，又要搞linux的服务，还要处理go的依赖……麻烦！
+方案3 既然服务器是linux系统，应用部署使用的是docker，而且vscode是有web版的（叫code server），那么使用docker来搞定这个开发环境应该问题不大的，而且这个镜像还可以到其它同类项目上直接使用！
+尝试1 go的镜像有，code server的镜像也好办，但搞两个镜像……算了，太麻烦！
+尝试2 把code server集成到go的镜像里，由于一直追求小体积镜像，使用的是alpine版，但code server使用到了glibc，应该能改，但还是太麻烦了。
+尝试3 既然把code server集成到go的镜像里太麻烦，那就把go集成到code server的镜像里。思路也很简单：集成go-&gt;导入插件-&gt;导入依赖-&gt;配置环境。
+由于本机的环境就是linux&#43;go，也有docker，而且尝试时也已安装过code server并且安装了插件，所以很多东西可以直接打包进镜像里。
+几番尝试后，最终打了个开箱即用的镜像，自我感觉良好，但也有几个地方值得拿出来说一下：
+由于code server的镜像里没有中文环境，所以中文语言包插件就不必折腾了，只要客户端支持中文，完全不影响使用
+由于本机就是linux&#43;vscode&#43;go的开发环境，所以直接打包了，Dockerfile并不通用
+由于追求开箱即用，是把所有所需都打进了镜像中，若需要灵活，可使用挂载卷的形式
+为了降低性能损耗，同时避免调试端口的映射，容器的网络使用host模式
+总结 搭建本地开发环境，安装插件，更新依赖
+编写Dockerfile
+1 2 3 4 5 6 7 8 9 10 FROM codercom/code-server:4.109.5 # go 插件 COPY --chown=coder:coder ./.local/share/code-server/extensions /home/coder/.local/share/code-server/extensions # go sdk COPY --chown=coder:coder ./go1.2x.x /home/coder/.local/go # go 依赖 COPY --chown=coder:coder ./go /home/coder/go # 必要的配置 RUN echo &#39;export PATH=&#34;$PATH:$HOME/."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "⚜️其它",
+      "item": "https://afrusrsc.github.io/posts/other/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "使用Docker+vscode搭建离线的go开发调试环境",
+      "item": "https://afrusrsc.github.io/posts/other/docker_vscode_go/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用Docker+vscode搭建离线的go开发调试环境",
+  "name": "使用Docker\u002bvscode搭建离线的go开发调试环境",
+  "description": "背景 受项目及信创环境影响，导致debug极不方便，主要限制如下：\n无法连接互联网\n客户端只能使用win7或国产系统，受使用习惯及生态影响，实际只能使用win7\n无法debug终究不是个事，还是需要有一个解决方案的。\n解决过程 方案1 首先想到的方案便是在某一客户端上安装vscode+go搭建一个简易的开发环境。\nvscode支持win7的最后一个版本是1.70.3，搞定这个安装包还是不难的；但go支持win7的最后一个版本是1.20.x，为了使用一些新的特性，至少得是1.23.x以上。\n方案2 方案1行不通，那就只能打服务器的主意了。在win7上装vscode及相关插件，在linux服务器上装go，进行远程调试。\n评估过程中发现，既要搞win7的插件，又要搞linux的服务，还要处理go的依赖……麻烦！\n方案3 既然服务器是linux系统，应用部署使用的是docker，而且vscode是有web版的（叫code server），那么使用docker来搞定这个开发环境应该问题不大的，而且这个镜像还可以到其它同类项目上直接使用！\n尝试1 go的镜像有，code server的镜像也好办，但搞两个镜像……算了，太麻烦！\n尝试2 把code server集成到go的镜像里，由于一直追求小体积镜像，使用的是alpine版，但code server使用到了glibc，应该能改，但还是太麻烦了。\n尝试3 既然把code server集成到go的镜像里太麻烦，那就把go集成到code server的镜像里。思路也很简单：集成go-\u0026gt;导入插件-\u0026gt;导入依赖-\u0026gt;配置环境。\n由于本机的环境就是linux+go，也有docker，而且尝试时也已安装过code server并且安装了插件，所以很多东西可以直接打包进镜像里。\n几番尝试后，最终打了个开箱即用的镜像，自我感觉良好，但也有几个地方值得拿出来说一下：\n由于code server的镜像里没有中文环境，所以中文语言包插件就不必折腾了，只要客户端支持中文，完全不影响使用\n由于本机就是linux+vscode+go的开发环境，所以直接打包了，Dockerfile并不通用\n由于追求开箱即用，是把所有所需都打进了镜像中，若需要灵活，可使用挂载卷的形式\n为了降低性能损耗，同时避免调试端口的映射，容器的网络使用host模式\n总结 搭建本地开发环境，安装插件，更新依赖\n编写Dockerfile\n1 2 3 4 5 6 7 8 9 10 FROM codercom/code-server:4.109.5 # go 插件 COPY --chown=coder:coder ./.local/share/code-server/extensions /home/coder/.local/share/code-server/extensions # go sdk COPY --chown=coder:coder ./go1.2x.x /home/coder/.local/go # go 依赖 COPY --chown=coder:coder ./go /home/coder/go # 必要的配置 RUN echo \u0026#39;export PATH=\u0026#34;$PATH:$HOME/.",
+  "keywords": [
+    "docker", "vscode", "go"
+  ],
+  "articleBody": "背景 受项目及信创环境影响，导致debug极不方便，主要限制如下：\n无法连接互联网\n客户端只能使用win7或国产系统，受使用习惯及生态影响，实际只能使用win7\n无法debug终究不是个事，还是需要有一个解决方案的。\n解决过程 方案1 首先想到的方案便是在某一客户端上安装vscode+go搭建一个简易的开发环境。\nvscode支持win7的最后一个版本是1.70.3，搞定这个安装包还是不难的；但go支持win7的最后一个版本是1.20.x，为了使用一些新的特性，至少得是1.23.x以上。\n方案2 方案1行不通，那就只能打服务器的主意了。在win7上装vscode及相关插件，在linux服务器上装go，进行远程调试。\n评估过程中发现，既要搞win7的插件，又要搞linux的服务，还要处理go的依赖……麻烦！\n方案3 既然服务器是linux系统，应用部署使用的是docker，而且vscode是有web版的（叫code server），那么使用docker来搞定这个开发环境应该问题不大的，而且这个镜像还可以到其它同类项目上直接使用！\n尝试1 go的镜像有，code server的镜像也好办，但搞两个镜像……算了，太麻烦！\n尝试2 把code server集成到go的镜像里，由于一直追求小体积镜像，使用的是alpine版，但code server使用到了glibc，应该能改，但还是太麻烦了。\n尝试3 既然把code server集成到go的镜像里太麻烦，那就把go集成到code server的镜像里。思路也很简单：集成go-\u003e导入插件-\u003e导入依赖-\u003e配置环境。\n由于本机的环境就是linux+go，也有docker，而且尝试时也已安装过code server并且安装了插件，所以很多东西可以直接打包进镜像里。\n几番尝试后，最终打了个开箱即用的镜像，自我感觉良好，但也有几个地方值得拿出来说一下：\n由于code server的镜像里没有中文环境，所以中文语言包插件就不必折腾了，只要客户端支持中文，完全不影响使用\n由于本机就是linux+vscode+go的开发环境，所以直接打包了，Dockerfile并不通用\n由于追求开箱即用，是把所有所需都打进了镜像中，若需要灵活，可使用挂载卷的形式\n为了降低性能损耗，同时避免调试端口的映射，容器的网络使用host模式\n总结 搭建本地开发环境，安装插件，更新依赖\n编写Dockerfile\n1 2 3 4 5 6 7 8 9 10 FROM codercom/code-server:4.109.5 # go 插件 COPY --chown=coder:coder ./.local/share/code-server/extensions /home/coder/.local/share/code-server/extensions # go sdk COPY --chown=coder:coder ./go1.2x.x /home/coder/.local/go # go 依赖 COPY --chown=coder:coder ./go /home/coder/go # 必要的配置 RUN echo 'export PATH=\"$PATH:$HOME/.local/go/bin:$HOME/go/bin\"' \u003e\u003e /home/coder/.bashrc \\ echo 'export PATH=\"$PATH:$HOME/.local/go/bin:$HOME/go/bin\"' \u003e\u003e /home/coder/.profile 打包成镜像 1 docker build -t codeserver:1.0 . 编写start.sh 1 2 3 4 5 6 7 8 #!/bin/bash docker container stop codeserver docker container rm codeserver docker run --name codeserver \\ --net host \\ # host模式降低性能损耗，同时避免调试端口的映射 -e PASSWORD=\"123456\" \\ # 默认密码 -v \"./src:/home/coder/src\" \\ # 挂载源码目录 -d codeserver:1.0 --port 8080 # 指定访问端口 ",
+  "wordCount" : "135",
+  "inLanguage": "zh",
+  "datePublished": "2026-03-04T21:53:18+08:00",
+  "dateModified": "2026-03-04T21:53:18+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/other/docker_vscode_go/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/other/">⚜️其它</a></div>
+    <h1 class="post-title entry-hint-parent">
+      使用Docker&#43;vscode搭建离线的go开发调试环境
+    </h1>
+    <div class="post-meta"><span title='2026-03-04 21:53:18 +0800 CST'>2026-03-04 21:53:18</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3%e8%bf%87%e7%a8%8b" aria-label="解决过程">解决过程</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%96%b9%e6%a1%881" aria-label="方案1"><del>方案1</del></a></li>
+                    <li>
+                        <a href="#%e6%96%b9%e6%a1%882" aria-label="方案2"><del>方案2</del></a></li>
+                    <li>
+                        <a href="#%e6%96%b9%e6%a1%883" aria-label="方案3">方案3</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%b0%9d%e8%af%951" aria-label="尝试1"><del>尝试1</del></a></li>
+                    <li>
+                        <a href="#%e5%b0%9d%e8%af%952" aria-label="尝试2"><del>尝试2</del></a></li>
+                    <li>
+                        <a href="#%e5%b0%9d%e8%af%953" aria-label="尝试3">尝试3</a></li></ul>
+                    </li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p>受项目及信创环境影响，导致debug极不方便，主要限制如下：</p>
+<ul>
+<li>
+<p>无法连接互联网</p>
+</li>
+<li>
+<p>客户端只能使用<code>win7</code>或<code>国产系统</code>，受使用习惯及生态影响，实际只能使用<code>win7</code></p>
+</li>
+</ul>
+<p>无法<code>debug</code>终究不是个事，还是需要有一个解决方案的。</p>
+<h1 id="解决过程">解决过程<a hidden class="anchor" aria-hidden="true" href="#解决过程">#</a></h1>
+<h2 id="方案1"><del>方案1</del><a hidden class="anchor" aria-hidden="true" href="#方案1">#</a></h2>
+<p>首先想到的方案便是在某一客户端上安装<code>vscode</code>+<code>go</code>搭建一个简易的开发环境。</p>
+<p><code>vscode</code>支持<code>win7</code>的最后一个版本是<code>1.70.3</code>，搞定这个安装包还是不难的；但<code>go</code>支持<code>win7</code>的最后一个版本是<code>1.20.x</code>，为了使用一些新的特性，至少得是<code>1.23.x</code>以上。</p>
+<h2 id="方案2"><del>方案2</del><a hidden class="anchor" aria-hidden="true" href="#方案2">#</a></h2>
+<p><code>方案1</code>行不通，那就只能打服务器的主意了。在<code>win7</code>上装<code>vscode</code>及相关插件，在<code>linux</code>服务器上装<code>go</code>，进行远程调试。</p>
+<p>评估过程中发现，既要搞<code>win7</code>的插件，又要搞<code>linux</code>的服务，还要处理<code>go</code>的依赖……麻烦！</p>
+<h2 id="方案3">方案3<a hidden class="anchor" aria-hidden="true" href="#方案3">#</a></h2>
+<p>既然服务器是<code>linux</code>系统，应用部署使用的是<code>docker</code>，而且<code>vscode</code>是有<code>web</code>版的（叫<code>code server</code>），那么使用<code>docker</code>来搞定这个开发环境应该问题不大的，而且这个镜像还可以到其它同类项目上直接使用！</p>
+<h3 id="尝试1"><del>尝试1</del><a hidden class="anchor" aria-hidden="true" href="#尝试1">#</a></h3>
+<p><code>go</code>的镜像有，<code>code server</code>的镜像也好办，但搞两个镜像……算了，太麻烦！</p>
+<h3 id="尝试2"><del>尝试2</del><a hidden class="anchor" aria-hidden="true" href="#尝试2">#</a></h3>
+<p>把<code>code server</code>集成到<code>go</code>的镜像里，由于一直追求小体积镜像，使用的是<code>alpine</code>版，但<code>code server</code>使用到了<code>glibc</code>，应该能改，但还是太麻烦了。</p>
+<h3 id="尝试3">尝试3<a hidden class="anchor" aria-hidden="true" href="#尝试3">#</a></h3>
+<p>既然把<code>code server</code>集成到<code>go</code>的镜像里太麻烦，那就把<code>go</code>集成到<code>code server</code>的镜像里。思路也很简单：<code>集成go</code>-&gt;<code>导入插件</code>-&gt;<code>导入依赖</code>-&gt;<code>配置环境</code>。</p>
+<p>由于本机的环境就是<code>linux</code>+<code>go</code>，也有<code>docker</code>，而且尝试时也已安装过<code>code server</code>并且安装了插件，所以很多东西可以直接打包进镜像里。</p>
+<p>几番尝试后，最终打了个开箱即用的镜像，自我感觉良好，但也有几个地方值得拿出来说一下：</p>
+<ol>
+<li>
+<p>由于<code>code server</code>的镜像里没有中文环境，所以<code>中文语言包</code>插件就不必折腾了，只要客户端支持中文，完全不影响使用</p>
+</li>
+<li>
+<p>由于本机就是<code>linux</code>+<code>vscode</code>+<code>go</code>的开发环境，所以直接打包了，<code>Dockerfile</code>并不通用</p>
+</li>
+<li>
+<p>由于追求开箱即用，是把所有所需都打进了镜像中，若需要灵活，可使用挂载卷的形式</p>
+</li>
+<li>
+<p>为了降低性能损耗，同时避免调试端口的映射，容器的网络使用<code>host</code>模式</p>
+</li>
+</ol>
+<h1 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h1>
+<ol>
+<li>
+<p>搭建本地开发环境，安装插件，更新依赖</p>
+</li>
+<li>
+<p>编写<code>Dockerfile</code></p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Dockerfile" data-lang="Dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> codercom/code-server:4.109.5</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># go 插件</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --chown<span class="o">=</span>coder:coder ./.local/share/code-server/extensions /home/coder/.local/share/code-server/extensions<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># go sdk</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --chown<span class="o">=</span>coder:coder ./go1.2x.x /home/coder/.local/go<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># go 依赖</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --chown<span class="o">=</span>coder:coder ./go /home/coder/go<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 必要的配置</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$PATH:$HOME/.local/go/bin:$HOME/go/bin&#34;&#39;</span> &gt;&gt; /home/coder/.bashrc <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$PATH:$HOME/.local/go/bin:$HOME/go/bin&#34;&#39;</span> &gt;&gt; /home/coder/.profile<span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>打包成镜像</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker build -t codeserver:1.0 .
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="4">
+<li>编写<code>start.sh</code></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>docker container stop codeserver
+</span></span><span class="line"><span class="cl">docker container rm codeserver
+</span></span><span class="line"><span class="cl">docker run --name codeserver <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --net host <span class="se">\ </span>                 <span class="c1"># host模式降低性能损耗，同时避免调试端口的映射</span>
+</span></span><span class="line"><span class="cl">    -e <span class="nv">PASSWORD</span><span class="o">=</span><span class="s2">&#34;123456&#34;</span> <span class="se">\ </span>       <span class="c1"># 默认密码</span>
+</span></span><span class="line"><span class="cl">    -v <span class="s2">&#34;./src:/home/coder/src&#34;</span> <span class="se">\ </span> <span class="c1"># 挂载源码目录</span>
+</span></span><span class="line"><span class="cl">    -d codeserver:1.0 --port <span class="m">8080</span> <span class="c1"># 指定访问端口</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/docker/">Docker</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/vscode/">Vscode</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_pitfall_summary/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go踩坑小结</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

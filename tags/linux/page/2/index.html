@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Linux | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/tags/linux/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/tags/linux/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/tags/linux/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Linux" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/tags/linux/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/tags/">🔖标签</a></div>
+  <h1>
+    Linux
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">安装LMDE
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+背景 一直以来，都对Linux心中神往，一直以来，也都对bug 10(win 10)深恶痛绝，但是对Linux却始终是浅尝辄止——要么是在虚拟机里玩，要么就是wls，真要装在真机上也不过是停留在安装完而已，真正用起来还是差得太多太远。
+不要跟我提wls2，用这货还得升到最新的bug 10，少不了又是自动升级又是各种应用什么的，那可一点儿都不纯净，还是现在用的LTSC勉强能将就，虽然还是动不动就会自动升级，而且通常还是升级失败再回滚的二货，但是比那种二货都不如的还是要强一些的。
+前段时间老婆打下来一台旧笔记本，i3 M370，4G内存，500G机械盘，也是实实在在的老古董了(还有更老的台机在角落里吃土呢)，但质量还是不错的，运行也还算稳定，就动了心思准备拿来搞Linux，实实在在用起来。
+选择发行版 Linux的发行版还是非常多的，鉴于以前捣鼓的大多都是Debian系的，这次还打算入手Debian系，至于Redhat系，以后再说吧。
+由于是老爷机，桌面环境想要在稳定的基础上尽可能轻量。至于不要桌面环境，彻头彻尾地搞tty，心里还是发怵的，毕竟是以学习为主，免不了要上网查资料，而且我这英语渣渣还是不要搞得太有挑战性，免得一不留神就跑偏了。
+Debian 多年前装过Debian，那时对中文的支持真的是——一言难尽，不过这么多年过去了，可能会有点长进吧，所以就先装了最新的尝试了下，然后……我真的没发现有啥长进的。
+Ubuntu Ubuntu是在Debian上弄起来的，最早时候玩的也是这货，wls里也是这货，而且各种桌面环境的发行版也都有，说实话，整体感观还是不错的！只不过这货现在好你搞什么平台大一统的，臃肿了不是一星半点，而且还又搞了个Snap什么的，感觉已经不再是我识别的那个Ubuntu，已经有向bug 10靠拢的倾向了，再加上这是老爷机，果断放弃。
+Linux Mint Linux Mint这货原先是在Ubuntu上搞起来的，当年也试用过Mate版的，体验挺好的，即兼容了Ubuntu的众多优势，又定位于桌面系统，没有变得那么肥胖，算是比较符合我的选择标准了。最近看到有基于Debian的LMDE版，思虑再三，决定就用这货了！
+Kali Linux Kali Linux这货也是在Debian上搞起来的，据说是专为黑客而生，估计以后会尝试吧。
+安装LMDE 制作安装盘 下载LMDE的iso镜像
+使用UltraISO把镜像写入U盘
+注意：写入的时候写入方式一定要选择RAW，否则从U盘启动时会报错failed to load ldlinux.c32
+安装 进BIOS设置U盘为第一启动项，保存
+从U盘引导，自动进入Live模式
+运行桌面上Install启动安装向导开始安装
+联网设置先跳过，否则整个安装过程巨漫长
+分区的环节，我直接把原有的分区全删了，使用整块硬盘
+安装grub的分区一定要选好，像我这种直接选了整块硬盘，不管现在选哪个，后期更新时再出现选grub安装分区的一定要和现在选的保持一致(我就是抽风了一下搞得grub引导不了，折腾半天也没修复回来，最后默默选择了重装)
+根据提示拔掉U盘，并按回车重启
+联网更新 联网 重启进入系统后就可以放心的联网了，若是wifi联不上就直接用网线吧。反正我是联不上wifi，起初以为是驱动问题，折腾了一整天也没搞定，后来索性放弃了，估计是无线网卡有问题，以后再说吧。
+更新 菜单-&gt;首选项-&gt;系统设置-&gt;软件源，输入密码，选择一个国内的源，哪个快选哪个就行，当然也可以不选，只要你能忍受那蜗牛速度
+在终端里执行命令sudo apt update &amp;&amp; sudo apt upgrade -y，输入密码，等待更新完成
+后记 玩Linux就要敢于折腾、勇于折腾
+不要问我要图，给图了你们还咋折腾？PS:其实是忘了弄，后来又懒得弄</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-12-14 16:57:26 +0800 CST'>2020-12-14 16:57:26</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 安装LMDE" href="https://afrusrsc.github.io/posts/os/lmde_install/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="https://afrusrsc.github.io/tags/linux/">
+      «&nbsp;上一页&nbsp;1/2
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
