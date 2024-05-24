@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Git提交规范 | 慢步道人</title>
+<meta name="keywords" content="git">
+<meta name="description" content=" 从其它平台迁移而来
+一直以来，都是用git commit -m来提交代码的，结果就是看提交历史时一点儿都不赏心悦目！既然别人已经有好的实践了，那么就来学习一下吧。
+提交消息格式 1 2 3 4 5 修改类型(影响范围):&lt;--空格--&gt;标题 &lt;--空行--&gt; [正文] &lt;--空行--&gt; [页脚] 任何一行都不能超过100个字符，以便在各种git工具中方便阅读 修改类型 以下选其一：
+值 含义 feat 添加新功能 fix 修复bug docs 只修改了文档 style 调整代码格式，未修改代码逻辑（如：调整空白、格式化等） refactor 代码重构，既没修复bug也没添加新功能 perf 性能优化，提高性能的代码修改 test 添加或修改代码测试 chore 对构建流程或辅助工具和依赖库（如文档生成等）的更改 revert 代码回滚 影响范围 内容不固定，可以是代码影响到的任何内容，但要足够简要。如果影响到多个范围可以用*表示。
+标题 必需，能简要描述本次提交的信息。
+不要大写首字母
+结尾不要使用句号
+正文 非必需，是对标题的补充说明。
+页脚 任何破坏性变更、不向下兼容都应在页脚中说明。也经常用来引用本次解决的issue。
+破坏性变更应以BREAKING CHANGE开头 1 BREAKING CHANGE:&lt;--空格--&gt;页脚内容 代码回滚 1 2 3 4 5 revert(影响范围):&lt;--空格--&gt;要恢复到的那个提交的标题 &lt;--空行--&gt; This reverts commit &lt;要恢复到的那个提交的hash&gt; &lt;--空行--&gt; [页脚] ">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/git/git_commit_specification/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/git/git_commit_specification/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Git提交规范" />
+<meta property="og:description" content=" 从其它平台迁移而来
+一直以来，都是用git commit -m来提交代码的，结果就是看提交历史时一点儿都不赏心悦目！既然别人已经有好的实践了，那么就来学习一下吧。
+提交消息格式 1 2 3 4 5 修改类型(影响范围):&lt;--空格--&gt;标题 &lt;--空行--&gt; [正文] &lt;--空行--&gt; [页脚] 任何一行都不能超过100个字符，以便在各种git工具中方便阅读 修改类型 以下选其一：
+值 含义 feat 添加新功能 fix 修复bug docs 只修改了文档 style 调整代码格式，未修改代码逻辑（如：调整空白、格式化等） refactor 代码重构，既没修复bug也没添加新功能 perf 性能优化，提高性能的代码修改 test 添加或修改代码测试 chore 对构建流程或辅助工具和依赖库（如文档生成等）的更改 revert 代码回滚 影响范围 内容不固定，可以是代码影响到的任何内容，但要足够简要。如果影响到多个范围可以用*表示。
+标题 必需，能简要描述本次提交的信息。
+不要大写首字母
+结尾不要使用句号
+正文 非必需，是对标题的补充说明。
+页脚 任何破坏性变更、不向下兼容都应在页脚中说明。也经常用来引用本次解决的issue。
+破坏性变更应以BREAKING CHANGE开头 1 BREAKING CHANGE:&lt;--空格--&gt;页脚内容 代码回滚 1 2 3 4 5 revert(影响范围):&lt;--空格--&gt;要恢复到的那个提交的标题 &lt;--空行--&gt; This reverts commit &lt;要恢复到的那个提交的hash&gt; &lt;--空行--&gt; [页脚] " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/git/git_commit_specification/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-01T20:41:00+08:00" />
+<meta property="article:modified_time" content="2023-08-01T20:41:00+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Git提交规范"/>
+<meta name="twitter:description" content=" 从其它平台迁移而来
+一直以来，都是用git commit -m来提交代码的，结果就是看提交历史时一点儿都不赏心悦目！既然别人已经有好的实践了，那么就来学习一下吧。
+提交消息格式 1 2 3 4 5 修改类型(影响范围):&lt;--空格--&gt;标题 &lt;--空行--&gt; [正文] &lt;--空行--&gt; [页脚] 任何一行都不能超过100个字符，以便在各种git工具中方便阅读 修改类型 以下选其一：
+值 含义 feat 添加新功能 fix 修复bug docs 只修改了文档 style 调整代码格式，未修改代码逻辑（如：调整空白、格式化等） refactor 代码重构，既没修复bug也没添加新功能 perf 性能优化，提高性能的代码修改 test 添加或修改代码测试 chore 对构建流程或辅助工具和依赖库（如文档生成等）的更改 revert 代码回滚 影响范围 内容不固定，可以是代码影响到的任何内容，但要足够简要。如果影响到多个范围可以用*表示。
+标题 必需，能简要描述本次提交的信息。
+不要大写首字母
+结尾不要使用句号
+正文 非必需，是对标题的补充说明。
+页脚 任何破坏性变更、不向下兼容都应在页脚中说明。也经常用来引用本次解决的issue。
+破坏性变更应以BREAKING CHANGE开头 1 BREAKING CHANGE:&lt;--空格--&gt;页脚内容 代码回滚 1 2 3 4 5 revert(影响范围):&lt;--空格--&gt;要恢复到的那个提交的标题 &lt;--空行--&gt; This reverts commit &lt;要恢复到的那个提交的hash&gt; &lt;--空行--&gt; [页脚] "/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💠使用Git",
+      "item": "https://afrusrsc.github.io/posts/git/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Git提交规范",
+      "item": "https://afrusrsc.github.io/posts/git/git_commit_specification/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Git提交规范",
+  "name": "Git提交规范",
+  "description": " 从其它平台迁移而来\n一直以来，都是用git commit -m来提交代码的，结果就是看提交历史时一点儿都不赏心悦目！既然别人已经有好的实践了，那么就来学习一下吧。\n提交消息格式 1 2 3 4 5 修改类型(影响范围):\u0026lt;--空格--\u0026gt;标题 \u0026lt;--空行--\u0026gt; [正文] \u0026lt;--空行--\u0026gt; [页脚] 任何一行都不能超过100个字符，以便在各种git工具中方便阅读 修改类型 以下选其一：\n值 含义 feat 添加新功能 fix 修复bug docs 只修改了文档 style 调整代码格式，未修改代码逻辑（如：调整空白、格式化等） refactor 代码重构，既没修复bug也没添加新功能 perf 性能优化，提高性能的代码修改 test 添加或修改代码测试 chore 对构建流程或辅助工具和依赖库（如文档生成等）的更改 revert 代码回滚 影响范围 内容不固定，可以是代码影响到的任何内容，但要足够简要。如果影响到多个范围可以用*表示。\n标题 必需，能简要描述本次提交的信息。\n不要大写首字母\n结尾不要使用句号\n正文 非必需，是对标题的补充说明。\n页脚 任何破坏性变更、不向下兼容都应在页脚中说明。也经常用来引用本次解决的issue。\n破坏性变更应以BREAKING CHANGE开头 1 BREAKING CHANGE:\u0026lt;--空格--\u0026gt;页脚内容 代码回滚 1 2 3 4 5 revert(影响范围):\u0026lt;--空格--\u0026gt;要恢复到的那个提交的标题 \u0026lt;--空行--\u0026gt; This reverts commit \u0026lt;要恢复到的那个提交的hash\u0026gt; \u0026lt;--空行--\u0026gt; [页脚] ",
+  "keywords": [
+    "git"
+  ],
+  "articleBody": " 从其它平台迁移而来\n一直以来，都是用git commit -m来提交代码的，结果就是看提交历史时一点儿都不赏心悦目！既然别人已经有好的实践了，那么就来学习一下吧。\n提交消息格式 1 2 3 4 5 修改类型(影响范围):\u003c--空格--\u003e标题 \u003c--空行--\u003e [正文] \u003c--空行--\u003e [页脚] 任何一行都不能超过100个字符，以便在各种git工具中方便阅读 修改类型 以下选其一：\n值 含义 feat 添加新功能 fix 修复bug docs 只修改了文档 style 调整代码格式，未修改代码逻辑（如：调整空白、格式化等） refactor 代码重构，既没修复bug也没添加新功能 perf 性能优化，提高性能的代码修改 test 添加或修改代码测试 chore 对构建流程或辅助工具和依赖库（如文档生成等）的更改 revert 代码回滚 影响范围 内容不固定，可以是代码影响到的任何内容，但要足够简要。如果影响到多个范围可以用*表示。\n标题 必需，能简要描述本次提交的信息。\n不要大写首字母\n结尾不要使用句号\n正文 非必需，是对标题的补充说明。\n页脚 任何破坏性变更、不向下兼容都应在页脚中说明。也经常用来引用本次解决的issue。\n破坏性变更应以BREAKING CHANGE开头 1 BREAKING CHANGE:\u003c--空格--\u003e页脚内容 代码回滚 1 2 3 4 5 revert(影响范围):\u003c--空格--\u003e要恢复到的那个提交的标题 \u003c--空行--\u003e This reverts commit \u003c要恢复到的那个提交的hash\u003e \u003c--空行--\u003e [页脚] ",
+  "wordCount" : "67",
+  "inLanguage": "zh",
+  "datePublished": "2023-08-01T20:41:00+08:00",
+  "dateModified": "2023-08-01T20:41:00+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/git/git_commit_specification/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/git/">💠使用Git</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Git提交规范
+    </h1>
+    <div class="post-meta"><span title='2023-08-01 20:41:00 +0800 CST'>2023-08-01 20:41:00</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e6%8f%90%e4%ba%a4%e6%b6%88%e6%81%af%e6%a0%bc%e5%bc%8f" aria-label="提交消息格式">提交消息格式</a><ul>
+                            
+                    <li>
+                        <a href="#%e4%bf%ae%e6%94%b9%e7%b1%bb%e5%9e%8b" aria-label="修改类型">修改类型</a></li>
+                    <li>
+                        <a href="#%e5%bd%b1%e5%93%8d%e8%8c%83%e5%9b%b4" aria-label="影响范围">影响范围</a></li>
+                    <li>
+                        <a href="#%e6%a0%87%e9%a2%98" aria-label="标题">标题</a></li>
+                    <li>
+                        <a href="#%e6%ad%a3%e6%96%87" aria-label="正文">正文</a></li>
+                    <li>
+                        <a href="#%e9%a1%b5%e8%84%9a" aria-label="页脚">页脚</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e4%bb%a3%e7%a0%81%e5%9b%9e%e6%bb%9a" aria-label="代码回滚">代码回滚</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>一直以来，都是用<code>git commit -m</code>来提交代码的，结果就是看提交历史时一点儿都不赏心悦目！既然别人已经有好的实践了，那么就来学习一下吧。</p>
+<h1 id="提交消息格式">提交消息格式<a hidden class="anchor" aria-hidden="true" href="#提交消息格式">#</a></h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">修改类型(影响范围):&lt;--空格--&gt;标题
+</span></span><span class="line"><span class="cl">&lt;--空行--&gt;
+</span></span><span class="line"><span class="cl">[正文]
+</span></span><span class="line"><span class="cl">&lt;--空行--&gt;
+</span></span><span class="line"><span class="cl">[页脚]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>任何一行都不能超过<code>100</code>个字符，以便在各种git工具中方便阅读</li>
+</ul>
+<h2 id="修改类型">修改类型<a hidden class="anchor" aria-hidden="true" href="#修改类型">#</a></h2>
+<p>以下选其一：</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>feat</td>
+<td>添加新功能</td>
+</tr>
+<tr>
+<td>fix</td>
+<td>修复bug</td>
+</tr>
+<tr>
+<td>docs</td>
+<td>只修改了文档</td>
+</tr>
+<tr>
+<td>style</td>
+<td>调整代码格式，未修改代码逻辑（如：调整空白、格式化等）</td>
+</tr>
+<tr>
+<td>refactor</td>
+<td>代码重构，既没修复bug也没添加新功能</td>
+</tr>
+<tr>
+<td>perf</td>
+<td>性能优化，提高性能的代码修改</td>
+</tr>
+<tr>
+<td>test</td>
+<td>添加或修改代码测试</td>
+</tr>
+<tr>
+<td>chore</td>
+<td>对构建流程或辅助工具和依赖库（如文档生成等）的更改</td>
+</tr>
+<tr>
+<td>revert</td>
+<td>代码回滚</td>
+</tr>
+</tbody>
+</table>
+<h2 id="影响范围">影响范围<a hidden class="anchor" aria-hidden="true" href="#影响范围">#</a></h2>
+<p>内容不固定，可以是代码影响到的任何内容，但要足够简要。如果影响到多个范围可以用<code>*</code>表示。</p>
+<h2 id="标题">标题<a hidden class="anchor" aria-hidden="true" href="#标题">#</a></h2>
+<p>必需，能简要描述本次提交的信息。</p>
+<ul>
+<li>
+<p>不要大写首字母</p>
+</li>
+<li>
+<p>结尾不要使用句号</p>
+</li>
+</ul>
+<h2 id="正文">正文<a hidden class="anchor" aria-hidden="true" href="#正文">#</a></h2>
+<p>非必需，是对标题的补充说明。</p>
+<h2 id="页脚">页脚<a hidden class="anchor" aria-hidden="true" href="#页脚">#</a></h2>
+<p>任何<code>破坏性变更</code>、<code>不向下兼容</code>都应在页脚中说明。也经常用来引用本次解决的<code>issue</code>。</p>
+<ul>
+<li>破坏性变更应以<code>BREAKING CHANGE</code>开头</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">BREAKING CHANGE:&lt;--空格--&gt;页脚内容
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="代码回滚">代码回滚<a hidden class="anchor" aria-hidden="true" href="#代码回滚">#</a></h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">revert(影响范围):&lt;--空格--&gt;要恢复到的那个提交的标题
+</span></span><span class="line"><span class="cl">&lt;--空行--&gt;
+</span></span><span class="line"><span class="cl">This reverts commit &lt;要恢复到的那个提交的hash&gt;
+</span></span><span class="line"><span class="cl">&lt;--空行--&gt;
+</span></span><span class="line"><span class="cl">[页脚]
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/git/">Git</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/other/markdown/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Markdown基础</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/git/git_base/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Git的基本使用</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
