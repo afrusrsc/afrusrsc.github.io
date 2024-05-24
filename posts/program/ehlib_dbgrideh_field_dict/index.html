@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>DBGridEh显示、编辑标记字段 | 慢步道人</title>
+<meta name="keywords" content="pascal, EhLib">
+<meta name="description" content="从其它平台迁移而来
+在用Delphi开发数据库应用过程中，经常需要用到DBBrid来显示或编辑数据库表，但相对于IDE自带的DBBrid，DBGridEh显然要更好用一些（cxDBGrid也同样好使，这里只对DBGridEh进行说明）。
+在数据库表结构设计时，通常会习惯使用整型字段来存储如男、女、已修改、已删除、已作废等具有标记性的信息，好处是占存储空间小且可扩展性强，缺点是显示方式不友好，但是，使用DBGridEh的一些设置可以弥补这个缺陷。
+假设数据库里的表T_Demo里有一个表示性别的字段Sex，其用0表示男，1表示女，2表示未知，用DBGridEh显示时仍为0、1、2，十分不友好。这时只要做一点美化即可。
+在DBGridEh的对应列的KeyList属性里分别加入0、1、2三个数字，每个数字一行，用代码实现的话就是： 1 2 3 4 5 //这里假设第一列就是性别，以下代码相同 DBGridEh.Columns[0].KeyList.Clear; DBGridEh.Columns[0].KeyList.Append(&#39;0&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;1&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;2&#39;); 在DBGridEh的对应列的PickList属性里分别加入男、女、未知三行，用代码实现是： 1 2 3 4 DBGridEh.Columns[0].PickList.Clear; DBGridEh.Columns[0].PickList.Append(&#39;男&#39;); DBGridEh.Columns[0].PickList.Append(&#39;女&#39;); DBGridEh.Columns[0].PickList.Append(&#39;未知&#39;); 这样，原先显示为0、1、2的性别就变成了男、女、未知。也可以加上图片来进一步美化。
+放置一个TImagList控件，并命名为ilSex，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。
+在DBGridEh的ImagList属性里关联ilSex，并且设置ShowImageAndText属性为True，用代码是：
+1 2 DBGridEh.ImagList := ilSex; DBGridEh.ShowImageAndText := True; 这样，性别这一列就有图片有文字，比0、1、2要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/ehlib_dbgrideh_field_dict/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/ehlib_dbgrideh_field_dict/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="DBGridEh显示、编辑标记字段" />
+<meta property="og:description" content="从其它平台迁移而来
+在用Delphi开发数据库应用过程中，经常需要用到DBBrid来显示或编辑数据库表，但相对于IDE自带的DBBrid，DBGridEh显然要更好用一些（cxDBGrid也同样好使，这里只对DBGridEh进行说明）。
+在数据库表结构设计时，通常会习惯使用整型字段来存储如男、女、已修改、已删除、已作废等具有标记性的信息，好处是占存储空间小且可扩展性强，缺点是显示方式不友好，但是，使用DBGridEh的一些设置可以弥补这个缺陷。
+假设数据库里的表T_Demo里有一个表示性别的字段Sex，其用0表示男，1表示女，2表示未知，用DBGridEh显示时仍为0、1、2，十分不友好。这时只要做一点美化即可。
+在DBGridEh的对应列的KeyList属性里分别加入0、1、2三个数字，每个数字一行，用代码实现的话就是： 1 2 3 4 5 //这里假设第一列就是性别，以下代码相同 DBGridEh.Columns[0].KeyList.Clear; DBGridEh.Columns[0].KeyList.Append(&#39;0&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;1&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;2&#39;); 在DBGridEh的对应列的PickList属性里分别加入男、女、未知三行，用代码实现是： 1 2 3 4 DBGridEh.Columns[0].PickList.Clear; DBGridEh.Columns[0].PickList.Append(&#39;男&#39;); DBGridEh.Columns[0].PickList.Append(&#39;女&#39;); DBGridEh.Columns[0].PickList.Append(&#39;未知&#39;); 这样，原先显示为0、1、2的性别就变成了男、女、未知。也可以加上图片来进一步美化。
+放置一个TImagList控件，并命名为ilSex，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。
+在DBGridEh的ImagList属性里关联ilSex，并且设置ShowImageAndText属性为True，用代码是：
+1 2 DBGridEh.ImagList := ilSex; DBGridEh.ShowImageAndText := True; 这样，性别这一列就有图片有文字，比0、1、2要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/ehlib_dbgrideh_field_dict/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-01-25T11:37:40+08:00" />
+<meta property="article:modified_time" content="2019-01-25T11:37:40+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="DBGridEh显示、编辑标记字段"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+在用Delphi开发数据库应用过程中，经常需要用到DBBrid来显示或编辑数据库表，但相对于IDE自带的DBBrid，DBGridEh显然要更好用一些（cxDBGrid也同样好使，这里只对DBGridEh进行说明）。
+在数据库表结构设计时，通常会习惯使用整型字段来存储如男、女、已修改、已删除、已作废等具有标记性的信息，好处是占存储空间小且可扩展性强，缺点是显示方式不友好，但是，使用DBGridEh的一些设置可以弥补这个缺陷。
+假设数据库里的表T_Demo里有一个表示性别的字段Sex，其用0表示男，1表示女，2表示未知，用DBGridEh显示时仍为0、1、2，十分不友好。这时只要做一点美化即可。
+在DBGridEh的对应列的KeyList属性里分别加入0、1、2三个数字，每个数字一行，用代码实现的话就是： 1 2 3 4 5 //这里假设第一列就是性别，以下代码相同 DBGridEh.Columns[0].KeyList.Clear; DBGridEh.Columns[0].KeyList.Append(&#39;0&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;1&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;2&#39;); 在DBGridEh的对应列的PickList属性里分别加入男、女、未知三行，用代码实现是： 1 2 3 4 DBGridEh.Columns[0].PickList.Clear; DBGridEh.Columns[0].PickList.Append(&#39;男&#39;); DBGridEh.Columns[0].PickList.Append(&#39;女&#39;); DBGridEh.Columns[0].PickList.Append(&#39;未知&#39;); 这样，原先显示为0、1、2的性别就变成了男、女、未知。也可以加上图片来进一步美化。
+放置一个TImagList控件，并命名为ilSex，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。
+在DBGridEh的ImagList属性里关联ilSex，并且设置ShowImageAndText属性为True，用代码是：
+1 2 DBGridEh.ImagList := ilSex; DBGridEh.ShowImageAndText := True; 这样，性别这一列就有图片有文字，比0、1、2要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "DBGridEh显示、编辑标记字段",
+      "item": "https://afrusrsc.github.io/posts/program/ehlib_dbgrideh_field_dict/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DBGridEh显示、编辑标记字段",
+  "name": "DBGridEh显示、编辑标记字段",
+  "description": "从其它平台迁移而来\n在用Delphi开发数据库应用过程中，经常需要用到DBBrid来显示或编辑数据库表，但相对于IDE自带的DBBrid，DBGridEh显然要更好用一些（cxDBGrid也同样好使，这里只对DBGridEh进行说明）。\n在数据库表结构设计时，通常会习惯使用整型字段来存储如男、女、已修改、已删除、已作废等具有标记性的信息，好处是占存储空间小且可扩展性强，缺点是显示方式不友好，但是，使用DBGridEh的一些设置可以弥补这个缺陷。\n假设数据库里的表T_Demo里有一个表示性别的字段Sex，其用0表示男，1表示女，2表示未知，用DBGridEh显示时仍为0、1、2，十分不友好。这时只要做一点美化即可。\n在DBGridEh的对应列的KeyList属性里分别加入0、1、2三个数字，每个数字一行，用代码实现的话就是： 1 2 3 4 5 //这里假设第一列就是性别，以下代码相同 DBGridEh.Columns[0].KeyList.Clear; DBGridEh.Columns[0].KeyList.Append(\u0026#39;0\u0026#39;); DBGridEh.Columns[0].KeyList.Append(\u0026#39;1\u0026#39;); DBGridEh.Columns[0].KeyList.Append(\u0026#39;2\u0026#39;); 在DBGridEh的对应列的PickList属性里分别加入男、女、未知三行，用代码实现是： 1 2 3 4 DBGridEh.Columns[0].PickList.Clear; DBGridEh.Columns[0].PickList.Append(\u0026#39;男\u0026#39;); DBGridEh.Columns[0].PickList.Append(\u0026#39;女\u0026#39;); DBGridEh.Columns[0].PickList.Append(\u0026#39;未知\u0026#39;); 这样，原先显示为0、1、2的性别就变成了男、女、未知。也可以加上图片来进一步美化。\n放置一个TImagList控件，并命名为ilSex，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。\n在DBGridEh的ImagList属性里关联ilSex，并且设置ShowImageAndText属性为True，用代码是：\n1 2 DBGridEh.ImagList := ilSex; DBGridEh.ShowImageAndText := True; 这样，性别这一列就有图片有文字，比0、1、2要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。",
+  "keywords": [
+    "pascal", "EhLib"
+  ],
+  "articleBody": " 从其它平台迁移而来\n在用Delphi开发数据库应用过程中，经常需要用到DBBrid来显示或编辑数据库表，但相对于IDE自带的DBBrid，DBGridEh显然要更好用一些（cxDBGrid也同样好使，这里只对DBGridEh进行说明）。\n在数据库表结构设计时，通常会习惯使用整型字段来存储如男、女、已修改、已删除、已作废等具有标记性的信息，好处是占存储空间小且可扩展性强，缺点是显示方式不友好，但是，使用DBGridEh的一些设置可以弥补这个缺陷。\n假设数据库里的表T_Demo里有一个表示性别的字段Sex，其用0表示男，1表示女，2表示未知，用DBGridEh显示时仍为0、1、2，十分不友好。这时只要做一点美化即可。\n在DBGridEh的对应列的KeyList属性里分别加入0、1、2三个数字，每个数字一行，用代码实现的话就是： 1 2 3 4 5 //这里假设第一列就是性别，以下代码相同 DBGridEh.Columns[0].KeyList.Clear; DBGridEh.Columns[0].KeyList.Append('0'); DBGridEh.Columns[0].KeyList.Append('1'); DBGridEh.Columns[0].KeyList.Append('2'); 在DBGridEh的对应列的PickList属性里分别加入男、女、未知三行，用代码实现是： 1 2 3 4 DBGridEh.Columns[0].PickList.Clear; DBGridEh.Columns[0].PickList.Append('男'); DBGridEh.Columns[0].PickList.Append('女'); DBGridEh.Columns[0].PickList.Append('未知'); 这样，原先显示为0、1、2的性别就变成了男、女、未知。也可以加上图片来进一步美化。\n放置一个TImagList控件，并命名为ilSex，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。\n在DBGridEh的ImagList属性里关联ilSex，并且设置ShowImageAndText属性为True，用代码是：\n1 2 DBGridEh.ImagList := ilSex; DBGridEh.ShowImageAndText := True; 这样，性别这一列就有图片有文字，比0、1、2要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。\n",
+  "wordCount" : "36",
+  "inLanguage": "zh",
+  "datePublished": "2019-01-25T11:37:40+08:00",
+  "dateModified": "2019-01-25T11:37:40+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/ehlib_dbgrideh_field_dict/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+    <h1 class="post-title entry-hint-parent">
+      DBGridEh显示、编辑标记字段
+    </h1>
+    <div class="post-meta"><span title='2019-01-25 11:37:40 +0800 CST'>2019-01-25 11:37:40</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> 
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>在用Delphi开发数据库应用过程中，经常需要用到<code>DBBrid</code>来显示或编辑数据库表，但相对于IDE自带的<code>DBBrid</code>，<code>DBGridEh</code>显然要更好用一些（<code>cxDBGrid</code>也同样好使，这里只对<code>DBGridEh</code>进行说明）。</p>
+<p>在数据库表结构设计时，通常会习惯使用整型字段来存储如<code>男</code>、<code>女</code>、<code>已修改</code>、<code>已删除</code>、<code>已作废</code>等具有标记性的信息，好处是<code>占存储空间小</code>且<code>可扩展性强</code>，缺点是显示方式不友好，但是，使用<code>DBGridEh</code>的一些设置可以弥补这个缺陷。</p>
+<p>假设数据库里的表<code>T_Demo</code>里有一个表示性别的字段<code>Sex</code>，其用<code>0</code>表示<code>男</code>，<code>1</code>表示<code>女</code>，<code>2</code>表示<code>未知</code>，用<code>DBGridEh</code>显示时仍为<code>0</code>、<code>1</code>、<code>2</code>，十分不友好。这时只要做一点美化即可。</p>
+<ol>
+<li>在<code>DBGridEh</code>的对应列的<code>KeyList</code>属性里分别加入<code>0</code>、<code>1</code>、<code>2</code>三个数字，每个数字一行，用代码实现的话就是：</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">//这里假设第一列就是性别，以下代码相同
+</span></span><span class="line"><span class="cl">DBGridEh.Columns[0].KeyList.Clear;
+</span></span><span class="line"><span class="cl">DBGridEh.Columns[0].KeyList.Append(&#39;0&#39;);
+</span></span><span class="line"><span class="cl">DBGridEh.Columns[0].KeyList.Append(&#39;1&#39;);
+</span></span><span class="line"><span class="cl">DBGridEh.Columns[0].KeyList.Append(&#39;2&#39;);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>在<code>DBGridEh</code>的对应列的<code>PickList</code>属性里分别加入<code>男</code>、<code>女</code>、<code>未知</code>三行，用代码实现是：</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">DBGridEh.Columns[0].PickList.Clear;
+</span></span><span class="line"><span class="cl">DBGridEh.Columns[0].PickList.Append(&#39;男&#39;);
+</span></span><span class="line"><span class="cl">DBGridEh.Columns[0].PickList.Append(&#39;女&#39;);
+</span></span><span class="line"><span class="cl">DBGridEh.Columns[0].PickList.Append(&#39;未知&#39;);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样，原先显示为<code>0</code>、<code>1</code>、<code>2</code>的性别就变成了<code>男</code>、<code>女</code>、<code>未知</code>。也可以加上图片来进一步美化。</p>
+<ol start="3">
+<li>
+<p>放置一个<code>TImagList</code>控件，并命名为<code>ilSex</code>，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。</p>
+</li>
+<li>
+<p>在<code>DBGridEh</code>的<code>ImagList</code>属性里关联<code>ilSex</code>，并且设置<code>ShowImageAndText</code>属性为<code>True</code>，用代码是：</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">DBGridEh.ImagList := ilSex;
+</span></span><span class="line"><span class="cl">DBGridEh.ShowImageAndText := True;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样，性别这一列就有图片有文字，比<code>0</code>、<code>1</code>、<code>2</code>要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/ehlib/">EhLib</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/delphi_screen_monitor/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>关于窗口置屏的那个坑</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/random_int/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>生成指定范围和个数的不重复的随机整数</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

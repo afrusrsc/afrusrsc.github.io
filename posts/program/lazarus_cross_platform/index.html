@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Lazarus跨平台方案总结 | 慢步道人</title>
+<meta name="keywords" content="lazarus, pascal">
+<meta name="description" content="前言 对于Lazarus跨平台开发接触有一段时间了，虽然踩了不坑，但仍觉得已踩过的坑不过是九牛一毛。不过还是应该记录一下，以备忘，以后又踩新坑了再补充吧。
+环境 项目 Linux Windows 操作系统 Debian 12 Win10 CPU架构 x86_64 x86_64 桌面环境 xfce 4 / 输入法 fcitx 5 系统自带 GUI环境 gtk2/qt5/qt6 win32/gtk2/qt5 目标程序 64位 32位/64位 Qt6Pas1.dll未能得到，win &#43; qt6未测试
+linux 64位系统未能设置好32位运行环境，未测试
+qt5未能得到64位的dll，未测试
+坑 windows Application.MessageBox按钮文字英文，无法直接本地化，Windows.MessageBoxAPI可以
+TPageControl组件自带的关闭按钮在win32下不可用，gtk2和qt5正常
+qt5下，某些组件会有很诡异的现象
+gtk2下，64位目标程序运行时报错
+gtk2下，默认界面很丑，需要用皮肤
+带GUI的dll机制和行为与delphi不一致
+使用ShareMem单元需要自行构建fpcmemdll.dll
+linux gtk2版IDE无法输入中文；目标程序可正常输入
+qt5和qt6版IDE可输入中文，但部分字无法输入，也无法正常输入多于两个字的词组；目标程序存在相同的问题
+qt5版IDE及目标程序所需要的libqt5pas一定要和编译用的IDE版本匹配
+总结 基于有限的测试经验，得出了以下结论：
+虽然Lazarus是跨平台的，并且号称一次编写，到处编译，但GUI的跨平台表现是不完全一致的，需要分别处理
+整体上，gtk2兼容性和稳定性优于qt
+最佳的开发方案：在windows系统上开发，然后交叉编译或在目标环境下进行编译
+保持跨平台一致性的方案：windows平台采用32位的gtk2&#43;皮肤，linux平台采用gtk2&#43;皮肤">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/lazarus_cross_platform/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/lazarus_cross_platform/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Lazarus跨平台方案总结" />
+<meta property="og:description" content="前言 对于Lazarus跨平台开发接触有一段时间了，虽然踩了不坑，但仍觉得已踩过的坑不过是九牛一毛。不过还是应该记录一下，以备忘，以后又踩新坑了再补充吧。
+环境 项目 Linux Windows 操作系统 Debian 12 Win10 CPU架构 x86_64 x86_64 桌面环境 xfce 4 / 输入法 fcitx 5 系统自带 GUI环境 gtk2/qt5/qt6 win32/gtk2/qt5 目标程序 64位 32位/64位 Qt6Pas1.dll未能得到，win &#43; qt6未测试
+linux 64位系统未能设置好32位运行环境，未测试
+qt5未能得到64位的dll，未测试
+坑 windows Application.MessageBox按钮文字英文，无法直接本地化，Windows.MessageBoxAPI可以
+TPageControl组件自带的关闭按钮在win32下不可用，gtk2和qt5正常
+qt5下，某些组件会有很诡异的现象
+gtk2下，64位目标程序运行时报错
+gtk2下，默认界面很丑，需要用皮肤
+带GUI的dll机制和行为与delphi不一致
+使用ShareMem单元需要自行构建fpcmemdll.dll
+linux gtk2版IDE无法输入中文；目标程序可正常输入
+qt5和qt6版IDE可输入中文，但部分字无法输入，也无法正常输入多于两个字的词组；目标程序存在相同的问题
+qt5版IDE及目标程序所需要的libqt5pas一定要和编译用的IDE版本匹配
+总结 基于有限的测试经验，得出了以下结论：
+虽然Lazarus是跨平台的，并且号称一次编写，到处编译，但GUI的跨平台表现是不完全一致的，需要分别处理
+整体上，gtk2兼容性和稳定性优于qt
+最佳的开发方案：在windows系统上开发，然后交叉编译或在目标环境下进行编译
+保持跨平台一致性的方案：windows平台采用32位的gtk2&#43;皮肤，linux平台采用gtk2&#43;皮肤" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/lazarus_cross_platform/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-07T21:57:25+08:00" />
+<meta property="article:modified_time" content="2024-08-07T21:57:25+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Lazarus跨平台方案总结"/>
+<meta name="twitter:description" content="前言 对于Lazarus跨平台开发接触有一段时间了，虽然踩了不坑，但仍觉得已踩过的坑不过是九牛一毛。不过还是应该记录一下，以备忘，以后又踩新坑了再补充吧。
+环境 项目 Linux Windows 操作系统 Debian 12 Win10 CPU架构 x86_64 x86_64 桌面环境 xfce 4 / 输入法 fcitx 5 系统自带 GUI环境 gtk2/qt5/qt6 win32/gtk2/qt5 目标程序 64位 32位/64位 Qt6Pas1.dll未能得到，win &#43; qt6未测试
+linux 64位系统未能设置好32位运行环境，未测试
+qt5未能得到64位的dll，未测试
+坑 windows Application.MessageBox按钮文字英文，无法直接本地化，Windows.MessageBoxAPI可以
+TPageControl组件自带的关闭按钮在win32下不可用，gtk2和qt5正常
+qt5下，某些组件会有很诡异的现象
+gtk2下，64位目标程序运行时报错
+gtk2下，默认界面很丑，需要用皮肤
+带GUI的dll机制和行为与delphi不一致
+使用ShareMem单元需要自行构建fpcmemdll.dll
+linux gtk2版IDE无法输入中文；目标程序可正常输入
+qt5和qt6版IDE可输入中文，但部分字无法输入，也无法正常输入多于两个字的词组；目标程序存在相同的问题
+qt5版IDE及目标程序所需要的libqt5pas一定要和编译用的IDE版本匹配
+总结 基于有限的测试经验，得出了以下结论：
+虽然Lazarus是跨平台的，并且号称一次编写，到处编译，但GUI的跨平台表现是不完全一致的，需要分别处理
+整体上，gtk2兼容性和稳定性优于qt
+最佳的开发方案：在windows系统上开发，然后交叉编译或在目标环境下进行编译
+保持跨平台一致性的方案：windows平台采用32位的gtk2&#43;皮肤，linux平台采用gtk2&#43;皮肤"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Lazarus跨平台方案总结",
+      "item": "https://afrusrsc.github.io/posts/program/lazarus_cross_platform/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Lazarus跨平台方案总结",
+  "name": "Lazarus跨平台方案总结",
+  "description": "前言 对于Lazarus跨平台开发接触有一段时间了，虽然踩了不坑，但仍觉得已踩过的坑不过是九牛一毛。不过还是应该记录一下，以备忘，以后又踩新坑了再补充吧。\n环境 项目 Linux Windows 操作系统 Debian 12 Win10 CPU架构 x86_64 x86_64 桌面环境 xfce 4 / 输入法 fcitx 5 系统自带 GUI环境 gtk2/qt5/qt6 win32/gtk2/qt5 目标程序 64位 32位/64位 Qt6Pas1.dll未能得到，win + qt6未测试\nlinux 64位系统未能设置好32位运行环境，未测试\nqt5未能得到64位的dll，未测试\n坑 windows Application.MessageBox按钮文字英文，无法直接本地化，Windows.MessageBoxAPI可以\nTPageControl组件自带的关闭按钮在win32下不可用，gtk2和qt5正常\nqt5下，某些组件会有很诡异的现象\ngtk2下，64位目标程序运行时报错\ngtk2下，默认界面很丑，需要用皮肤\n带GUI的dll机制和行为与delphi不一致\n使用ShareMem单元需要自行构建fpcmemdll.dll\nlinux gtk2版IDE无法输入中文；目标程序可正常输入\nqt5和qt6版IDE可输入中文，但部分字无法输入，也无法正常输入多于两个字的词组；目标程序存在相同的问题\nqt5版IDE及目标程序所需要的libqt5pas一定要和编译用的IDE版本匹配\n总结 基于有限的测试经验，得出了以下结论：\n虽然Lazarus是跨平台的，并且号称一次编写，到处编译，但GUI的跨平台表现是不完全一致的，需要分别处理\n整体上，gtk2兼容性和稳定性优于qt\n最佳的开发方案：在windows系统上开发，然后交叉编译或在目标环境下进行编译\n保持跨平台一致性的方案：windows平台采用32位的gtk2+皮肤，linux平台采用gtk2+皮肤",
+  "keywords": [
+    "lazarus", "pascal"
+  ],
+  "articleBody": "前言 对于Lazarus跨平台开发接触有一段时间了，虽然踩了不坑，但仍觉得已踩过的坑不过是九牛一毛。不过还是应该记录一下，以备忘，以后又踩新坑了再补充吧。\n环境 项目 Linux Windows 操作系统 Debian 12 Win10 CPU架构 x86_64 x86_64 桌面环境 xfce 4 / 输入法 fcitx 5 系统自带 GUI环境 gtk2/qt5/qt6 win32/gtk2/qt5 目标程序 64位 32位/64位 Qt6Pas1.dll未能得到，win + qt6未测试\nlinux 64位系统未能设置好32位运行环境，未测试\nqt5未能得到64位的dll，未测试\n坑 windows Application.MessageBox按钮文字英文，无法直接本地化，Windows.MessageBoxAPI可以\nTPageControl组件自带的关闭按钮在win32下不可用，gtk2和qt5正常\nqt5下，某些组件会有很诡异的现象\ngtk2下，64位目标程序运行时报错\ngtk2下，默认界面很丑，需要用皮肤\n带GUI的dll机制和行为与delphi不一致\n使用ShareMem单元需要自行构建fpcmemdll.dll\nlinux gtk2版IDE无法输入中文；目标程序可正常输入\nqt5和qt6版IDE可输入中文，但部分字无法输入，也无法正常输入多于两个字的词组；目标程序存在相同的问题\nqt5版IDE及目标程序所需要的libqt5pas一定要和编译用的IDE版本匹配\n总结 基于有限的测试经验，得出了以下结论：\n虽然Lazarus是跨平台的，并且号称一次编写，到处编译，但GUI的跨平台表现是不完全一致的，需要分别处理\n整体上，gtk2兼容性和稳定性优于qt\n最佳的开发方案：在windows系统上开发，然后交叉编译或在目标环境下进行编译\n保持跨平台一致性的方案：windows平台采用32位的gtk2+皮肤，linux平台采用gtk2+皮肤\n",
+  "wordCount" : "52",
+  "inLanguage": "zh",
+  "datePublished": "2024-08-07T21:57:25+08:00",
+  "dateModified": "2024-08-07T21:57:25+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/lazarus_cross_platform/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Lazarus跨平台方案总结
+    </h1>
+    <div class="post-meta"><span title='2024-08-07 21:57:25 +0800 CST'>2024-08-07 21:57:25</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a><ul>
+                            
+                    <li>
+                        <a href="#%e7%8e%af%e5%a2%83" aria-label="环境">环境</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e5%9d%91" aria-label="坑">坑</a><ul>
+                            
+                    <li>
+                        <a href="#windows" aria-label="windows">windows</a></li>
+                    <li>
+                        <a href="#linux" aria-label="linux">linux</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>对于<code>Lazarus</code>跨平台开发接触有一段时间了，虽然踩了不坑，但仍觉得已踩过的坑不过是九牛一毛。不过还是应该记录一下，以备忘，以后又踩新坑了再补充吧。</p>
+<h2 id="环境">环境<a hidden class="anchor" aria-hidden="true" href="#环境">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>Linux</th>
+<th>Windows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>Debian 12</td>
+<td>Win10</td>
+</tr>
+<tr>
+<td>CPU架构</td>
+<td>x86_64</td>
+<td>x86_64</td>
+</tr>
+<tr>
+<td>桌面环境</td>
+<td>xfce 4</td>
+<td>/</td>
+</tr>
+<tr>
+<td>输入法</td>
+<td>fcitx 5</td>
+<td>系统自带</td>
+</tr>
+<tr>
+<td>GUI环境</td>
+<td>gtk2/qt5/qt6</td>
+<td>win32/gtk2/qt5</td>
+</tr>
+<tr>
+<td>目标程序</td>
+<td>64位</td>
+<td>32位/64位</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><code>Qt6Pas1.dll</code>未能得到，<code>win + qt6</code>未测试</p>
+</li>
+<li>
+<p><code>linux 64位</code>系统未能设置好<code>32位</code>运行环境，未测试</p>
+</li>
+<li>
+<p><code>qt5</code>未能得到<code>64位</code>的<code>dll</code>，未测试</p>
+</li>
+</ul>
+<h1 id="坑">坑<a hidden class="anchor" aria-hidden="true" href="#坑">#</a></h1>
+<h2 id="windows">windows<a hidden class="anchor" aria-hidden="true" href="#windows">#</a></h2>
+<ul>
+<li>
+<p><code>Application.MessageBox</code>按钮文字英文，无法直接本地化，<code>Windows.MessageBox</code>API可以</p>
+</li>
+<li>
+<p><code>TPageControl</code>组件自带的关闭按钮在<code>win32</code>下不可用，<code>gtk2</code>和<code>qt5</code>正常</p>
+</li>
+<li>
+<p><code>qt5</code>下，某些组件会有很诡异的现象</p>
+</li>
+<li>
+<p><code>gtk2</code>下，<code>64位</code>目标程序运行时报错</p>
+</li>
+<li>
+<p><code>gtk2</code>下，默认界面很丑，需要用皮肤</p>
+</li>
+<li>
+<p><code>带GUI的dll</code>机制和行为与<code>delphi</code>不一致</p>
+</li>
+<li>
+<p>使用<code>ShareMem</code>单元需要自行构建<code>fpcmemdll.dll</code></p>
+</li>
+</ul>
+<h2 id="linux">linux<a hidden class="anchor" aria-hidden="true" href="#linux">#</a></h2>
+<ul>
+<li>
+<p><code>gtk2</code>版<code>IDE</code>无法输入中文；目标程序可正常输入</p>
+</li>
+<li>
+<p><code>qt5</code>和<code>qt6</code>版<code>IDE</code>可输入中文，但部分字无法输入，也无法正常输入多于两个字的词组；目标程序存在相同的问题</p>
+</li>
+<li>
+<p><code>qt5</code>版<code>IDE</code>及目标程序所需要的<code>libqt5pas</code>一定要和编译用的<code>IDE</code>版本匹配</p>
+</li>
+</ul>
+<h1 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h1>
+<p>基于有限的测试经验，得出了以下结论：</p>
+<ul>
+<li>
+<p>虽然<code>Lazarus</code>是跨平台的，并且号称<code>一次编写，到处编译</code>，但<code>GUI</code>的跨平台表现是不完全一致的，需要分别处理</p>
+</li>
+<li>
+<p>整体上，<code>gtk2</code>兼容性和稳定性优于<code>qt</code></p>
+</li>
+<li>
+<p>最佳的开发方案：在<code>windows</code>系统上开发，然后交叉编译或在目标环境下进行编译</p>
+</li>
+<li>
+<p>保持跨平台一致性的方案：<code>windows</code>平台采用<code>32位</code>的<code>gtk2</code>+<code>皮肤</code>，<code>linux</code>平台采用<code>gtk2</code>+<code>皮肤</code></p>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/java_jar_rebuild/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>修改jar包内配置并重新构建</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/lazarus_debian_qt5/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>在Debian上使用Lazarus的Qt5问题</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
