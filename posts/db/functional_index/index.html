@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>使用函数索引优化特定查询 | 慢步道人</title>
+<meta name="keywords" content="Oracle, pg">
+<meta name="description" content="问题 业务中遇到一个非常慢的查询，大致可以简化为以下SQL：
+1 2 3 4 5 select * from t1 where c1 not in (...) and c2 not like &#39;ABC%&#39; and c3 in (...) and c4=-1 and c5&gt;&#39;2020-01-01,00:00:00&#39; 其中：
+有索引且命中的条件已简化掉了
+c5为自定义格式的时间字符串
+c2和c5有索引（普通索引），c1、c3和c4无索引
+c3和c4为绑定条件
+c1、c3和c4均为小值域列
+分析 not in和not like会导致普通索引失效
+为小值域列添加普通索引无法提供预期的效果
+c3和c4为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域
+c5虽然已有索引，但字符串比较操作还是太低效
+解决方案 基于以上特殊的情形，搜索并尝试后发现，函数索引恰好可以达到预期，而使用的数据库又刚好支持（Oracel和PostgreSQL完全支持）。
+添加索引 将c1的not in手动改为in查询，即可利用已有索引
+c2的not like为后模糊查询，为其创建函数索引：
+1 CREATE INDEX idx_t1_func_c2 ON t1(CASE WHEN c2 NOT LIKE &#39;ABC%&#39; THEN 1 ELSE 0 END); 为c3和c4的绑定条件创建函数索引： 1 CREATE INDEX idx_t1_func_c3c4 ON t1(CASE WHEN c3 in (.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/db/functional_index/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/db/functional_index/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="使用函数索引优化特定查询" />
+<meta property="og:description" content="问题 业务中遇到一个非常慢的查询，大致可以简化为以下SQL：
+1 2 3 4 5 select * from t1 where c1 not in (...) and c2 not like &#39;ABC%&#39; and c3 in (...) and c4=-1 and c5&gt;&#39;2020-01-01,00:00:00&#39; 其中：
+有索引且命中的条件已简化掉了
+c5为自定义格式的时间字符串
+c2和c5有索引（普通索引），c1、c3和c4无索引
+c3和c4为绑定条件
+c1、c3和c4均为小值域列
+分析 not in和not like会导致普通索引失效
+为小值域列添加普通索引无法提供预期的效果
+c3和c4为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域
+c5虽然已有索引，但字符串比较操作还是太低效
+解决方案 基于以上特殊的情形，搜索并尝试后发现，函数索引恰好可以达到预期，而使用的数据库又刚好支持（Oracel和PostgreSQL完全支持）。
+添加索引 将c1的not in手动改为in查询，即可利用已有索引
+c2的not like为后模糊查询，为其创建函数索引：
+1 CREATE INDEX idx_t1_func_c2 ON t1(CASE WHEN c2 NOT LIKE &#39;ABC%&#39; THEN 1 ELSE 0 END); 为c3和c4的绑定条件创建函数索引： 1 CREATE INDEX idx_t1_func_c3c4 ON t1(CASE WHEN c3 in (." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/db/functional_index/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-03-31T17:04:49+08:00" />
+<meta property="article:modified_time" content="2025-03-31T17:04:49+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用函数索引优化特定查询"/>
+<meta name="twitter:description" content="问题 业务中遇到一个非常慢的查询，大致可以简化为以下SQL：
+1 2 3 4 5 select * from t1 where c1 not in (...) and c2 not like &#39;ABC%&#39; and c3 in (...) and c4=-1 and c5&gt;&#39;2020-01-01,00:00:00&#39; 其中：
+有索引且命中的条件已简化掉了
+c5为自定义格式的时间字符串
+c2和c5有索引（普通索引），c1、c3和c4无索引
+c3和c4为绑定条件
+c1、c3和c4均为小值域列
+分析 not in和not like会导致普通索引失效
+为小值域列添加普通索引无法提供预期的效果
+c3和c4为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域
+c5虽然已有索引，但字符串比较操作还是太低效
+解决方案 基于以上特殊的情形，搜索并尝试后发现，函数索引恰好可以达到预期，而使用的数据库又刚好支持（Oracel和PostgreSQL完全支持）。
+添加索引 将c1的not in手动改为in查询，即可利用已有索引
+c2的not like为后模糊查询，为其创建函数索引：
+1 CREATE INDEX idx_t1_func_c2 ON t1(CASE WHEN c2 NOT LIKE &#39;ABC%&#39; THEN 1 ELSE 0 END); 为c3和c4的绑定条件创建函数索引： 1 CREATE INDEX idx_t1_func_c3c4 ON t1(CASE WHEN c3 in (."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🗄️数据库",
+      "item": "https://afrusrsc.github.io/posts/db/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "使用函数索引优化特定查询",
+      "item": "https://afrusrsc.github.io/posts/db/functional_index/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用函数索引优化特定查询",
+  "name": "使用函数索引优化特定查询",
+  "description": "问题 业务中遇到一个非常慢的查询，大致可以简化为以下SQL：\n1 2 3 4 5 select * from t1 where c1 not in (...) and c2 not like \u0026#39;ABC%\u0026#39; and c3 in (...) and c4=-1 and c5\u0026gt;\u0026#39;2020-01-01,00:00:00\u0026#39; 其中：\n有索引且命中的条件已简化掉了\nc5为自定义格式的时间字符串\nc2和c5有索引（普通索引），c1、c3和c4无索引\nc3和c4为绑定条件\nc1、c3和c4均为小值域列\n分析 not in和not like会导致普通索引失效\n为小值域列添加普通索引无法提供预期的效果\nc3和c4为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域\nc5虽然已有索引，但字符串比较操作还是太低效\n解决方案 基于以上特殊的情形，搜索并尝试后发现，函数索引恰好可以达到预期，而使用的数据库又刚好支持（Oracel和PostgreSQL完全支持）。\n添加索引 将c1的not in手动改为in查询，即可利用已有索引\nc2的not like为后模糊查询，为其创建函数索引：\n1 CREATE INDEX idx_t1_func_c2 ON t1(CASE WHEN c2 NOT LIKE \u0026#39;ABC%\u0026#39; THEN 1 ELSE 0 END); 为c3和c4的绑定条件创建函数索引： 1 CREATE INDEX idx_t1_func_c3c4 ON t1(CASE WHEN c3 in (.",
+  "keywords": [
+    "Oracle", "pg"
+  ],
+  "articleBody": "问题 业务中遇到一个非常慢的查询，大致可以简化为以下SQL：\n1 2 3 4 5 select * from t1 where c1 not in (...) and c2 not like 'ABC%' and c3 in (...) and c4=-1 and c5\u003e'2020-01-01,00:00:00' 其中：\n有索引且命中的条件已简化掉了\nc5为自定义格式的时间字符串\nc2和c5有索引（普通索引），c1、c3和c4无索引\nc3和c4为绑定条件\nc1、c3和c4均为小值域列\n分析 not in和not like会导致普通索引失效\n为小值域列添加普通索引无法提供预期的效果\nc3和c4为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域\nc5虽然已有索引，但字符串比较操作还是太低效\n解决方案 基于以上特殊的情形，搜索并尝试后发现，函数索引恰好可以达到预期，而使用的数据库又刚好支持（Oracel和PostgreSQL完全支持）。\n添加索引 将c1的not in手动改为in查询，即可利用已有索引\nc2的not like为后模糊查询，为其创建函数索引：\n1 CREATE INDEX idx_t1_func_c2 ON t1(CASE WHEN c2 NOT LIKE 'ABC%' THEN 1 ELSE 0 END); 为c3和c4的绑定条件创建函数索引： 1 CREATE INDEX idx_t1_func_c3c4 ON t1(CASE WHEN c3 in (...) and c4=-1 THEN 1 ELSE 0 END); c5不能改变表数据类型，但可以转换为时间类型，为转换后的时间类型创建索引，即为c5创建函数索引： 1 CREATE INDEX idx_t1_func_c5 ON t1(to_date(c5, 'YYYY-MM-DD,HH24:MI:SS')); 修改查询 添加索引后，还需要按照索引使用相同的函数来改造条件语句，最终优化后的SQL：\n1 2 3 4 5 select * from t1 where c1 in (...) and (CASE WHEN c2 NOT LIKE 'ABC%' THEN 1 ELSE 0 END)=1 and (CASE WHEN c3 in (...) and c4=-1 THEN 1 ELSE 0 END)=1 and to_date(c5, 'YYYY-MM-DD,HH24:MI:SS')\u003eto_date('2020-01-01,00:00:00','YYYY-MM-DD,HH24:MI:SS') 效果 清除缓存测试，原查询大约需要57s，优化后大约13s。\n",
+  "wordCount" : "136",
+  "inLanguage": "zh",
+  "datePublished": "2025-03-31T17:04:49+08:00",
+  "dateModified": "2025-03-31T17:04:49+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/db/functional_index/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/db/">🗄️数据库</a></div>
+    <h1 class="post-title entry-hint-parent">
+      使用函数索引优化特定查询
+    </h1>
+    <div class="post-meta"><span title='2025-03-31 17:04:49 +0800 CST'>2025-03-31 17:04:49</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e9%97%ae%e9%a2%98" aria-label="问题">问题</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%88%86%e6%9e%90" aria-label="分析">分析</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="解决方案">解决方案</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%b7%bb%e5%8a%a0%e7%b4%a2%e5%bc%95" aria-label="添加索引">添加索引</a></li>
+                    <li>
+                        <a href="#%e4%bf%ae%e6%94%b9%e6%9f%a5%e8%af%a2" aria-label="修改查询">修改查询</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e6%95%88%e6%9e%9c" aria-label="效果">效果</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="问题">问题<a hidden class="anchor" aria-hidden="true" href="#问题">#</a></h1>
+<p>业务中遇到一个非常慢的查询，大致可以简化为以下<code>SQL</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">where</span><span class="w"> </span><span class="n">c1</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(...)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="n">c2</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;ABC%&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="n">c3</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(...)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">c4</span><span class="o">=-</span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="n">c5</span><span class="o">&gt;</span><span class="s1">&#39;2020-01-01,00:00:00&#39;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中：</p>
+<ul>
+<li>
+<p>有索引且命中的条件已简化掉了</p>
+</li>
+<li>
+<p><code>c5</code>为自定义格式的时间字符串</p>
+</li>
+<li>
+<p><code>c2</code>和<code>c5</code>有索引（普通索引），<code>c1</code>、<code>c3</code>和<code>c4</code>无索引</p>
+</li>
+<li>
+<p><code>c3</code>和<code>c4</code>为绑定条件</p>
+</li>
+<li>
+<p><code>c1</code>、<code>c3</code>和<code>c4</code>均为<code>小值域列</code></p>
+</li>
+</ul>
+<h2 id="分析">分析<a hidden class="anchor" aria-hidden="true" href="#分析">#</a></h2>
+<ul>
+<li>
+<p><code>not in</code>和<code>not like</code>会导致普通索引失效</p>
+</li>
+<li>
+<p>为<code>小值域列</code>添加普通索引无法提供预期的效果</p>
+</li>
+<li>
+<p><code>c3</code>和<code>c4</code>为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域</p>
+</li>
+<li>
+<p><code>c5</code>虽然已有索引，但<code>字符串比较</code>操作还是太低效</p>
+</li>
+</ul>
+<h1 id="解决方案">解决方案<a hidden class="anchor" aria-hidden="true" href="#解决方案">#</a></h1>
+<p>基于以上特殊的情形，搜索并尝试后发现，<code>函数索引</code>恰好可以达到预期，而使用的数据库又刚好支持（<code>Oracel</code>和<code>PostgreSQL</code>完全支持）。</p>
+<h2 id="添加索引">添加索引<a hidden class="anchor" aria-hidden="true" href="#添加索引">#</a></h2>
+<ul>
+<li>
+<p>将<code>c1</code>的<code>not in</code>手动改为<code>in</code>查询，即可利用已有索引</p>
+</li>
+<li>
+<p><code>c2</code>的<code>not like</code>为后模糊查询，为其创建<code>函数索引</code>：</p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_t1_func_c2</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">t1</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">c2</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;ABC%&#39;</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>为<code>c3</code>和<code>c4</code>的绑定条件创建<code>函数索引</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_t1_func_c3c4</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">t1</span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">c3</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(...)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">c4</span><span class="o">=-</span><span class="mi">1</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>c5</code>不能改变表数据类型，但可以转换为<code>时间类型</code>，为转换后的时间类型创建索引，即为<code>c5</code>创建<code>函数索引</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_t1_func_c5</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">t1</span><span class="p">(</span><span class="n">to_date</span><span class="p">(</span><span class="n">c5</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;YYYY-MM-DD,HH24:MI:SS&#39;</span><span class="p">));</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="修改查询">修改查询<a hidden class="anchor" aria-hidden="true" href="#修改查询">#</a></h2>
+<p>添加索引后，还需要按照索引使用相同的函数来改造条件语句，最终优化后的<code>SQL</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">where</span><span class="w"> </span><span class="n">c1</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(...)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">c2</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;ABC%&#39;</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">c3</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(...)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">c4</span><span class="o">=-</span><span class="mi">1</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="n">to_date</span><span class="p">(</span><span class="n">c5</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;YYYY-MM-DD,HH24:MI:SS&#39;</span><span class="p">)</span><span class="o">&gt;</span><span class="n">to_date</span><span class="p">(</span><span class="s1">&#39;2020-01-01,00:00:00&#39;</span><span class="p">,</span><span class="s1">&#39;YYYY-MM-DD,HH24:MI:SS&#39;</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="效果">效果<a hidden class="anchor" aria-hidden="true" href="#效果">#</a></h1>
+<p>清除缓存测试，原查询大约需要<code>57s</code>，优化后大约<code>13s</code>。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/oracle/">Oracle</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pg/">Pg</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://afrusrsc.github.io/posts/os/debian_nvidia_driver/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Debian安装Nvidia驱动</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
