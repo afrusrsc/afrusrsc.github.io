@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Pascal | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/tags/pascal/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/tags/pascal/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/tags/pascal/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Pascal" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/tags/pascal/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Pascal"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/tags/">🔖标签</a></div>
+  <h1>
+    Pascal
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">TClientDataSet的使用以及遇到的坑
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+在Delphi未加入FireDAC之前，似乎是没有内存表控件的（也许有，可能我不知道吧），但是可以用TClientDataSet控件来做内存表使用，即使有了FireDAC可以使用TFDMemTable，我还是觉得TClientDataSet更好用一些。
+做内存表使用 创建 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 with ClientDataSet do begin Close; //定义字段 with FieldDefs do begin Clear; Add(&#39;Field1&#39;, ftInteger, 0, False); Add(&#39;Field2&#39;, ftString, 0, False); ...... end; //创建结构 CreateDataSet; Open; end; 排序 在定义字段后，创建结构前，也可以指定排序字段。
+1 IndexFieldNames := &#39;Field1&#39;; 做缓存使用 需要结合TDataSetProvider来使用。以下示例以使用ADO组件为例。
+拉取数据 方法1 TDBGrid-&gt;TDataSource-&gt;TClientDataSet-&gt;TDataSetProvider-&gt;TADOQuery-&gt;TADOConnection
+1 2 3 4 5 6 7 ClientDataSet.ProviderName := DataSetProvider.Name; //设计器里设置过就不需要了 with ClientDataSet do begin Close; CommandText:=&#39;select * from T_Table&#39;; Open; end; 方法2 TDBGrid-&gt;TDataSource...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-01-12 14:43:15 +0800 CST'>2019-01-12 14:43:15</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to TClientDataSet的使用以及遇到的坑" href="https://afrusrsc.github.io/posts/program/pascal/delphi_clientdataset/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">使用海康威视SDK的那些坑
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。
+Delphi版本的接口 Gitee地址
+首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C&#43;&#43;的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。
+由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。
+坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。
+其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。
+PlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-01-02 16:29:46 +0800 CST'>2019-01-02 16:29:46</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 使用海康威视SDK的那些坑" href="https://afrusrsc.github.io/posts/program/pascal/sdk_hcnetsdk/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Delphi自定义图形控件的自定义字体属性在设计期报错的解决办法
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+背景 自定义一个图形控件（继承自TGraphicControl类），需要在不同区域显示不同字体的内容，此时会需要在设计器中加入多个字体，方法是在控件的published区增加对应的字体属性即可（使用Ctrl&#43;Shift&#43;C可快速生成），如：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 TMyGraphicControl = class(GraphicControl) private FText1Font: TFont; FText2Font: TFont; procedure SetText1Font(const Value: TFont); procedure SetText2Font(const Value: TFont); protected procedure Paint; override; public { public declarations } published property Text1Font:TFont read FText1Font write SetText1Font; property Text2Font:TFont read FText2Font write SetText2Font; end; 这样就可以在设计器里像使用原生控件一样使用自己的控件了。
+问题 但是，如果在设计期选择了弹出字体对话框进行设置字体，IDE就会报错（大意是读或写某个地址异常），而在运行期则正常！
+原因 对比查看Delphi自带的控件源码，终于找到了原因。
+1 2 3 4 5 6 7 8 9 10 //Delphi TControl类设置字体属性的方法 procedure TControl....</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-10-02 02:40:14 +0800 CST'>2018-10-02 02:40:14</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Delphi自定义图形控件的自定义字体属性在设计期报错的解决办法" href="https://afrusrsc.github.io/posts/program/pascal/delphi_custom_graphic_control/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Delphi版本号对照表
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+Conditional VER Product Product Version Package Version VER330 Delphi / C&#43;&#43;Builder XE10.3 Rio 26 260 VER320 Delphi / C&#43;&#43;Builder XE10.2 Tokyo 25 250 VER310 Delphi / C&#43;&#43;Builder XE10.1 Berlin 24 240 VER300 Delphi / C&#43;&#43;Builder XE10 Seattle 23 230 VER290 Delphi / C&#43;&#43;Builder XE8 22 220 VER280 Delphi / C&#43;&#43;Builder XE7 21 210 VER270 Delphi / C&#43;&#43;Builder XE6 20 200 VER260 Delphi / C&#43;&#43;Builder XE5 19 190 VER250 Delphi / C&#43;&#43;Builder XE4 18 180 VER240 Delphi / C&#43;&#43;Builder XE3 17 170 VER230 Delphi / C&#43;&#43;Builder XE2 16 160 VER220 Delphi / C&#43;&#43;Builder XE 15 150 VER210 Delphi / C&#43;&#43;Builder 2010 14 140 VER200 Delphi / C&#43;&#43;Builder 2009 12 120 VER190 Delphi 2007 for ....</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-08-12 15:52:38 +0800 CST'>2018-08-12 15:52:38</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Delphi版本号对照表" href="https://afrusrsc.github.io/posts/program/pascal/delphi_version/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">使用FireDAC的TFDQuery查询Firebird遇到的坑
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+这几天被Prepare这个东西搞死了，虽然用它解决了目前的问题，但是完全不知道为什么，如有大侠知道还望指教，不胜感激！
+首先，说下开发环境：
+win10 x64(1709 [10.0.16299.125])&#43;Delphi XE7 up1(自带FireDAC)&#43;Firebird 3.0.2.32703_0(数据库字符集使用UTF8)
+问题一：中文模糊查询 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 var CompanyType: Integer FDQuery1.Close; FDQuery1.SQL.Text := &#39;SELECT * FROM companyinfo &#39; &#43; &#39;WHERE (tag = 0) AND (companytype = :companytype) AND &#39; &#43; &#39;((companyname LIKE :Text) OR (pym LIKE :Text))&#39; &#43; &#39; ORDER BY TIMES DESC&#39;; //FDQuery1.Prepare; //写在这里会报错，提示如下，大致意思是： //数据库 companytype 字段是SmallInt类型，却赋了一个Integer类型的值 {--------------------------- [FireDAC][Phys][FB]-338....</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-01-03 01:43:02 +0800 CST'>2018-01-03 01:43:02</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 使用FireDAC的TFDQuery查询Firebird遇到的坑" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdquery_firebird/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">cxGrid基本用法小记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+汉化 在DevExpress选项卡找到TcxLocalizer控件放到窗体上，为了通用，我是放到DataModule窗体上。 准备好汉化的资源文件或配置文件（我使用的是后者），在DataModule的Create事件里写上如下代码 1 2 3 4 5 6 7 with cxLocalizer1 do begin StorageType := lstIni; LoadFromFile(IniPath &#43; &#39;DevChs.ini&#39;); locale := 2052; Active := True; end; 在有cxGrid或其实Dev控件的单元引用DataModule单元。 更改视觉样式 在DevExpress选项卡找到TcxLookAndFeelController控件放到DataModule窗体上。
+在有cxGrid或其它Dev控件的单元引用DataModule单元。
+在要更改视觉样式的代码段里设置TcxLookAndFeelController控件的Kind属性和NativeStyle属性。
+让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式 在DevExpress选项卡找到TcxStyleRepository控件放到DataModule窗体上。
+双击cxStyleRepository控件，打开如下窗口，点Add添加两个样式，并命名。
+分别在属性中设置不同的样式，颜色、字体、字号、字体颜色等。 在有cxGrid的单元中引用DataModule单元。
+选中cxGrid的cxGridDBTableView，展开Styles，分别关联ContentEven和ContentOdd。
+另外也可设置Header、Selection和Inactive。Header改变的是表头的样式，Selection改变的是当前选择行的样式，Inactive改变的是cxGrid失去焦点时当前选择行的样式。
+不显示分组框 设置cxGridDBTableView的OptionsView下的GroupByBox属性为False。
+显示合计等脚注 设置cxGridDBTableView的OptionsView下的Footer属性为True。
+点cxGrid的Customize...按钮，弹出对话框，选择Summary标签页，在Footer子标签页中点Add增加合计项目。
+选择增加的项目，在属性中设置关联的列、字段名等属性。 设置行号 增加一列，不关联数据库字段，设置好属性。
+在该列的OnGetDataText事件中写如下代码：
+1 AText := IntToStr(ARecordIndex &#43; 1); 编辑完成前光标不能离开当前行 在cxGridDBTableView的OnCanFocusRecord事件中写入类似以下的代码： 1 AAllow := DbState in [dsBrowse]; 只读 设置cxGridDBTableView.OptionsData.Editing属性为False。
+选择整行 设置cxGridDBTableView.OptionsSelection.CellSelect属性为False。</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-11-25 20:41:33 +0800 CST'>2017-11-25 20:41:33</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to cxGrid基本用法小记" href="https://afrusrsc.github.io/posts/program/pascal/devexpress_cxgrid/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">FireDAC之TFDStoredProc
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+1.在FireDAC选项卡中找到TFDStoredProc控件，放到窗体上，并把Connection属性设置为准备好的数据库连接控件上。
+2.在需要执行存储过程的位置写入类似以下的代码：
+1 2 3 4 5 6 7 8 9 FDStoredProc1.StoredProcName := &#39;SP_StoredProcName&#39;; FDStoredProc1.Prepare; //必须，否则会报找不到参数的错误 FDStoredProc1.ParamByName(&#39;I_ID&#39;).AsInteger := id; //无返回值或返回值由输出参数传递时 FDStoredProc1.ExecProc; UserName := FDStoredProc1.ParamByName(&#39;O_USERNAME&#39;).AsString; //有返回值或数据集时 FDStoredProc1.Open(); UserName := FDStoredProc1.FindField(&#39;O_USERNAME&#39;).AsString; 3.以上为存储过程返回单个值或单条记录时的用法，存储过程返回多条记录（即数据表）的用法暂未研究。</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-11-24 10:11:13 +0800 CST'>2017-11-24 10:11:13</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to FireDAC之TFDStoredProc" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdstoredproc/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">FirdDAC之TFDQuery使用
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 从其它平台迁移而来
+1.在FireDAC选项卡中找到TFDQuery控件，放到窗体上，并把Connection属性设置为准备好的数据库连接控件上。
+2.在需要查询或执行SQL语句的位置写入类似以下的代码：
+1 2 3 4 5 6 7 8 //查询，有返回集 FDQuery1.SQL.Text := &#39;SELECT * FROM DBTable WHERE id = :id&#39;; FDQuery1.ParamByName(&#39;id&#39;).AsInteger := 1; FDQuery1.Open(); //执行SQL语句，无返回集 FDQuery1.SQL.Text := &#39;DELETE FROM DBTable WHERE id = :id&#39;; FDQuery1.ParamByName(&#39;id&#39;).AsInteger := 1; FDQuery1.ExecSQL; 3.若查询结果需要连接到数据集，则在DataAccess选项卡中找到TDataSource控件，放到窗体上，并把DataSet属性连接到TFDQuery控件。然后把数据感知控件（如cxGrid等）的DataSource属性连接到TDataSource控件。
+4.若只需要取出查询结果并进行后续处理，可使用如下代码取出结果：
+1 2 3 id := FDQuery1.FindField(&#39;id&#39;).AsInteger; DeptName := FDQuery1.FindField(&#39;deptname&#39;).AsString; Money := FDQuery1.FindField(&#39;money&#39;).AsFloat; </p>
+  </div>
+  <footer class="entry-footer"><span title='2017-11-23 22:31:27 +0800 CST'>2017-11-23 22:31:27</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to FirdDAC之TFDQuery使用" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdquery/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">FireDAC连接数据库
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+建立DataModule
+在FireDAC选项卡中找到我们的主角TFDConnection控件，并放到DataModule窗体上，把LoginPrompt设为False，这样在连接时就不会弹出登陆对话框了。然后再找到TFDManager控件，也放到DataModule窗体上，并且把Active属性设为True，这样一来，在引用了本单元的其它单元中，就可以直接把FireDAC控件的Connection连接到本单元的TFDConnection了。
+在FireDAC Links选项卡中找到所需要连接的数据的驱动链接控件，放到DataModule窗体上。本例中使用的是FireBird数据库，因此就选择了TFDPhysFBDriverLink，其它数据库参照执行（本人接触的数据库不多，各数据库间的差异不敢妄言，但整体使用思路和方法应是不差的）。 在FireDAC UI选项卡中找到TFDGUIxWaitCursor控件，放到DataModule窗体上。该控件其实只是个光标，可修改ScreenCursor属性来改变光标。 至此，拖控件的工作基本上就做完了，下面该写代码了（虽然代码中有相当一部分工作可以直接在设计器中修改属性来达到，但建议用代码来实现，一方面便于DEBUG，另一方面也易于进行数据库的变更、迁移等）。
+在DataModule的Create事件中写入类似以下的代码（也可写在其它地主，但要保证必须在任何数据库操作代码前运行）： 1 2 3 4 5 6 7 8 9 10 11 12 FDPhysFBDriverLink1.VendorLib := DllPath &#43; &#39;fbclient.dll&#39;; FDConnection1.Params.DriverID := &#39;FB&#39;; FDConnection1.Params.Database := HostName &#43; &#39;/&#39; &#43; DBPort &#43; &#39;:&#39; &#43; DBFilePathAndName; FDConnection1.Params.UserName := UserName; FDConnection1.Params.Password := Password; FDConnection1.Params.Add(&#39;CharacterSet=utf8&#39;); try FDConnection1.Open(); except on E:Exception do ShowMessage(E.Message); end; 注意：FDConnection1.Params.Add(&#39;CharacterSet=utf8&#39;);这句是设置客户端连接数据库是默认使用的字符集，一定要与所连接的数据库使用的默认字符集一致，否则将会发生很多奇怪的事情。而且该项无法在设计器的属性中进行设置！</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-11-22 11:25:47 +0800 CST'>2017-11-22 11:25:47</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to FireDAC连接数据库" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdconnection/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">深入Delphi的字符串类型
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+探索 之前提到了Delphi的字符串，但并未展开说，这里就详细探讨下Delphi的字符串类型。
+废话不多说，直接上源码：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 program StringTest; {$APPTYPE CONSOLE} uses SysUtils; var s1, s2, s3: string; begin Writeln(&#39;Now time : &#39;,FormatDateTime(&#39;HH:MM:SS....</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-08-15 23:17:53 +0800 CST'>2017-08-15 23:17:53</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 深入Delphi的字符串类型" href="https://afrusrsc.github.io/posts/program/pascal/delphi_string01/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="https://afrusrsc.github.io/tags/pascal/page/6/">
+      «&nbsp;上一页&nbsp;6/8
+    </a>
+    <a class="next" href="https://afrusrsc.github.io/tags/pascal/page/8/">下一页&nbsp;8/8&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
