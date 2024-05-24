@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Xfce on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/xfce/</link>
+    <description>Recent content in Xfce on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sun, 13 Jul 2025 10:26:19 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/xfce/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Xfce4自定义用户文件夹</title>
+      <link>https://afrusrsc.github.io/posts/os/xfce4_user_dirs/</link>
+      <pubDate>Sun, 13 Jul 2025 10:26:19 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/os/xfce4_user_dirs/</guid>
+      <description>背景 在Linux上，一直使用的是xfce桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。
+但是，在中文环境下，默认的下载目录名字就是下载，在命令行下使用时还要切换输入法，麻烦，虽然可以建立软链接解决，但还是想知道有没有更直接的方法。
+解决方案 一番折腾后，发现了$HOME/.config/目录下的user-dirs.dirs文件，内容如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # This file is written by xdg-user-dirs-update # If you want to change or add directories, just edit the line you&amp;#39;re # interested in. All local changes will be retained on the next run. # Format is XDG_xxx_DIR=&amp;#34;$HOME/yyy&amp;#34;, where yyy is a shell-escaped # homedir-relative path, or XDG_xxx_DIR=&amp;#34;/yyy&amp;#34;, where /yyy is an # absolute path.</description>
+    </item>
+  </channel>
+</rss>
