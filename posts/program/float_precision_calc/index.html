@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>简单数学运算的比较 | 慢步道人</title>
+<meta name="keywords" content="delphi, pascal, java, c#, python, float">
+<meta name="description" content="从其它平台迁移而来
+人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。
+java 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/float_precision_calc/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.eb0ba7092f4c129d35bcb4cae63a08b56b9bba849899ab84ae42d2c4834d5870.css" integrity="sha256-6wunCS9MEp01vLTK5joItWubuoSYmauErkLSxINNWHA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/float_precision_calc/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="简单数学运算的比较" />
+<meta property="og:description" content="从其它平台迁移而来
+人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。
+java 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/float_precision_calc/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-01-01T22:37:24+08:00" />
+<meta property="article:modified_time" content="2020-01-01T22:37:24+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="简单数学运算的比较"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。
+java 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "简单数学运算的比较",
+      "item": "https://afrusrsc.github.io/posts/program/float_precision_calc/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "简单数学运算的比较",
+  "name": "简单数学运算的比较",
+  "description": "从其它平台迁移而来\n人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。\njava 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10.",
+  "keywords": [
+    "delphi", "pascal", "java", "c#", "python", "float"
+  ],
+  "articleBody": " 从其它平台迁移而来\n人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。\njava 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10.0; //0.1 d := 1 - 9.0 / 10; //0.1 e := 1 - 9 / 10; //0.1 Go 1 2 3 4 5 a := 1 / 10 //0 b := 1.0 / 10 //0.1 c := 1 / 10.0 //0.1 d := 1 - 9.0/10 //0.1 e := 1 - 9/10 //1 C# 1 2 3 4 5 6 7 8 9 10 11 12 //.Net Framework double a = 1 / 10; //0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.1 double e = 1 - 9 / 10; //1 //.NET Core double a = 1 / 10; //0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1 python 3 1 2 3 4 5 a = 1 / 10; //0.1 b = 1.0 / 10; //0.1 c = 1 / 10.0; //0.1 d = 1 - 9.0 / 10; //0.09999999999999998 e = 1 - 9 / 10; //0.09999999999999998 从以上可看出：\nDelphi和python 3，整数/整数=浮点数；java、Go、C#，整数/整数=整数。\nDelphi、Go、C#(.Net Framework)比java、C#(.NET Core)、python 3的浮点数精度要高。\nDelphi按自然认知书写即可；Go、C#(.Net Framework)需要注意一下书写语法；python 3浮点数做比较时要做下特殊处理才行；java、C#(.NET Core)不仅要注意书写语法，比较时还要做特殊处理。\n综合精度和方便度来看，Delphi才是王者，Go、C#(.Net Framework)次之，python 3再次，java、C#(.NET Core)末之。\n哈哈，Delphi依然宝刀未老啊！\n",
+  "wordCount" : "275",
+  "inLanguage": "zh",
+  "datePublished": "2020-01-01T22:37:24+08:00",
+  "dateModified": "2020-01-01T22:37:24+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/float_precision_calc/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+    <h1 class="post-title entry-hint-parent">
+      简单数学运算的比较
+    </h1>
+    <div class="post-meta"><span title='2020-01-01 22:37:24 +0800 CST'>2020-01-01 22:37:24</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> 
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>人到中年，总是不免生出些危机感，长年使用<code>Delphi</code>，心中自是不踏实，闲来便看两眼<code>java</code>，不想却发现个从未注意过的小问题。</p>
+<ul>
+<li>java</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">10</span><span class="p">;</span><span class="w">       </span><span class="c1">//0.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">.</span><span class="na">0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">10</span><span class="p">;</span><span class="w">     </span><span class="c1">//0.1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kt">double</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">10</span><span class="p">.</span><span class="na">0</span><span class="p">;</span><span class="w">     </span><span class="c1">//0.1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">9</span><span class="p">.</span><span class="na">0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">10</span><span class="p">;</span><span class="w"> </span><span class="c1">//0.09999999999999998</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kt">double</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">9</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">10</span><span class="p">;</span><span class="w">   </span><span class="c1">//1.0</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Delphi</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a := 1 / 10;       //0.1
+</span></span><span class="line"><span class="cl">b := 1.0 / 10;     //0.1
+</span></span><span class="line"><span class="cl">c := 1 / 10.0;     //0.1
+</span></span><span class="line"><span class="cl">d := 1 - 9.0 / 10; //0.1
+</span></span><span class="line"><span class="cl">e := 1 - 9 / 10;   //0.1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Go</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">a</span> <span class="o">:=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">10</span>     <span class="c1">//0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">b</span> <span class="o">:=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">10</span>   <span class="c1">//0.1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">c</span> <span class="o">:=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">10.0</span>   <span class="c1">//0.1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">d</span> <span class="o">:=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">9.0</span><span class="o">/</span><span class="mi">10</span> <span class="c1">//0.1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">e</span> <span class="o">:=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">9</span><span class="o">/</span><span class="mi">10</span>   <span class="c1">//1
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>C#</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="c1">//.Net Framework</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">a</span> <span class="p">=</span> <span class="m">1</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span>       <span class="c1">//0</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">b</span> <span class="p">=</span> <span class="m">1.0</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span>     <span class="c1">//0.1</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">c</span> <span class="p">=</span> <span class="m">1</span> <span class="p">/</span> <span class="m">10.0</span><span class="p">;</span>     <span class="c1">//0.1</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">d</span> <span class="p">=</span> <span class="m">1</span> <span class="p">-</span> <span class="m">9.0</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span> <span class="c1">//0.1</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">e</span> <span class="p">=</span> <span class="m">1</span> <span class="p">-</span> <span class="m">9</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span>   <span class="c1">//1</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//.NET Core</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">a</span> <span class="p">=</span> <span class="m">1</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span>       <span class="c1">//0</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">b</span> <span class="p">=</span> <span class="m">1.0</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span>     <span class="c1">//0.1</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">c</span> <span class="p">=</span> <span class="m">1</span> <span class="p">/</span> <span class="m">10.0</span><span class="p">;</span>     <span class="c1">//0.1</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">d</span> <span class="p">=</span> <span class="m">1</span> <span class="p">-</span> <span class="m">9.0</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span> <span class="c1">//0.09999999999999998</span>
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">e</span> <span class="p">=</span> <span class="m">1</span> <span class="p">-</span> <span class="m">9</span> <span class="p">/</span> <span class="m">10</span><span class="p">;</span>   <span class="c1">//1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>python 3</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">10</span><span class="p">;</span>       <span class="o">//</span><span class="mf">0.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">10</span><span class="p">;</span>     <span class="o">//</span><span class="mf">0.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">10.0</span><span class="p">;</span>     <span class="o">//</span><span class="mf">0.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">9.0</span> <span class="o">/</span> <span class="mi">10</span><span class="p">;</span> <span class="o">//</span><span class="mf">0.09999999999999998</span>
+</span></span><span class="line"><span class="cl"><span class="n">e</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">9</span> <span class="o">/</span> <span class="mi">10</span><span class="p">;</span>   <span class="o">//</span><span class="mf">0.09999999999999998</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从以上可看出：</p>
+<ol>
+<li>
+<p><code>Delphi</code>和<code>python 3</code>，整数/整数=浮点数；<code>java</code>、<code>Go</code>、<code>C#</code>，整数/整数=整数。</p>
+</li>
+<li>
+<p><code>Delphi</code>、<code>Go</code>、<code>C#(.Net Framework)</code>比<code>java</code>、<code>C#(.NET Core)</code>、<code>python 3</code>的浮点数精度要高。</p>
+</li>
+<li>
+<p><code>Delphi</code>按自然认知书写即可；<code>Go</code>、<code>C#(.Net Framework)</code>需要注意一下书写语法；<code>python 3</code>浮点数做比较时要做下特殊处理才行；<code>java</code>、<code>C#(.NET Core)</code>不仅要注意书写语法，比较时还要做特殊处理。</p>
+</li>
+</ol>
+<p>综合精度和方便度来看，<code>Delphi</code>才是王者，<code>Go</code>、<code>C#(.Net Framework)</code>次之，<code>python 3</code>再次，<code>java</code>、<code>C#(.NET Core)</code>末之。</p>
+<p>哈哈，<code>Delphi</code>依然宝刀未老啊！</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/delphi/">Delphi</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/java/">Java</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/c%23/">C#</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/python/">Python</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/float/">Float</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go_delphi_interface/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>从Delphi到Go——接口</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/delphi_delay/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Delphi中的延时</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

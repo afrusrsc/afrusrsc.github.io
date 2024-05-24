@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>GBK编码 | 慢步道人</title>
+<meta name="keywords" content="GBK, 字符编码">
+<meta name="description" content="从其它平台迁移而来
+在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。
+其中，中文字符集编码常用的有GB2312和GBK，以及万国码UTF8，另外还有GB18030。
+ASCII码每个字符占一个字节；GB2312是GBK的子集，两个字符集都是每个字符占两个字节；GB18030是GBK的取代版本，每个字符占一个、两个或四个字节；UFT8是万国码，每个字符占一个、两个或三个字节。
+下图是GBK字符编码表。
+图是265*256的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为0000~FF00；垂直方向表示低字节，从上到下为0000~00FF。
+左侧0区：0000~007F，ASCII码区。
+右下色块区：8140~FEFE（需剔除a区即817F~FE7F），GBK编码区。
+具体说明 GBK编码分三部分。
+一、汉字区 2区：B0A1~F7FE，GBK/2，GB2312汉字区，GB2312汉字6763个。
+GB13000.1扩充汉字区
+3区：8140~A0FE，GBK/3，GB13000.1中的CJK汉字6080个。
+4区：AA40~FEA0，GBK/4，CJK汉字和增补的汉字8160个。
+二、图形符号区 1区：A1A1~A9FE，GBK/1，GB2312非汉字符号区。除GB2312的符号外，还有10个小写罗马数字和GB12345增补的符号。计符号717个。
+5区：A840~A9A0，GBK/5，GB13000.1扩充非汉字区。包含BIG-5非汉字符号、结构符和汉字〇。计符号166个。
+三、用户自定义区 A区：AAA1~AFFE，码位564个。
+B区：F8A1~FEFE，码位658个。
+C区：A140~A7A0，码位672个。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/gbk/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.eb0ba7092f4c129d35bcb4cae63a08b56b9bba849899ab84ae42d2c4834d5870.css" integrity="sha256-6wunCS9MEp01vLTK5joItWubuoSYmauErkLSxINNWHA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/gbk/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="GBK编码" />
+<meta property="og:description" content="从其它平台迁移而来
+在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。
+其中，中文字符集编码常用的有GB2312和GBK，以及万国码UTF8，另外还有GB18030。
+ASCII码每个字符占一个字节；GB2312是GBK的子集，两个字符集都是每个字符占两个字节；GB18030是GBK的取代版本，每个字符占一个、两个或四个字节；UFT8是万国码，每个字符占一个、两个或三个字节。
+下图是GBK字符编码表。
+图是265*256的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为0000~FF00；垂直方向表示低字节，从上到下为0000~00FF。
+左侧0区：0000~007F，ASCII码区。
+右下色块区：8140~FEFE（需剔除a区即817F~FE7F），GBK编码区。
+具体说明 GBK编码分三部分。
+一、汉字区 2区：B0A1~F7FE，GBK/2，GB2312汉字区，GB2312汉字6763个。
+GB13000.1扩充汉字区
+3区：8140~A0FE，GBK/3，GB13000.1中的CJK汉字6080个。
+4区：AA40~FEA0，GBK/4，CJK汉字和增补的汉字8160个。
+二、图形符号区 1区：A1A1~A9FE，GBK/1，GB2312非汉字符号区。除GB2312的符号外，还有10个小写罗马数字和GB12345增补的符号。计符号717个。
+5区：A840~A9A0，GBK/5，GB13000.1扩充非汉字区。包含BIG-5非汉字符号、结构符和汉字〇。计符号166个。
+三、用户自定义区 A区：AAA1~AFFE，码位564个。
+B区：F8A1~FEFE，码位658个。
+C区：A140~A7A0，码位672个。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/gbk/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2017-11-30T10:46:25+08:00" />
+<meta property="article:modified_time" content="2017-11-30T10:46:25+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="GBK编码"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。
+其中，中文字符集编码常用的有GB2312和GBK，以及万国码UTF8，另外还有GB18030。
+ASCII码每个字符占一个字节；GB2312是GBK的子集，两个字符集都是每个字符占两个字节；GB18030是GBK的取代版本，每个字符占一个、两个或四个字节；UFT8是万国码，每个字符占一个、两个或三个字节。
+下图是GBK字符编码表。
+图是265*256的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为0000~FF00；垂直方向表示低字节，从上到下为0000~00FF。
+左侧0区：0000~007F，ASCII码区。
+右下色块区：8140~FEFE（需剔除a区即817F~FE7F），GBK编码区。
+具体说明 GBK编码分三部分。
+一、汉字区 2区：B0A1~F7FE，GBK/2，GB2312汉字区，GB2312汉字6763个。
+GB13000.1扩充汉字区
+3区：8140~A0FE，GBK/3，GB13000.1中的CJK汉字6080个。
+4区：AA40~FEA0，GBK/4，CJK汉字和增补的汉字8160个。
+二、图形符号区 1区：A1A1~A9FE，GBK/1，GB2312非汉字符号区。除GB2312的符号外，还有10个小写罗马数字和GB12345增补的符号。计符号717个。
+5区：A840~A9A0，GBK/5，GB13000.1扩充非汉字区。包含BIG-5非汉字符号、结构符和汉字〇。计符号166个。
+三、用户自定义区 A区：AAA1~AFFE，码位564个。
+B区：F8A1~FEFE，码位658个。
+C区：A140~A7A0，码位672个。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "GBK编码",
+      "item": "https://afrusrsc.github.io/posts/program/gbk/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GBK编码",
+  "name": "GBK编码",
+  "description": "从其它平台迁移而来\n在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。\n其中，中文字符集编码常用的有GB2312和GBK，以及万国码UTF8，另外还有GB18030。\nASCII码每个字符占一个字节；GB2312是GBK的子集，两个字符集都是每个字符占两个字节；GB18030是GBK的取代版本，每个字符占一个、两个或四个字节；UFT8是万国码，每个字符占一个、两个或三个字节。\n下图是GBK字符编码表。\n图是265*256的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为0000~FF00；垂直方向表示低字节，从上到下为0000~00FF。\n左侧0区：0000~007F，ASCII码区。\n右下色块区：8140~FEFE（需剔除a区即817F~FE7F），GBK编码区。\n具体说明 GBK编码分三部分。\n一、汉字区 2区：B0A1~F7FE，GBK/2，GB2312汉字区，GB2312汉字6763个。\nGB13000.1扩充汉字区\n3区：8140~A0FE，GBK/3，GB13000.1中的CJK汉字6080个。\n4区：AA40~FEA0，GBK/4，CJK汉字和增补的汉字8160个。\n二、图形符号区 1区：A1A1~A9FE，GBK/1，GB2312非汉字符号区。除GB2312的符号外，还有10个小写罗马数字和GB12345增补的符号。计符号717个。\n5区：A840~A9A0，GBK/5，GB13000.1扩充非汉字区。包含BIG-5非汉字符号、结构符和汉字〇。计符号166个。\n三、用户自定义区 A区：AAA1~AFFE，码位564个。\nB区：F8A1~FEFE，码位658个。\nC区：A140~A7A0，码位672个。",
+  "keywords": [
+    "GBK", "字符编码"
+  ],
+  "articleBody": " 从其它平台迁移而来\n在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。\n其中，中文字符集编码常用的有GB2312和GBK，以及万国码UTF8，另外还有GB18030。\nASCII码每个字符占一个字节；GB2312是GBK的子集，两个字符集都是每个字符占两个字节；GB18030是GBK的取代版本，每个字符占一个、两个或四个字节；UFT8是万国码，每个字符占一个、两个或三个字节。\n下图是GBK字符编码表。\n图是265*256的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为0000~FF00；垂直方向表示低字节，从上到下为0000~00FF。\n左侧0区：0000~007F，ASCII码区。\n右下色块区：8140~FEFE（需剔除a区即817F~FE7F），GBK编码区。\n具体说明 GBK编码分三部分。\n一、汉字区 2区：B0A1~F7FE，GBK/2，GB2312汉字区，GB2312汉字6763个。\nGB13000.1扩充汉字区\n3区：8140~A0FE，GBK/3，GB13000.1中的CJK汉字6080个。\n4区：AA40~FEA0，GBK/4，CJK汉字和增补的汉字8160个。\n二、图形符号区 1区：A1A1~A9FE，GBK/1，GB2312非汉字符号区。除GB2312的符号外，还有10个小写罗马数字和GB12345增补的符号。计符号717个。\n5区：A840~A9A0，GBK/5，GB13000.1扩充非汉字区。包含BIG-5非汉字符号、结构符和汉字〇。计符号166个。\n三、用户自定义区 A区：AAA1~AFFE，码位564个。\nB区：F8A1~FEFE，码位658个。\nC区：A140~A7A0，码位672个。\n",
+  "wordCount" : "22",
+  "inLanguage": "zh",
+  "datePublished": "2017-11-30T10:46:25+08:00",
+  "dateModified": "2017-11-30T10:46:25+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/gbk/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+    <h1 class="post-title entry-hint-parent">
+      GBK编码
+    </h1>
+    <div class="post-meta"><span title='2017-11-30 10:46:25 +0800 CST'>2017-11-30 10:46:25</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%85%b7%e4%bd%93%e8%af%b4%e6%98%8e" aria-label="具体说明">具体说明</a><ul>
+                            
+                    <li>
+                        <a href="#%e4%b8%80%e6%b1%89%e5%ad%97%e5%8c%ba" aria-label="一、汉字区">一、汉字区</a></li>
+                    <li>
+                        <a href="#%e4%ba%8c%e5%9b%be%e5%bd%a2%e7%ac%a6%e5%8f%b7%e5%8c%ba" aria-label="二、图形符号区">二、图形符号区</a></li>
+                    <li>
+                        <a href="#%e4%b8%89%e7%94%a8%e6%88%b7%e8%87%aa%e5%ae%9a%e4%b9%89%e5%8c%ba" aria-label="三、用户自定义区">三、用户自定义区</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。</p>
+<p>其中，中文字符集编码常用的有<code>GB2312</code>和<code>GBK</code>，以及万国码<code>UTF8</code>，另外还有<code>GB18030</code>。</p>
+<p><code>ASCII码</code>每个字符占一个字节；<code>GB2312</code>是<code>GBK</code>的子集，两个字符集都是每个字符占两个字节；<code>GB18030</code>是<code>GBK</code>的取代版本，每个字符占一个、两个或四个字节；<code>UFT8</code>是万国码，每个字符占一个、两个或三个字节。</p>
+<p>下图是<code>GBK</code>字符编码表。</p>
+<p><img loading="lazy" src="https://s21.ax1x.com/2024/07/18/pkocJBD.jpg" alt=""  />
+</p>
+<p>图是<code>265*256</code>的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为<code>0000~FF00</code>；垂直方向表示低字节，从上到下为<code>0000~00FF</code>。</p>
+<p>左侧<code>0区</code>：<code>0000~007F</code>，<code>ASCII码</code>区。</p>
+<p>右下色块区：<code>8140~FEFE</code>（需剔除<code>a区</code>即<code>817F~FE7F</code>），<code>GBK编码</code>区。</p>
+<h1 id="具体说明">具体说明<a hidden class="anchor" aria-hidden="true" href="#具体说明">#</a></h1>
+<p>GBK编码分三部分。</p>
+<h2 id="一汉字区">一、汉字区<a hidden class="anchor" aria-hidden="true" href="#一汉字区">#</a></h2>
+<ol>
+<li>
+<p>2区：<code>B0A1~F7FE</code>，<code>GBK/2</code>，<code>GB2312</code>汉字区，<code>GB2312</code>汉字<code>6763</code>个。</p>
+</li>
+<li>
+<p><code>GB13000.1</code>扩充汉字区</p>
+<ol>
+<li>
+<p>3区：<code>8140~A0FE</code>，<code>GBK/3</code>，<code>GB13000.1</code>中的<code>CJK</code>汉字<code>6080</code>个。</p>
+</li>
+<li>
+<p>4区：<code>AA40~FEA0</code>，<code>GBK/4</code>，<code>CJK</code>汉字和增补的汉字<code>8160</code>个。</p>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="二图形符号区">二、图形符号区<a hidden class="anchor" aria-hidden="true" href="#二图形符号区">#</a></h2>
+<ol>
+<li>
+<p>1区：<code>A1A1~A9FE</code>，<code>GBK/1</code>，<code>GB2312</code>非汉字符号区。除<code>GB2312</code>的符号外，还有<code>10</code>个小写罗马数字和<code>GB12345</code>增补的符号。计符号<code>717</code>个。</p>
+</li>
+<li>
+<p>5区：<code>A840~A9A0</code>，<code>GBK/5</code>，<code>GB13000.1</code>扩充非汉字区。包含<code>BIG-5</code>非汉字符号、结构符和汉字<code>〇</code>。计符号<code>166</code>个。</p>
+</li>
+</ol>
+<h2 id="三用户自定义区">三、用户自定义区<a hidden class="anchor" aria-hidden="true" href="#三用户自定义区">#</a></h2>
+<ol>
+<li>
+<p>A区：<code>AAA1~AFFE</code>，码位<code>564</code>个。</p>
+</li>
+<li>
+<p>B区：<code>F8A1~FEFE</code>，码位<code>658</code>个。</p>
+</li>
+<li>
+<p>C区：<code>A140~A7A0</code>，码位<code>672</code>个。</p>
+</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/gbk/">GBK</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/">字符编码</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/firedac_fdquery_firebird/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>使用FireDAC的TFDQuery查询Firebird遇到的坑</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/devexpress_cxgrid/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>cxGrid基本用法小记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

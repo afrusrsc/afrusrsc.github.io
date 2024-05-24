@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>idhttp POST的坑 | 慢步道人</title>
+<meta name="keywords" content="delphi, pascal">
+<meta name="description" content=" 从其它平台迁移而来
+坑 最近要和一个平台提供的http接口进行对接，由于服务不是部署在公网上的，所以没办法直接在开发环境下直接调试，又不能在客户的测试机上部署开发环境，只能选择加日志这种古老的方法。
+在对接过程中却出现了莫名其妙的问题：POST的内容是一样的，但返回的内容却不一样，更准确点说是有的接口返回正常有的返回不正常（其实还是测试有限，测试多的话还会出现同一接口有的请求正常有的不正常）。
+平台提供的word接口文档写得真的是……一言难尽，由此也对接口的准确性、可靠性等保持怀疑。不过，这次用我们提供的数据，平台方给出了相应的中间结果（中间结果一致）及返回结果，还有postman和curl的测试截图，充分证明接口以及数据请求是没有问题的。
+在客户测试机上装了curl测试也证明接口没问题。（问为什么一开始没想到用curl？因为windows默认没有，而且utf8还会显示乱码，习惯性的就没想起来用）
+请求头也改了，没用一样的效果。
+最后实在找不出问题，就只能进行TCP抓包了，这一抓还就真抓出问题了：
+原始数据
+1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on&#43;GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK&#43;QdkZMs4zL84Pu/aiSMpiID9Mm&#43;jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a&#43;410CWBawZY1vItZ&#43;43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on&#43;GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on&#43;GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO&#43;yNMRV&#43;J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6&#43;ID/w== 发送后抓到的却是
+1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on&#43;GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK&#43;QdkZMs4zL84Pu/aiSMpiID9Mm&#43;jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a&#43;410CWBawZY1vItZ&#43;43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on&#43;GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on&#43;GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO&#43;yNMRV&#43;J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6&#43;ID/w=%3D 最后的=被转码为%3D了！
+解决 找到原因就好办了
+1 2 //idhttp.HTTPOptions := [hoForceEncodeParams]; //默认强制对参数进行转码 idhttp.HTTPOptions := []; //去掉就OK了 ">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/delphi_idhttp_post/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.eb0ba7092f4c129d35bcb4cae63a08b56b9bba849899ab84ae42d2c4834d5870.css" integrity="sha256-6wunCS9MEp01vLTK5joItWubuoSYmauErkLSxINNWHA=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/delphi_idhttp_post/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="idhttp POST的坑" />
+<meta property="og:description" content=" 从其它平台迁移而来
+坑 最近要和一个平台提供的http接口进行对接，由于服务不是部署在公网上的，所以没办法直接在开发环境下直接调试，又不能在客户的测试机上部署开发环境，只能选择加日志这种古老的方法。
+在对接过程中却出现了莫名其妙的问题：POST的内容是一样的，但返回的内容却不一样，更准确点说是有的接口返回正常有的返回不正常（其实还是测试有限，测试多的话还会出现同一接口有的请求正常有的不正常）。
+平台提供的word接口文档写得真的是……一言难尽，由此也对接口的准确性、可靠性等保持怀疑。不过，这次用我们提供的数据，平台方给出了相应的中间结果（中间结果一致）及返回结果，还有postman和curl的测试截图，充分证明接口以及数据请求是没有问题的。
+在客户测试机上装了curl测试也证明接口没问题。（问为什么一开始没想到用curl？因为windows默认没有，而且utf8还会显示乱码，习惯性的就没想起来用）
+请求头也改了，没用一样的效果。
+最后实在找不出问题，就只能进行TCP抓包了，这一抓还就真抓出问题了：
+原始数据
+1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on&#43;GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK&#43;QdkZMs4zL84Pu/aiSMpiID9Mm&#43;jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a&#43;410CWBawZY1vItZ&#43;43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on&#43;GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on&#43;GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO&#43;yNMRV&#43;J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6&#43;ID/w== 发送后抓到的却是
+1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on&#43;GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK&#43;QdkZMs4zL84Pu/aiSMpiID9Mm&#43;jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a&#43;410CWBawZY1vItZ&#43;43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on&#43;GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on&#43;GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO&#43;yNMRV&#43;J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6&#43;ID/w=%3D 最后的=被转码为%3D了！
+解决 找到原因就好办了
+1 2 //idhttp.HTTPOptions := [hoForceEncodeParams]; //默认强制对参数进行转码 idhttp.HTTPOptions := []; //去掉就OK了 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/delphi_idhttp_post/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-07-12T21:47:37+08:00" />
+<meta property="article:modified_time" content="2022-07-12T21:47:37+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="idhttp POST的坑"/>
+<meta name="twitter:description" content=" 从其它平台迁移而来
+坑 最近要和一个平台提供的http接口进行对接，由于服务不是部署在公网上的，所以没办法直接在开发环境下直接调试，又不能在客户的测试机上部署开发环境，只能选择加日志这种古老的方法。
+在对接过程中却出现了莫名其妙的问题：POST的内容是一样的，但返回的内容却不一样，更准确点说是有的接口返回正常有的返回不正常（其实还是测试有限，测试多的话还会出现同一接口有的请求正常有的不正常）。
+平台提供的word接口文档写得真的是……一言难尽，由此也对接口的准确性、可靠性等保持怀疑。不过，这次用我们提供的数据，平台方给出了相应的中间结果（中间结果一致）及返回结果，还有postman和curl的测试截图，充分证明接口以及数据请求是没有问题的。
+在客户测试机上装了curl测试也证明接口没问题。（问为什么一开始没想到用curl？因为windows默认没有，而且utf8还会显示乱码，习惯性的就没想起来用）
+请求头也改了，没用一样的效果。
+最后实在找不出问题，就只能进行TCP抓包了，这一抓还就真抓出问题了：
+原始数据
+1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on&#43;GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK&#43;QdkZMs4zL84Pu/aiSMpiID9Mm&#43;jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a&#43;410CWBawZY1vItZ&#43;43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on&#43;GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on&#43;GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO&#43;yNMRV&#43;J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6&#43;ID/w== 发送后抓到的却是
+1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on&#43;GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK&#43;QdkZMs4zL84Pu/aiSMpiID9Mm&#43;jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a&#43;410CWBawZY1vItZ&#43;43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on&#43;GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on&#43;GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO&#43;yNMRV&#43;J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6&#43;ID/w=%3D 最后的=被转码为%3D了！
+解决 找到原因就好办了
+1 2 //idhttp.HTTPOptions := [hoForceEncodeParams]; //默认强制对参数进行转码 idhttp.HTTPOptions := []; //去掉就OK了 "/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "idhttp POST的坑",
+      "item": "https://afrusrsc.github.io/posts/program/delphi_idhttp_post/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "idhttp POST的坑",
+  "name": "idhttp POST的坑",
+  "description": " 从其它平台迁移而来\n坑 最近要和一个平台提供的http接口进行对接，由于服务不是部署在公网上的，所以没办法直接在开发环境下直接调试，又不能在客户的测试机上部署开发环境，只能选择加日志这种古老的方法。\n在对接过程中却出现了莫名其妙的问题：POST的内容是一样的，但返回的内容却不一样，更准确点说是有的接口返回正常有的返回不正常（其实还是测试有限，测试多的话还会出现同一接口有的请求正常有的不正常）。\n平台提供的word接口文档写得真的是……一言难尽，由此也对接口的准确性、可靠性等保持怀疑。不过，这次用我们提供的数据，平台方给出了相应的中间结果（中间结果一致）及返回结果，还有postman和curl的测试截图，充分证明接口以及数据请求是没有问题的。\n在客户测试机上装了curl测试也证明接口没问题。（问为什么一开始没想到用curl？因为windows默认没有，而且utf8还会显示乱码，习惯性的就没想起来用）\n请求头也改了，没用一样的效果。\n最后实在找不出问题，就只能进行TCP抓包了，这一抓还就真抓出问题了：\n原始数据\n1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on+GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK+QdkZMs4zL84Pu/aiSMpiID9Mm+jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a+410CWBawZY1vItZ+43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on+GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on+GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO+yNMRV+J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6+ID/w== 发送后抓到的却是\n1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on+GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK+QdkZMs4zL84Pu/aiSMpiID9Mm+jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a+410CWBawZY1vItZ+43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on+GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on+GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO+yNMRV+J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6+ID/w=%3D 最后的=被转码为%3D了！\n解决 找到原因就好办了\n1 2 //idhttp.HTTPOptions := [hoForceEncodeParams]; //默认强制对参数进行转码 idhttp.HTTPOptions := []; //去掉就OK了 ",
+  "keywords": [
+    "delphi", "pascal"
+  ],
+  "articleBody": " 从其它平台迁移而来\n坑 最近要和一个平台提供的http接口进行对接，由于服务不是部署在公网上的，所以没办法直接在开发环境下直接调试，又不能在客户的测试机上部署开发环境，只能选择加日志这种古老的方法。\n在对接过程中却出现了莫名其妙的问题：POST的内容是一样的，但返回的内容却不一样，更准确点说是有的接口返回正常有的返回不正常（其实还是测试有限，测试多的话还会出现同一接口有的请求正常有的不正常）。\n平台提供的word接口文档写得真的是……一言难尽，由此也对接口的准确性、可靠性等保持怀疑。不过，这次用我们提供的数据，平台方给出了相应的中间结果（中间结果一致）及返回结果，还有postman和curl的测试截图，充分证明接口以及数据请求是没有问题的。\n在客户测试机上装了curl测试也证明接口没问题。（问为什么一开始没想到用curl？因为windows默认没有，而且utf8还会显示乱码，习惯性的就没想起来用）\n请求头也改了，没用一样的效果。\n最后实在找不出问题，就只能进行TCP抓包了，这一抓还就真抓出问题了：\n原始数据\n1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on+GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK+QdkZMs4zL84Pu/aiSMpiID9Mm+jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a+410CWBawZY1vItZ+43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on+GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on+GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO+yNMRV+J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6+ID/w== 发送后抓到的却是\n1 /knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on+GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK+QdkZMs4zL84Pu/aiSMpiID9Mm+jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a+410CWBawZY1vItZ+43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on+GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on+GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO+yNMRV+J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6+ID/w=%3D 最后的=被转码为%3D了！\n解决 找到原因就好办了\n1 2 //idhttp.HTTPOptions := [hoForceEncodeParams]; //默认强制对参数进行转码 idhttp.HTTPOptions := []; //去掉就OK了 ",
+  "wordCount" : "27",
+  "inLanguage": "zh",
+  "datePublished": "2022-07-12T21:47:37+08:00",
+  "dateModified": "2022-07-12T21:47:37+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/delphi_idhttp_post/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+    <h1 class="post-title entry-hint-parent">
+      idhttp POST的坑
+    </h1>
+    <div class="post-meta"><span title='2022-07-12 21:47:37 +0800 CST'>2022-07-12 21:47:37</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%9d%91" aria-label="坑">坑</a></li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3" aria-label="解决">解决</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<h1 id="坑">坑<a hidden class="anchor" aria-hidden="true" href="#坑">#</a></h1>
+<p>最近要和一个平台提供的<code>http接口</code>进行对接，由于服务不是部署在公网上的，所以没办法直接在开发环境下直接调试，又不能在客户的测试机上部署开发环境，只能选择加日志这种古老的方法。</p>
+<p>在对接过程中却出现了莫名其妙的问题：<code>POST</code>的内容是一样的，但返回的内容却不一样，更准确点说是有的接口返回正常有的返回不正常（其实还是测试有限，测试多的话还会出现同一接口有的请求正常有的不正常）。</p>
+<p>平台提供的<code>word</code>接口文档写得真的是……一言难尽，由此也对接口的准确性、可靠性等保持怀疑。不过，这次用我们提供的数据，平台方给出了相应的中间结果（中间结果一致）及返回结果，还有<code>postman</code>和<code>curl</code>的测试截图，充分证明接口以及数据请求是没有问题的。</p>
+<p>在客户测试机上装了<code>curl</code>测试也证明接口没问题。（问为什么一开始没想到用<code>curl</code>？因为<code>windows</code>默认没有，而且<code>utf8</code>还会显示乱码，习惯性的就没想起来用）</p>
+<p>请求头也改了，没用一样的效果。</p>
+<p>最后实在找不出问题，就只能进行<code>TCP抓包</code>了，这一抓还就真抓出问题了：</p>
+<p>原始数据</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on+GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK+QdkZMs4zL84Pu/aiSMpiID9Mm+jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a+410CWBawZY1vItZ+43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on+GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on+GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO+yNMRV+J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6+ID/w==
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>发送后抓到的却是</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/knwRBV5D4Qtk7RzoQhtBUSMXQig3zURYmeSQBB17NVr6qddCkTxS7e0oO/qfNCkuX14vGsxEoLLN4KS5vtQWDs5on+GeAE5LadCZuHDCe7M25GitNKqnsCfC5qVmti1LyxLxYg2JpLP6GylWERWBOmbP2yO2Aiuey6V526rlRICnidM1W0A4ziNMSjGCng0n5Md4so/RjswNdcE4C5F0kBEGRWH0ZK+QdkZMs4zL84Pu/aiSMpiID9Mm+jtdLZuk0m0UtEd1MmxnU2KPdQz9057JAtM5LIj4YenZl3J86OPWtb9DE6a+410CWBawZY1vItZ+43Kh/QPnkw6Qe4toXRnF84X/ijtiWkTt4moJT87xDpf/TXEd7LRkddWPRRGF3KHnUKacLySwMmXkU6CQMazE1Kh1ZGML6zl1weaq4xVulFwhGfp2XKzYdZfT3uq4yqVr30AaEqYoy2/P1MkhTs5on+GeAE54r939gdklpefguipLJVBpWk/B5S9QsCDxDbfGYNxJo3rIAxDL7sjjlmVL1RjU86sHsNIbmRii7dL70pf5qcIMJzryGmtn94SAE2HjLw0abfr0A9amRsdIzs5on+GeAE5RIxdCKDfNRFnPqLzNU5stMSDcpuafJpNhUXDbQOMlPungXJHHZAgbE2XtoI4geIRYjiyBLDMQuB0l5WvfDhpRnYo1VaEu7J0tRuezwUplK61p4I8giLwAtO+yNMRV+J65g9XaT8vmf8gxmtK3wEFrve7HwsYH0QhlQQiMilY/JVsiHZS6+ID/w=%3D
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后的<code>=</code>被转码为<code>%3D</code>了！</p>
+<h1 id="解决">解决<a hidden class="anchor" aria-hidden="true" href="#解决">#</a></h1>
+<p>找到原因就好办了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">//idhttp.HTTPOptions := [hoForceEncodeParams]; //默认强制对参数进行转码
+</span></span><span class="line"><span class="cl">idhttp.HTTPOptions := [];                      //去掉就OK了
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/delphi/">Delphi</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go_format_datetime/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go的时间格式化</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/lazarus_order/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Lazarus构造/析构等方法的执行顺序</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
