@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>💠使用Git on 慢步道人</title>
+    <link>https://afrusrsc.github.io/posts/git/</link>
+    <description>Recent content in 💠使用Git on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Mon, 06 Jan 2025 22:28:42 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/posts/git/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Git管理文件权限</title>
+      <link>https://afrusrsc.github.io/posts/git/git_filemode/</link>
+      <pubDate>Mon, 06 Jan 2025 22:28:42 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/git/git_filemode/</guid>
+      <description>问题 由于经常会在windows和linux间交替写代码，因此也经常遇到使用git status查看有变更，使用git diff查看却没有看到差异的情况，原因有两种：
+换行符的差异
+文件权限的差异
+换行符 默认情况下，windows使用crlf做为换行符，linux使用lf做为换行符，不进行配置和处理的话，自然会出现上述情况。
+通常情况下，windows下的git进行如下配置：
+1 2 git config --global core.safecrlf true git config --global core.autocrlf true linux下进行如下配置：
+1 2 git config --global core.safecrlf true git config --global core.autocrlf input 如此，可解决绝大部分换行符问题，但对于需要精细化控制的场景显然不够，对此，可通过仓库的.gitattributes进行配置实现。
+1 2 *.bat text eol=crlf *.sh text eol=lf 文件权限 在windows下，准确说是windows的文件系统下（如ntfs），git init一个仓库时，其filemode默认是false，即忽略文件权限的变化；而linux的文件系统下（如ext4），其filemode默认是true，即跟踪文件权限的变化。若是在两者之间交替工作，或是拷贝文件，则会出现文件权限的变化，此时若filemode=true则会出现上述问题。
+一种是一刀切的方案，关闭filemode，即：
+1 git config --local core.fileMode false 另一种精细化的方案，自然还是借助.gitattributes进行配置：
+1 2 * -filemode *.sh filemode=755 </description>
+    </item>
+    <item>
+      <title>在wsl中使用Git同时管理windows项目和linux项目</title>
+      <link>https://afrusrsc.github.io/posts/git/git_wsl_win_linux/</link>
+      <pubDate>Wed, 23 Aug 2023 21:51:01 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/git/git_wsl_win_linux/</guid>
+      <description> 从其它平台迁移而来
+问题 以前，单纯的做windows桌面应用的开发，wsl里装git，完全按照windows平台进行配置即可。但是现在，想入手golang了，一番了解下来，果然开源的还是linux环境最合适，wsl2目前看是最合适的了，不过，唯一的问题就是要用git同时管理windows和linux项目（其实主要是golang项目，虽然是跨平台的）比较麻烦，麻烦的根源首当其冲的自然是换行符了。
+纯windows开发时，git一般是这样配置：
+1 2 git config --global core.safecrlf true git config --global core.autocrlf true 纯linux开发时，自然可以这样配置：
+1 2 git config --global core.safecrlf true git config --global core.autocrlf input 那既要做windows开发保住饭碗，又要做linux开发提升自我，这git要怎样配置呢？
+解决方案 一番尝试下来，问题解决了，不过有几个前提：
+windows开发依然在windows环境下进行，linux开发在wsl2下进行
+windows项目基本固定，就那么几个，偶尔写个demo什么的也用不上git，而linux开发主要是学习的，肯定会频繁创建项目，还要多看别人的项目，所以git的配置要以linux为主
+所以，全局配置按linux来，即：
+1 git config --global core.autocrlf input 具体的windows项目内：
+1 git config --local core.autocrlf true 新clone出的windows项目，需要删除工作区的内容重新checkout：
+1 git checkout -f xxx </description>
+    </item>
+    <item>
+      <title>Git提交规范</title>
+      <link>https://afrusrsc.github.io/posts/git/git_commit_specification/</link>
+      <pubDate>Tue, 01 Aug 2023 20:41:00 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/git/git_commit_specification/</guid>
+      <description> 从其它平台迁移而来
+一直以来，都是用git commit -m来提交代码的，结果就是看提交历史时一点儿都不赏心悦目！既然别人已经有好的实践了，那么就来学习一下吧。
+提交消息格式 1 2 3 4 5 修改类型(影响范围):&amp;lt;--空格--&amp;gt;标题 &amp;lt;--空行--&amp;gt; [正文] &amp;lt;--空行--&amp;gt; [页脚] 任何一行都不能超过100个字符，以便在各种git工具中方便阅读 修改类型 以下选其一：
+值 含义 feat 添加新功能 fix 修复bug docs 只修改了文档 style 调整代码格式，未修改代码逻辑（如：调整空白、格式化等） refactor 代码重构，既没修复bug也没添加新功能 perf 性能优化，提高性能的代码修改 test 添加或修改代码测试 chore 对构建流程或辅助工具和依赖库（如文档生成等）的更改 revert 代码回滚 影响范围 内容不固定，可以是代码影响到的任何内容，但要足够简要。如果影响到多个范围可以用*表示。
+标题 必需，能简要描述本次提交的信息。
+不要大写首字母
+结尾不要使用句号
+正文 非必需，是对标题的补充说明。
+页脚 任何破坏性变更、不向下兼容都应在页脚中说明。也经常用来引用本次解决的issue。
+破坏性变更应以BREAKING CHANGE开头 1 BREAKING CHANGE:&amp;lt;--空格--&amp;gt;页脚内容 代码回滚 1 2 3 4 5 revert(影响范围):&amp;lt;--空格--&amp;gt;要恢复到的那个提交的标题 &amp;lt;--空行--&amp;gt; This reverts commit &amp;lt;要恢复到的那个提交的hash&amp;gt; &amp;lt;--空行--&amp;gt; [页脚] </description>
+    </item>
+    <item>
+      <title>Git的基本使用</title>
+      <link>https://afrusrsc.github.io/posts/git/git_base/</link>
+      <pubDate>Mon, 31 Jul 2023 21:39:34 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/git/git_base/</guid>
+      <description>从其它平台迁移而来
+安装 Windows 下载git，由于某些原因，建议去镜像站点下载对应的版本（建议下载便携版）。
+便携版进行自解压，选择合适路径，建议路径不要有中文。
+在环境变量中修改Path的值，增加git路径\bin。
+若有需要，也可以安装TortoiseGit图形操作界面。
+其实Win10+启用wsl，然后在wsl里安装使用git是最爽的。
+Linux 1 sudo apt update &amp;amp;&amp;amp; sudo apt install git 基本配置 1 2 3 4 5 6 7 8 9 10 11 # 用户名和邮箱 git config --global user.name &amp;#34;XXX&amp;#34; git config --global user.email XXXXXX@XXX.com # 换行符 git config --global core.safecrlf true git config --global core.autocrlf input # Windows 平台设为 true # 记住密码 git config --global credential.helper store # 别名设置 git config --global alias.</description>
+    </item>
+    <item>
+      <title>同时使用Git和SVN</title>
+      <link>https://afrusrsc.github.io/posts/git/git_svn/</link>
+      <pubDate>Mon, 05 Jun 2023 21:30:33 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/git/git_svn/</guid>
+      <description>从其它平台迁移而来
+背景 一般情况下，企业内部多数是使用SVN来进行版本控制的，原因通常也就两个字——简单：
+安装简单，无论服务端还是客户端
+操作简单，即使非技术人员也能很快学会
+管理简单，建目录、开账户、分权限，基本就能完成95%以上的需求
+SVN是很强大的，但是使用者的水平差距也是很巨大的，结果就是多数情况下只有一个分支，大家都往里面各种提交，当然，有好好管理的不含在内。
+不过，用过git的人，尤其是开发人员，估计都会喜欢git多一些，那么，同时使用SVN和git就会爽很多。
+以下就以企业内使用SVN，开发者使用git为例进行说明，其中：SVN遵守企业内的版本控制使用工作流程，git遵守git类的工作流程。
+环境配置 SVN 以使用ToroiseSVN为例：
+任意文件夹中（最好是非SVN项目，减少菜单干扰）右键-&amp;gt;ToroiseSVN-&amp;gt;设置-&amp;gt;常规设置-&amp;gt;Subversion-&amp;gt;全局忽略样式（全局设置不会提交到版本库，避免对仓库信息的修改而影响到别人），在原有基础上追加以下内容： 1 .git .gitignore .README.md 拉取SVN代码 git 配置git环境
+在要使用git的SVN项目下建git版本库的初始化
+1 2 cd 项目 git init 编写.gitignore文件，配置常规开发需忽略的文件，再加上SVN的版本库信息.svn/
+再次拉取SVN代码，确保代码最新
+把文件增加进git库
+1 git add . 提交初版代码 1 git commit 工作流 分支 master：主分支，与SVN保持一致
+dev：开发主分支，主要用于合并开发完成的内容
+...：任务分支（含BUG修复），具体的开发任务，开发完成后要合并到dev
+具体流程 --- title: SVN+git工作流程 --- graph TD subgraph m[master分支流程] direction TB m1[切到master分支] m2[检出SVN代码] m3[git提交] m4[合并dev代码] m5[SVN提交] m1 --&gt; m2 --&gt; m3 --&gt; m4 --&gt; m5 end subgraph d[dev分支流程] direction TB d1[切到dev分支] d2[合并工作分支内容] d3[合并master分支内容] d4[根据情况调整] d5[提交] d6[切回master] d1 --&gt; d2 --&gt; d4 d1 --&gt; d3 --&gt; d4 --&gt; d5 --&gt; d6 end subgraph w[工作分支流程] direction TB w1[新建/切到工作分支] w2[根据情况合并dev分支内容] w3[开发] w4[提交] w5[根据情况切对应分支] w1 --&gt; w2 --&gt; w4 --&gt; w5 w1 --&gt; w3 --&gt; w4 end m3 -.</description>
+    </item>
+  </channel>
+</rss>

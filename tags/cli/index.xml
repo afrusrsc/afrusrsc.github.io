@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>CLI on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/cli/</link>
+    <description>Recent content in CLI on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Thu, 17 Apr 2025 20:28:24 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/cli/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ANSI转义序列</title>
+      <link>https://afrusrsc.github.io/posts/program/misc/ansi_es/</link>
+      <pubDate>Thu, 17 Apr 2025 20:28:24 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/misc/ansi_es/</guid>
+      <description>起因 近来，翻看gin源码时，无意间看到了green = &amp;quot;\033[97;42m&amp;quot;这种不明所以的代码，遂充满疑惑和好奇，于是就搜索探究了一番，这才知道这叫ANSI转义序列。
+ANSI转义序列 简单说，就是一种标准化的终端控制序列，用于设置文本样式、颜色和背景等。先放个代码吧，以免不知所云。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 package main import &amp;#34;fmt&amp;#34; func main() { for i := 0; i &amp;lt;= 10; i++ { fmt.Printf(&amp;#34;这是\033[%[1]dm&amp;lt;文本属性&amp;gt;%2[1]d\033[0m\n&amp;#34;, i) } s := []int{30, 31, 32, 33, 34, 35, 36, 37} for _, v := range s { fmt.Printf(&amp;#34;这是\033[%[1]dm&amp;lt;16色标准前景色&amp;gt;%2[1]d\033[0m\t\033[%[2]dm&amp;lt;16色亮前景色&amp;gt;%2[2]d\033[0m\n&amp;#34;, v, v+60) fmt.Printf(&amp;#34;这是\033[%[1]dm&amp;lt;16色标准背景色&amp;gt;%2[1]d\033[0m\t\033[%[2]dm&amp;lt;16色亮背景色&amp;gt;%2[2]d\033[0m\n&amp;#34;, v+10, v+70) } for i := 0; i &amp;lt; 256; i++ { fmt.</description>
+    </item>
+  </channel>
+</rss>
