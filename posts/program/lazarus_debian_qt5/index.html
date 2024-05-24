@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>在Debian上使用Lazarus的Qt5问题 | 慢步道人</title>
+<meta name="keywords" content="lazarus, pascal">
+<meta name="description" content="事件 环境 项目 值 操作系统 Debian 12 桌面环境 xfce 4 输入法 fcitx 5 背景 最早在Debian上安装Lazarus是直接sudo apt install lazarus，即使用的是官方仓库的版本，也是戏称为万年不更新版。默认安装的是Gtk2版，该版存在中文输入法问题（输入法问题可参照解决Debian上Lazarus输入法问题）；也可以把IDE改为Qt5版，同样可以使用中文输入法。
+想用最新版Lazarus 3.4，直接在官网下载最新的deb包，没有安装成功。
+后来使用的是fpcupdeluxe-x86_64-linux安装，即Gtk2版，但是由于官方并没有合并中文输入法的解决方案，每次升级都要再做一遍，麻烦。
+现在，准备使用fpcupdeluxe-x86_64-linux-qt5直接安装Qt5版。
+问题 直接使用fpcupdeluxe-x86_64-linux-qt5安装，报错：
+1 ./fpcupdeluxe-x86_64-linux-qt5: error while loading shared libraries: libQt5Pas.so.1: cannot open shared object file: No such file or directory 是因为缺少libQt5Pas.so.1，安装libqt5pas-dev包：
+1 sudo apt install libqt5pas-dev 再次安装，又报错：
+1 ./fpcupdeluxe-x86_64-linux-qt5: symbol lookup error: ./fpcupdeluxe-x86_64-linux-qt5: undefined symbol: QGuiApplication_setFallbackSessionManagementEnabled 先安装Gtk2版，再修改为Qt5版，编译还报错。编写普通的应用，编译为Qt5版，同样报错。
+安装官方仓库的Lazarus 2.2，一切正常。
+解决 去github上查看fpcupdeluxe相关的issues，说是要下载1.2.15版的libqt5pas，并安装：
+1 sudo apt install ./libqt5pas1_2.15-1_amd64.deb ./libqt5pas-dev_2.15-1_amd64.deb 进一步查看，其实是因为Qt5删除/更新了部分接口导致不兼容了，而Debian 12的官方仓库中并未包含该更新，所以需要手动下载安装，Debian 13的官方仓库中已经包含了，像以前一样直接安装即可。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/lazarus_debian_qt5/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/lazarus_debian_qt5/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="在Debian上使用Lazarus的Qt5问题" />
+<meta property="og:description" content="事件 环境 项目 值 操作系统 Debian 12 桌面环境 xfce 4 输入法 fcitx 5 背景 最早在Debian上安装Lazarus是直接sudo apt install lazarus，即使用的是官方仓库的版本，也是戏称为万年不更新版。默认安装的是Gtk2版，该版存在中文输入法问题（输入法问题可参照解决Debian上Lazarus输入法问题）；也可以把IDE改为Qt5版，同样可以使用中文输入法。
+想用最新版Lazarus 3.4，直接在官网下载最新的deb包，没有安装成功。
+后来使用的是fpcupdeluxe-x86_64-linux安装，即Gtk2版，但是由于官方并没有合并中文输入法的解决方案，每次升级都要再做一遍，麻烦。
+现在，准备使用fpcupdeluxe-x86_64-linux-qt5直接安装Qt5版。
+问题 直接使用fpcupdeluxe-x86_64-linux-qt5安装，报错：
+1 ./fpcupdeluxe-x86_64-linux-qt5: error while loading shared libraries: libQt5Pas.so.1: cannot open shared object file: No such file or directory 是因为缺少libQt5Pas.so.1，安装libqt5pas-dev包：
+1 sudo apt install libqt5pas-dev 再次安装，又报错：
+1 ./fpcupdeluxe-x86_64-linux-qt5: symbol lookup error: ./fpcupdeluxe-x86_64-linux-qt5: undefined symbol: QGuiApplication_setFallbackSessionManagementEnabled 先安装Gtk2版，再修改为Qt5版，编译还报错。编写普通的应用，编译为Qt5版，同样报错。
+安装官方仓库的Lazarus 2.2，一切正常。
+解决 去github上查看fpcupdeluxe相关的issues，说是要下载1.2.15版的libqt5pas，并安装：
+1 sudo apt install ./libqt5pas1_2.15-1_amd64.deb ./libqt5pas-dev_2.15-1_amd64.deb 进一步查看，其实是因为Qt5删除/更新了部分接口导致不兼容了，而Debian 12的官方仓库中并未包含该更新，所以需要手动下载安装，Debian 13的官方仓库中已经包含了，像以前一样直接安装即可。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/lazarus_debian_qt5/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-04T16:37:12+08:00" />
+<meta property="article:modified_time" content="2024-08-04T16:37:12+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="在Debian上使用Lazarus的Qt5问题"/>
+<meta name="twitter:description" content="事件 环境 项目 值 操作系统 Debian 12 桌面环境 xfce 4 输入法 fcitx 5 背景 最早在Debian上安装Lazarus是直接sudo apt install lazarus，即使用的是官方仓库的版本，也是戏称为万年不更新版。默认安装的是Gtk2版，该版存在中文输入法问题（输入法问题可参照解决Debian上Lazarus输入法问题）；也可以把IDE改为Qt5版，同样可以使用中文输入法。
+想用最新版Lazarus 3.4，直接在官网下载最新的deb包，没有安装成功。
+后来使用的是fpcupdeluxe-x86_64-linux安装，即Gtk2版，但是由于官方并没有合并中文输入法的解决方案，每次升级都要再做一遍，麻烦。
+现在，准备使用fpcupdeluxe-x86_64-linux-qt5直接安装Qt5版。
+问题 直接使用fpcupdeluxe-x86_64-linux-qt5安装，报错：
+1 ./fpcupdeluxe-x86_64-linux-qt5: error while loading shared libraries: libQt5Pas.so.1: cannot open shared object file: No such file or directory 是因为缺少libQt5Pas.so.1，安装libqt5pas-dev包：
+1 sudo apt install libqt5pas-dev 再次安装，又报错：
+1 ./fpcupdeluxe-x86_64-linux-qt5: symbol lookup error: ./fpcupdeluxe-x86_64-linux-qt5: undefined symbol: QGuiApplication_setFallbackSessionManagementEnabled 先安装Gtk2版，再修改为Qt5版，编译还报错。编写普通的应用，编译为Qt5版，同样报错。
+安装官方仓库的Lazarus 2.2，一切正常。
+解决 去github上查看fpcupdeluxe相关的issues，说是要下载1.2.15版的libqt5pas，并安装：
+1 sudo apt install ./libqt5pas1_2.15-1_amd64.deb ./libqt5pas-dev_2.15-1_amd64.deb 进一步查看，其实是因为Qt5删除/更新了部分接口导致不兼容了，而Debian 12的官方仓库中并未包含该更新，所以需要手动下载安装，Debian 13的官方仓库中已经包含了，像以前一样直接安装即可。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "在Debian上使用Lazarus的Qt5问题",
+      "item": "https://afrusrsc.github.io/posts/program/lazarus_debian_qt5/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "在Debian上使用Lazarus的Qt5问题",
+  "name": "在Debian上使用Lazarus的Qt5问题",
+  "description": "事件 环境 项目 值 操作系统 Debian 12 桌面环境 xfce 4 输入法 fcitx 5 背景 最早在Debian上安装Lazarus是直接sudo apt install lazarus，即使用的是官方仓库的版本，也是戏称为万年不更新版。默认安装的是Gtk2版，该版存在中文输入法问题（输入法问题可参照解决Debian上Lazarus输入法问题）；也可以把IDE改为Qt5版，同样可以使用中文输入法。\n想用最新版Lazarus 3.4，直接在官网下载最新的deb包，没有安装成功。\n后来使用的是fpcupdeluxe-x86_64-linux安装，即Gtk2版，但是由于官方并没有合并中文输入法的解决方案，每次升级都要再做一遍，麻烦。\n现在，准备使用fpcupdeluxe-x86_64-linux-qt5直接安装Qt5版。\n问题 直接使用fpcupdeluxe-x86_64-linux-qt5安装，报错：\n1 ./fpcupdeluxe-x86_64-linux-qt5: error while loading shared libraries: libQt5Pas.so.1: cannot open shared object file: No such file or directory 是因为缺少libQt5Pas.so.1，安装libqt5pas-dev包：\n1 sudo apt install libqt5pas-dev 再次安装，又报错：\n1 ./fpcupdeluxe-x86_64-linux-qt5: symbol lookup error: ./fpcupdeluxe-x86_64-linux-qt5: undefined symbol: QGuiApplication_setFallbackSessionManagementEnabled 先安装Gtk2版，再修改为Qt5版，编译还报错。编写普通的应用，编译为Qt5版，同样报错。\n安装官方仓库的Lazarus 2.2，一切正常。\n解决 去github上查看fpcupdeluxe相关的issues，说是要下载1.2.15版的libqt5pas，并安装：\n1 sudo apt install ./libqt5pas1_2.15-1_amd64.deb ./libqt5pas-dev_2.15-1_amd64.deb 进一步查看，其实是因为Qt5删除/更新了部分接口导致不兼容了，而Debian 12的官方仓库中并未包含该更新，所以需要手动下载安装，Debian 13的官方仓库中已经包含了，像以前一样直接安装即可。",
+  "keywords": [
+    "lazarus", "pascal"
+  ],
+  "articleBody": "事件 环境 项目 值 操作系统 Debian 12 桌面环境 xfce 4 输入法 fcitx 5 背景 最早在Debian上安装Lazarus是直接sudo apt install lazarus，即使用的是官方仓库的版本，也是戏称为万年不更新版。默认安装的是Gtk2版，该版存在中文输入法问题（输入法问题可参照解决Debian上Lazarus输入法问题）；也可以把IDE改为Qt5版，同样可以使用中文输入法。\n想用最新版Lazarus 3.4，直接在官网下载最新的deb包，没有安装成功。\n后来使用的是fpcupdeluxe-x86_64-linux安装，即Gtk2版，但是由于官方并没有合并中文输入法的解决方案，每次升级都要再做一遍，麻烦。\n现在，准备使用fpcupdeluxe-x86_64-linux-qt5直接安装Qt5版。\n问题 直接使用fpcupdeluxe-x86_64-linux-qt5安装，报错：\n1 ./fpcupdeluxe-x86_64-linux-qt5: error while loading shared libraries: libQt5Pas.so.1: cannot open shared object file: No such file or directory 是因为缺少libQt5Pas.so.1，安装libqt5pas-dev包：\n1 sudo apt install libqt5pas-dev 再次安装，又报错：\n1 ./fpcupdeluxe-x86_64-linux-qt5: symbol lookup error: ./fpcupdeluxe-x86_64-linux-qt5: undefined symbol: QGuiApplication_setFallbackSessionManagementEnabled 先安装Gtk2版，再修改为Qt5版，编译还报错。编写普通的应用，编译为Qt5版，同样报错。\n安装官方仓库的Lazarus 2.2，一切正常。\n解决 去github上查看fpcupdeluxe相关的issues，说是要下载1.2.15版的libqt5pas，并安装：\n1 sudo apt install ./libqt5pas1_2.15-1_amd64.deb ./libqt5pas-dev_2.15-1_amd64.deb 进一步查看，其实是因为Qt5删除/更新了部分接口导致不兼容了，而Debian 12的官方仓库中并未包含该更新，所以需要手动下载安装，Debian 13的官方仓库中已经包含了，像以前一样直接安装即可。\n其它相关 Qt6版同样需要手动安装对应的包，下载地址\n已知Qt5和Qt6中无法输入汉字不和有，词组最多只能输入两个字，多余的会截断。\n",
+  "wordCount" : "75",
+  "inLanguage": "zh",
+  "datePublished": "2024-08-04T16:37:12+08:00",
+  "dateModified": "2024-08-04T16:37:12+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/lazarus_debian_qt5/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+    <h1 class="post-title entry-hint-parent">
+      在Debian上使用Lazarus的Qt5问题
+    </h1>
+    <div class="post-meta"><span title='2024-08-04 16:37:12 +0800 CST'>2024-08-04 16:37:12</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e4%ba%8b%e4%bb%b6" aria-label="事件">事件</a><ul>
+                            
+                    <li>
+                        <a href="#%e7%8e%af%e5%a2%83" aria-label="环境">环境</a></li>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e9%97%ae%e9%a2%98" aria-label="问题">问题</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3" aria-label="解决">解决</a></li>
+                    <li>
+                        <a href="#%e5%85%b6%e5%ae%83%e7%9b%b8%e5%85%b3" aria-label="其它相关">其它相关</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="事件">事件<a hidden class="anchor" aria-hidden="true" href="#事件">#</a></h1>
+<h2 id="环境">环境<a hidden class="anchor" aria-hidden="true" href="#环境">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>Debian 12</td>
+</tr>
+<tr>
+<td>桌面环境</td>
+<td>xfce 4</td>
+</tr>
+<tr>
+<td>输入法</td>
+<td>fcitx 5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h2>
+<ul>
+<li>
+<p>最早在<code>Debian</code>上安装<code>Lazarus</code>是直接<code>sudo apt install lazarus</code>，即使用的是官方仓库的版本，也是戏称为<code>万年不更新版</code>。默认安装的是<code>Gtk2</code>版，该版存在<code>中文输入法问题</code>（输入法问题可参照<a href="/posts/program/lazarus_debian_ime/">解决Debian上Lazarus输入法问题</a>）；也可以把<code>IDE</code>改为<code>Qt5</code>版，同样可以使用<code>中文输入法</code>。</p>
+</li>
+<li>
+<p>想用最新版<code>Lazarus 3.4</code>，直接在官网下载最新的<code>deb</code>包，没有安装成功。</p>
+</li>
+<li>
+<p>后来使用的是<code>fpcupdeluxe-x86_64-linux</code>安装，即<code>Gtk2</code>版，但是由于官方并没有合并<code>中文输入法</code>的解决方案，每次升级都要再做一遍，麻烦。</p>
+</li>
+<li>
+<p>现在，准备使用<code>fpcupdeluxe-x86_64-linux-qt5</code>直接安装<code>Qt5</code>版。</p>
+</li>
+</ul>
+<h2 id="问题">问题<a hidden class="anchor" aria-hidden="true" href="#问题">#</a></h2>
+<p>直接使用<code>fpcupdeluxe-x86_64-linux-qt5</code>安装，报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">./</span><span class="n">fpcupdeluxe</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">qt5</span><span class="p">:</span> <span class="n">error</span> <span class="k">while</span> <span class="n">loading</span> <span class="n">shared</span> <span class="n">libraries</span><span class="p">:</span> <span class="n">libQt5Pas</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">1</span><span class="p">:</span> <span class="n">cannot</span> <span class="n">open</span> <span class="n">shared</span> <span class="n">object</span> <span class="n">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>是因为缺少<code>libQt5Pas.so.1</code>，安装<code>libqt5pas-dev</code>包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt install libqt5pas-dev
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再次安装，又报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./fpcupdeluxe-x86_64-linux-qt5: symbol lookup error: ./fpcupdeluxe-x86_64-linux-qt5: undefined symbol: QGuiApplication_setFallbackSessionManagementEnabled
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>先安装<code>Gtk2</code>版，再修改为<code>Qt5</code>版，编译还报错。编写普通的应用，编译为<code>Qt5</code>版，同样报错。</p>
+<p>安装官方仓库的<code>Lazarus 2.2</code>，一切正常。</p>
+<h1 id="解决">解决<a hidden class="anchor" aria-hidden="true" href="#解决">#</a></h1>
+<p>去<code>github</code>上查看<code>fpcupdeluxe</code>相关的<a href="https://github.com/LongDirtyAnimAlf/fpcupdeluxe/issues/691">issues</a>，说是要<a href="https://github.com/davidbannon/libqt5pas/releases">下载</a><code>1.2.15</code>版的<code>libqt5pas</code>，并安装：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo apt install ./libqt5pas1_2.15-1_amd64.deb ./libqt5pas-dev_2.15-1_amd64.deb
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进一步查看，其实是因为<code>Qt5</code>删除/更新了部分接口导致不兼容了，而<code>Debian 12</code>的官方仓库中并未包含该更新，所以需要手动下载安装，<code>Debian 13</code>的官方仓库中已经包含了，像以前一样直接安装即可。</p>
+<hr>
+<h1 id="其它相关">其它相关<a hidden class="anchor" aria-hidden="true" href="#其它相关">#</a></h1>
+<ul>
+<li>
+<p><code>Qt6</code>版同样需要手动安装对应的包，<a href="https://github.com/davidbannon/libqt6pas/releases">下载地址</a></p>
+</li>
+<li>
+<p>已知<code>Qt5</code>和<code>Qt6</code>中无法输入汉字<code>不</code>和<code>有</code>，词组最多只能输入<code>两个字</code>，多余的会截断。</p>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/lazarus_cross_platform/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Lazarus跨平台方案总结</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/db/pgsql_zip_install/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>PostgreSQL zip 安装</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
