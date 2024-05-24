@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Lazarus发布v2.2.6版本 | 慢步道人</title>
+<meta name="keywords" content="lazarus, pascal">
+<meta name="description" content="从其它平台迁移而来
+2023-03-09，Lazarus 团队宣布发布 Lazarus 2.2.6 版本，这是一个错误修复版本，使用 FPC 3.2.2 构建。
+大概在Lazarus 2.2.6发布的第二天吧，就把自己电脑上的Lazarus升级到最新了，一直以来都是这个习惯，基本上从来没怎么关心过具体都更新了哪些内容。
+不过，这次心血来潮，把发行日志给大致看了下，看了之后还是有点小收获的，在此记录一二。
+版本号 Lazarus是IDE，最终完成编译的是FPC，两者的版本号管理策略和Linux内核的策略类似。以下为笔者总结，实际的版本号管理策略未考证。
+版本号格式如下：
+1 [主版本号].[次版本号].[修订版本号] 其中，次版本号和修订版本号，奇数为开发版，偶数为稳定版。
+发行日志 Lazarus 2.2.x发行日志原文。可以看到，这是2.2.0的发行日志，并非2.2.6的发行日志，说明这是按次版本号统一整理的。
+由于内容较多，而且部分内容笔者也没接触/使用过，所以，只拣熟悉的或感觉比较重要的拿出来分享一下。
+LazUtils包 移除PasWStr单元 原因：只有当编译器版本低于3.0才包含代码。
+补救：不要再使用PasWStr
+LCL包 TValueListEditor 旧行为：允许在键列中使用当前的NameValueSeparator（默认情况下：=）。
+新行为：不能在键列中使用名称值分隔符。如果在键列中键入名称值分隔符，焦点将移动到值列。如果将其粘贴到列中，它将被删除（没有任何反馈或警告）。
+Screen添加了三组新方法 BeginTempCursor / EndTempCursor、BeginWaitCursor / EndWaitCursor和BeginScreenCursor / EndScreenCursor用于临时光标更改，而不是直接设置Screen.Cursor属性。
+TGroupBox，TRadioGroup，TCheckGroup Win32旧行为：可以设置属性颜色，它直接显示。
+Win32新行为：如果要更改颜色，则必须设置ParentBackground := False;
+TFrame Win32旧行为：无法更改TFrame的颜色。
+Win32新行为：如果要更改颜色，则必须设置ParentBackground := False;
+T(Float)SpinEdit 新增了EditorEnabled属性，以禁用编辑中的直接用户输入。如果设置为False，则用户只能使用微调器或箭头键更改值。
+Debugger LazDebugger-FP (FpDebug) v1.0成为Windows和Linux默认的调试器。
+GDB(mo)使用修改版的GDB 9.2
+笔者补充：FpDebug无法调试dll，需要使用GDB
+组件 OpenGL全面支持Qt5的widgetset。
+TSpinEditEx 新属性ThousandSeparator允许显示插入了千位分隔符的值。
+TFloatSpinEditEx 支持以科学计数法形式的文本进行录入。
+新属性DisplayMode，用于控制是否使用科学记数法。
+新属性property控制以科学记数法显示值时使用的精度。
+还有其它许多更改，详细请看原文。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_v2_2_6/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_v2_2_6/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Lazarus发布v2.2.6版本" />
+<meta property="og:description" content="从其它平台迁移而来
+2023-03-09，Lazarus 团队宣布发布 Lazarus 2.2.6 版本，这是一个错误修复版本，使用 FPC 3.2.2 构建。
+大概在Lazarus 2.2.6发布的第二天吧，就把自己电脑上的Lazarus升级到最新了，一直以来都是这个习惯，基本上从来没怎么关心过具体都更新了哪些内容。
+不过，这次心血来潮，把发行日志给大致看了下，看了之后还是有点小收获的，在此记录一二。
+版本号 Lazarus是IDE，最终完成编译的是FPC，两者的版本号管理策略和Linux内核的策略类似。以下为笔者总结，实际的版本号管理策略未考证。
+版本号格式如下：
+1 [主版本号].[次版本号].[修订版本号] 其中，次版本号和修订版本号，奇数为开发版，偶数为稳定版。
+发行日志 Lazarus 2.2.x发行日志原文。可以看到，这是2.2.0的发行日志，并非2.2.6的发行日志，说明这是按次版本号统一整理的。
+由于内容较多，而且部分内容笔者也没接触/使用过，所以，只拣熟悉的或感觉比较重要的拿出来分享一下。
+LazUtils包 移除PasWStr单元 原因：只有当编译器版本低于3.0才包含代码。
+补救：不要再使用PasWStr
+LCL包 TValueListEditor 旧行为：允许在键列中使用当前的NameValueSeparator（默认情况下：=）。
+新行为：不能在键列中使用名称值分隔符。如果在键列中键入名称值分隔符，焦点将移动到值列。如果将其粘贴到列中，它将被删除（没有任何反馈或警告）。
+Screen添加了三组新方法 BeginTempCursor / EndTempCursor、BeginWaitCursor / EndWaitCursor和BeginScreenCursor / EndScreenCursor用于临时光标更改，而不是直接设置Screen.Cursor属性。
+TGroupBox，TRadioGroup，TCheckGroup Win32旧行为：可以设置属性颜色，它直接显示。
+Win32新行为：如果要更改颜色，则必须设置ParentBackground := False;
+TFrame Win32旧行为：无法更改TFrame的颜色。
+Win32新行为：如果要更改颜色，则必须设置ParentBackground := False;
+T(Float)SpinEdit 新增了EditorEnabled属性，以禁用编辑中的直接用户输入。如果设置为False，则用户只能使用微调器或箭头键更改值。
+Debugger LazDebugger-FP (FpDebug) v1.0成为Windows和Linux默认的调试器。
+GDB(mo)使用修改版的GDB 9.2
+笔者补充：FpDebug无法调试dll，需要使用GDB
+组件 OpenGL全面支持Qt5的widgetset。
+TSpinEditEx 新属性ThousandSeparator允许显示插入了千位分隔符的值。
+TFloatSpinEditEx 支持以科学计数法形式的文本进行录入。
+新属性DisplayMode，用于控制是否使用科学记数法。
+新属性property控制以科学记数法显示值时使用的精度。
+还有其它许多更改，详细请看原文。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/lazarus_v2_2_6/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-04-06T20:43:52+08:00" />
+<meta property="article:modified_time" content="2023-04-06T20:43:52+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Lazarus发布v2.2.6版本"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+2023-03-09，Lazarus 团队宣布发布 Lazarus 2.2.6 版本，这是一个错误修复版本，使用 FPC 3.2.2 构建。
+大概在Lazarus 2.2.6发布的第二天吧，就把自己电脑上的Lazarus升级到最新了，一直以来都是这个习惯，基本上从来没怎么关心过具体都更新了哪些内容。
+不过，这次心血来潮，把发行日志给大致看了下，看了之后还是有点小收获的，在此记录一二。
+版本号 Lazarus是IDE，最终完成编译的是FPC，两者的版本号管理策略和Linux内核的策略类似。以下为笔者总结，实际的版本号管理策略未考证。
+版本号格式如下：
+1 [主版本号].[次版本号].[修订版本号] 其中，次版本号和修订版本号，奇数为开发版，偶数为稳定版。
+发行日志 Lazarus 2.2.x发行日志原文。可以看到，这是2.2.0的发行日志，并非2.2.6的发行日志，说明这是按次版本号统一整理的。
+由于内容较多，而且部分内容笔者也没接触/使用过，所以，只拣熟悉的或感觉比较重要的拿出来分享一下。
+LazUtils包 移除PasWStr单元 原因：只有当编译器版本低于3.0才包含代码。
+补救：不要再使用PasWStr
+LCL包 TValueListEditor 旧行为：允许在键列中使用当前的NameValueSeparator（默认情况下：=）。
+新行为：不能在键列中使用名称值分隔符。如果在键列中键入名称值分隔符，焦点将移动到值列。如果将其粘贴到列中，它将被删除（没有任何反馈或警告）。
+Screen添加了三组新方法 BeginTempCursor / EndTempCursor、BeginWaitCursor / EndWaitCursor和BeginScreenCursor / EndScreenCursor用于临时光标更改，而不是直接设置Screen.Cursor属性。
+TGroupBox，TRadioGroup，TCheckGroup Win32旧行为：可以设置属性颜色，它直接显示。
+Win32新行为：如果要更改颜色，则必须设置ParentBackground := False;
+TFrame Win32旧行为：无法更改TFrame的颜色。
+Win32新行为：如果要更改颜色，则必须设置ParentBackground := False;
+T(Float)SpinEdit 新增了EditorEnabled属性，以禁用编辑中的直接用户输入。如果设置为False，则用户只能使用微调器或箭头键更改值。
+Debugger LazDebugger-FP (FpDebug) v1.0成为Windows和Linux默认的调试器。
+GDB(mo)使用修改版的GDB 9.2
+笔者补充：FpDebug无法调试dll，需要使用GDB
+组件 OpenGL全面支持Qt5的widgetset。
+TSpinEditEx 新属性ThousandSeparator允许显示插入了千位分隔符的值。
+TFloatSpinEditEx 支持以科学计数法形式的文本进行录入。
+新属性DisplayMode，用于控制是否使用科学记数法。
+新属性property控制以科学记数法显示值时使用的精度。
+还有其它许多更改，详细请看原文。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Lazarus发布v2.2.6版本",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/lazarus_v2_2_6/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Lazarus发布v2.2.6版本",
+  "name": "Lazarus发布v2.2.6版本",
+  "description": "从其它平台迁移而来\n2023-03-09，Lazarus 团队宣布发布 Lazarus 2.2.6 版本，这是一个错误修复版本，使用 FPC 3.2.2 构建。\n大概在Lazarus 2.2.6发布的第二天吧，就把自己电脑上的Lazarus升级到最新了，一直以来都是这个习惯，基本上从来没怎么关心过具体都更新了哪些内容。\n不过，这次心血来潮，把发行日志给大致看了下，看了之后还是有点小收获的，在此记录一二。\n版本号 Lazarus是IDE，最终完成编译的是FPC，两者的版本号管理策略和Linux内核的策略类似。以下为笔者总结，实际的版本号管理策略未考证。\n版本号格式如下：\n1 [主版本号].[次版本号].[修订版本号] 其中，次版本号和修订版本号，奇数为开发版，偶数为稳定版。\n发行日志 Lazarus 2.2.x发行日志原文。可以看到，这是2.2.0的发行日志，并非2.2.6的发行日志，说明这是按次版本号统一整理的。\n由于内容较多，而且部分内容笔者也没接触/使用过，所以，只拣熟悉的或感觉比较重要的拿出来分享一下。\nLazUtils包 移除PasWStr单元 原因：只有当编译器版本低于3.0才包含代码。\n补救：不要再使用PasWStr\nLCL包 TValueListEditor 旧行为：允许在键列中使用当前的NameValueSeparator（默认情况下：=）。\n新行为：不能在键列中使用名称值分隔符。如果在键列中键入名称值分隔符，焦点将移动到值列。如果将其粘贴到列中，它将被删除（没有任何反馈或警告）。\nScreen添加了三组新方法 BeginTempCursor / EndTempCursor、BeginWaitCursor / EndWaitCursor和BeginScreenCursor / EndScreenCursor用于临时光标更改，而不是直接设置Screen.Cursor属性。\nTGroupBox，TRadioGroup，TCheckGroup Win32旧行为：可以设置属性颜色，它直接显示。\nWin32新行为：如果要更改颜色，则必须设置ParentBackground := False;\nTFrame Win32旧行为：无法更改TFrame的颜色。\nWin32新行为：如果要更改颜色，则必须设置ParentBackground := False;\nT(Float)SpinEdit 新增了EditorEnabled属性，以禁用编辑中的直接用户输入。如果设置为False，则用户只能使用微调器或箭头键更改值。\nDebugger LazDebugger-FP (FpDebug) v1.0成为Windows和Linux默认的调试器。\nGDB(mo)使用修改版的GDB 9.2\n笔者补充：FpDebug无法调试dll，需要使用GDB\n组件 OpenGL全面支持Qt5的widgetset。\nTSpinEditEx 新属性ThousandSeparator允许显示插入了千位分隔符的值。\nTFloatSpinEditEx 支持以科学计数法形式的文本进行录入。\n新属性DisplayMode，用于控制是否使用科学记数法。\n新属性property控制以科学记数法显示值时使用的精度。\n还有其它许多更改，详细请看原文。",
+  "keywords": [
+    "lazarus", "pascal"
+  ],
+  "articleBody": " 从其它平台迁移而来\n2023-03-09，Lazarus 团队宣布发布 Lazarus 2.2.6 版本，这是一个错误修复版本，使用 FPC 3.2.2 构建。\n大概在Lazarus 2.2.6发布的第二天吧，就把自己电脑上的Lazarus升级到最新了，一直以来都是这个习惯，基本上从来没怎么关心过具体都更新了哪些内容。\n不过，这次心血来潮，把发行日志给大致看了下，看了之后还是有点小收获的，在此记录一二。\n版本号 Lazarus是IDE，最终完成编译的是FPC，两者的版本号管理策略和Linux内核的策略类似。以下为笔者总结，实际的版本号管理策略未考证。\n版本号格式如下：\n1 [主版本号].[次版本号].[修订版本号] 其中，次版本号和修订版本号，奇数为开发版，偶数为稳定版。\n发行日志 Lazarus 2.2.x发行日志原文。可以看到，这是2.2.0的发行日志，并非2.2.6的发行日志，说明这是按次版本号统一整理的。\n由于内容较多，而且部分内容笔者也没接触/使用过，所以，只拣熟悉的或感觉比较重要的拿出来分享一下。\nLazUtils包 移除PasWStr单元 原因：只有当编译器版本低于3.0才包含代码。\n补救：不要再使用PasWStr\nLCL包 TValueListEditor 旧行为：允许在键列中使用当前的NameValueSeparator（默认情况下：=）。\n新行为：不能在键列中使用名称值分隔符。如果在键列中键入名称值分隔符，焦点将移动到值列。如果将其粘贴到列中，它将被删除（没有任何反馈或警告）。\nScreen添加了三组新方法 BeginTempCursor / EndTempCursor、BeginWaitCursor / EndWaitCursor和BeginScreenCursor / EndScreenCursor用于临时光标更改，而不是直接设置Screen.Cursor属性。\nTGroupBox，TRadioGroup，TCheckGroup Win32旧行为：可以设置属性颜色，它直接显示。\nWin32新行为：如果要更改颜色，则必须设置ParentBackground := False;\nTFrame Win32旧行为：无法更改TFrame的颜色。\nWin32新行为：如果要更改颜色，则必须设置ParentBackground := False;\nT(Float)SpinEdit 新增了EditorEnabled属性，以禁用编辑中的直接用户输入。如果设置为False，则用户只能使用微调器或箭头键更改值。\nDebugger LazDebugger-FP (FpDebug) v1.0成为Windows和Linux默认的调试器。\nGDB(mo)使用修改版的GDB 9.2\n笔者补充：FpDebug无法调试dll，需要使用GDB\n组件 OpenGL全面支持Qt5的widgetset。\nTSpinEditEx 新属性ThousandSeparator允许显示插入了千位分隔符的值。\nTFloatSpinEditEx 支持以科学计数法形式的文本进行录入。\n新属性DisplayMode，用于控制是否使用科学记数法。\n新属性property控制以科学记数法显示值时使用的精度。\n还有其它许多更改，详细请看原文。\n",
+  "wordCount" : "66",
+  "inLanguage": "zh",
+  "datePublished": "2023-04-06T20:43:52+08:00",
+  "dateModified": "2023-04-06T20:43:52+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/pascal/lazarus_v2_2_6/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/pascal/">⚒️pascal</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Lazarus发布v2.2.6版本
+    </h1>
+    <div class="post-meta"><span title='2023-04-06 20:43:52 +0800 CST'>2023-04-06 20:43:52</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e7%89%88%e6%9c%ac%e5%8f%b7" aria-label="版本号">版本号</a></li>
+                    <li>
+                        <a href="#%e5%8f%91%e8%a1%8c%e6%97%a5%e5%bf%97" aria-label="发行日志">发行日志</a><ul>
+                            
+                    <li>
+                        <a href="#lazutils%e5%8c%85" aria-label="LazUtils包">LazUtils包</a><ul>
+                            
+                    <li>
+                        <a href="#%e7%a7%bb%e9%99%a4paswstr%e5%8d%95%e5%85%83" aria-label="移除PasWStr单元">移除PasWStr单元</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#lcl%e5%8c%85" aria-label="LCL包">LCL包</a><ul>
+                            
+                    <li>
+                        <a href="#tvaluelisteditor" aria-label="TValueListEditor">TValueListEditor</a></li>
+                    <li>
+                        <a href="#screen%e6%b7%bb%e5%8a%a0%e4%ba%86%e4%b8%89%e7%bb%84%e6%96%b0%e6%96%b9%e6%b3%95" aria-label="Screen添加了三组新方法">Screen添加了三组新方法</a></li>
+                    <li>
+                        <a href="#tgroupboxtradiogrouptcheckgroup" aria-label="TGroupBox，TRadioGroup，TCheckGroup">TGroupBox，TRadioGroup，TCheckGroup</a></li>
+                    <li>
+                        <a href="#tframe" aria-label="TFrame">TFrame</a></li>
+                    <li>
+                        <a href="#tfloatspinedit" aria-label="T(Float)SpinEdit">T(Float)SpinEdit</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#debugger" aria-label="Debugger">Debugger</a></li>
+                    <li>
+                        <a href="#%e7%bb%84%e4%bb%b6" aria-label="组件">组件</a><ul>
+                            
+                    <li>
+                        <a href="#tspineditex" aria-label="TSpinEditEx">TSpinEditEx</a></li>
+                    <li>
+                        <a href="#tfloatspineditex" aria-label="TFloatSpinEditEx">TFloatSpinEditEx</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<blockquote>
+<p>2023-03-09，Lazarus 团队宣布发布 Lazarus 2.2.6 版本，这是一个错误修复版本，使用 FPC 3.2.2 构建。</p>
+</blockquote>
+<p>大概在<code>Lazarus 2.2.6</code>发布的第二天吧，就把自己电脑上的<code>Lazarus</code>升级到最新了，一直以来都是这个习惯，基本上从来没怎么关心过具体都更新了哪些内容。</p>
+<p>不过，这次心血来潮，把发行日志给大致看了下，看了之后还是有点小收获的，在此记录一二。</p>
+<h1 id="版本号">版本号<a hidden class="anchor" aria-hidden="true" href="#版本号">#</a></h1>
+<p><code>Lazarus</code>是<code>IDE</code>，最终完成编译的是<code>FPC</code>，两者的版本号管理策略和<code>Linux内核</code>的策略类似。以下为笔者总结，实际的版本号管理策略未考证。</p>
+<p>版本号格式如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[主版本号].[次版本号].[修订版本号]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中，<code>次版本号</code>和<code>修订版本号</code>，<code>奇数</code>为<code>开发版</code>，<code>偶数</code>为<code>稳定版</code>。</p>
+<h1 id="发行日志">发行日志<a hidden class="anchor" aria-hidden="true" href="#发行日志">#</a></h1>
+<p><code>Lazarus 2.2.x</code>发行日志<a href="https://wiki.lazarus.freepascal.org/Lazarus_2.2.0_release_notes">原文</a>。可以看到，这是<code>2.2.0</code>的发行日志，并非<code>2.2.6</code>的发行日志，说明这是按次版本号统一整理的。</p>
+<p>由于内容较多，而且部分内容笔者也没<code>接触/使用</code>过，所以，只拣<code>熟悉的</code>或<code>感觉比较重要的</code>拿出来分享一下。</p>
+<h2 id="lazutils包">LazUtils包<a hidden class="anchor" aria-hidden="true" href="#lazutils包">#</a></h2>
+<h3 id="移除paswstr单元">移除PasWStr单元<a hidden class="anchor" aria-hidden="true" href="#移除paswstr单元">#</a></h3>
+<p>原因：只有当编译器版本低于<code>3.0</code>才包含代码。</p>
+<p>补救：不要再使用<code>PasWStr</code></p>
+<h2 id="lcl包">LCL包<a hidden class="anchor" aria-hidden="true" href="#lcl包">#</a></h2>
+<h3 id="tvaluelisteditor">TValueListEditor<a hidden class="anchor" aria-hidden="true" href="#tvaluelisteditor">#</a></h3>
+<p>旧行为：允许在键列中使用当前的<code>NameValueSeparator</code>（默认情况下：<code>=</code>）。</p>
+<p>新行为：不能在<code>键</code>列中使用名称值分隔符。如果在<code>键</code>列中键入名称值分隔符，焦点将移动到<code>值</code>列。如果将其粘贴到列中，它将被删除（没有任何反馈或警告）。</p>
+<h3 id="screen添加了三组新方法">Screen添加了三组新方法<a hidden class="anchor" aria-hidden="true" href="#screen添加了三组新方法">#</a></h3>
+<p><code>BeginTempCursor / EndTempCursor</code>、<code>BeginWaitCursor / EndWaitCursor</code>和<code>BeginScreenCursor / EndScreenCursor</code>用于临时光标更改，而不是直接设置<code>Screen.Cursor</code>属性。</p>
+<h3 id="tgroupboxtradiogrouptcheckgroup">TGroupBox，TRadioGroup，TCheckGroup<a hidden class="anchor" aria-hidden="true" href="#tgroupboxtradiogrouptcheckgroup">#</a></h3>
+<p><code>Win32</code>旧行为：可以设置属性颜色，它直接显示。</p>
+<p><code>Win32</code>新行为：如果要更改颜色，则必须设置<code>ParentBackground := False;</code></p>
+<h3 id="tframe">TFrame<a hidden class="anchor" aria-hidden="true" href="#tframe">#</a></h3>
+<p><code>Win32</code>旧行为：无法更改<code>TFrame</code>的颜色。</p>
+<p><code>Win32</code>新行为：如果要更改颜色，则必须设置<code>ParentBackground := False;</code></p>
+<h3 id="tfloatspinedit">T(Float)SpinEdit<a hidden class="anchor" aria-hidden="true" href="#tfloatspinedit">#</a></h3>
+<p>新增了<code>EditorEnabled</code>属性，以禁用编辑中的直接用户输入。如果设置为<code>False</code>，则用户只能使用微调器或箭头键更改值。</p>
+<h2 id="debugger">Debugger<a hidden class="anchor" aria-hidden="true" href="#debugger">#</a></h2>
+<p><code>LazDebugger-FP (FpDebug) v1.0</code>成为<code>Windows</code>和<code>Linux</code>默认的调试器。</p>
+<p><code>GDB(mo)</code>使用修改版的<code>GDB 9.2</code></p>
+<blockquote>
+<p>笔者补充：<code>FpDebug</code>无法调试<code>dll</code>，需要使用<code>GDB</code></p>
+</blockquote>
+<h2 id="组件">组件<a hidden class="anchor" aria-hidden="true" href="#组件">#</a></h2>
+<p><code>OpenGL</code>全面支持<code>Qt5</code>的<code>widgetset</code>。</p>
+<h3 id="tspineditex">TSpinEditEx<a hidden class="anchor" aria-hidden="true" href="#tspineditex">#</a></h3>
+<p>新属性<code>ThousandSeparator</code>允许显示插入了千位分隔符的值。</p>
+<h3 id="tfloatspineditex">TFloatSpinEditEx<a hidden class="anchor" aria-hidden="true" href="#tfloatspineditex">#</a></h3>
+<p>支持以<code>科学计数法</code>形式的文本进行录入。</p>
+<p>新属性<code>DisplayMode</code>，用于控制是否使用科学记数法。</p>
+<p>新属性<code>property</code>控制以科学记数法显示值时使用的精度。</p>
+<hr>
+<p>还有其它许多更改，详细请看<a href="https://wiki.lazarus.freepascal.org/Lazarus_2.2.0_release_notes">原文</a>。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_ctype/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>ctypes里的bug？</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/other/mermaid_gantt/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Mermaid学习笔记之——甘特图</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
