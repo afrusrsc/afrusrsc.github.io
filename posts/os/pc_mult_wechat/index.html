@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>PC上多开微信的方法 | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="背景 随着微信在工作场景中使用得越来越多，为避免工作微信对个人生活的无缝入侵，多账号成了一个有效隔离工作和生活的手段。
+但是，微信官方客户端默认不支持多账号登录，这就对有多账号登录需求的人造成了不便。
+解决方案 多开的方法有很多，个人更倾向使用脚本完成，不推荐安装第三方软件。
+windows win上多开的原理很简单，就是在微信彻底启动完成前启动多次，最终就会实现微信多开。可以拼手速，当然写成bat脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 @echo off :: 设置需要打开的微信数量 set count=2 :: 循环启动微信 for /l %%i in (1,1,%count%) do ( :: 需要填写微信实际安装路径 start &#34;&#34; &#34;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&#34; ) 美化 可以给写好的脚本创建个桌面快捷方式，然后在快捷方式上右键属性，更改图标，选择WeChat.exe，选择微信自己的图标即可。
+若有开机启动的需求了，再把快捷方式加入开机启动项即可。
+linux 注意：官方已经出了原生的linux版微信，以下方法是基于官方linux版，至于某些特供版是否适用尚不清楚。
+在linux上多开的原理也不复杂：微信启动后会生成个锁文件（~/.xwechat/lock/lock.ini），删除即可再开一个微信。可以手动删除，当然依然是写成脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 11 12 #!/bin/bash # 设置需要打开的微信数量 count=2 # 循环启动微信 for ((i=0; i&lt;${count}; i&#43;&#43;)); do # 需要填写微信实际安装路径 /usr/bin/wechat &amp; # 0.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/os/pc_mult_wechat/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/os/pc_mult_wechat/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="PC上多开微信的方法" />
+<meta property="og:description" content="背景 随着微信在工作场景中使用得越来越多，为避免工作微信对个人生活的无缝入侵，多账号成了一个有效隔离工作和生活的手段。
+但是，微信官方客户端默认不支持多账号登录，这就对有多账号登录需求的人造成了不便。
+解决方案 多开的方法有很多，个人更倾向使用脚本完成，不推荐安装第三方软件。
+windows win上多开的原理很简单，就是在微信彻底启动完成前启动多次，最终就会实现微信多开。可以拼手速，当然写成bat脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 @echo off :: 设置需要打开的微信数量 set count=2 :: 循环启动微信 for /l %%i in (1,1,%count%) do ( :: 需要填写微信实际安装路径 start &#34;&#34; &#34;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&#34; ) 美化 可以给写好的脚本创建个桌面快捷方式，然后在快捷方式上右键属性，更改图标，选择WeChat.exe，选择微信自己的图标即可。
+若有开机启动的需求了，再把快捷方式加入开机启动项即可。
+linux 注意：官方已经出了原生的linux版微信，以下方法是基于官方linux版，至于某些特供版是否适用尚不清楚。
+在linux上多开的原理也不复杂：微信启动后会生成个锁文件（~/.xwechat/lock/lock.ini），删除即可再开一个微信。可以手动删除，当然依然是写成脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 11 12 #!/bin/bash # 设置需要打开的微信数量 count=2 # 循环启动微信 for ((i=0; i&lt;${count}; i&#43;&#43;)); do # 需要填写微信实际安装路径 /usr/bin/wechat &amp; # 0." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/os/pc_mult_wechat/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-07-22T21:13:32+08:00" />
+<meta property="article:modified_time" content="2025-07-22T21:13:32+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PC上多开微信的方法"/>
+<meta name="twitter:description" content="背景 随着微信在工作场景中使用得越来越多，为避免工作微信对个人生活的无缝入侵，多账号成了一个有效隔离工作和生活的手段。
+但是，微信官方客户端默认不支持多账号登录，这就对有多账号登录需求的人造成了不便。
+解决方案 多开的方法有很多，个人更倾向使用脚本完成，不推荐安装第三方软件。
+windows win上多开的原理很简单，就是在微信彻底启动完成前启动多次，最终就会实现微信多开。可以拼手速，当然写成bat脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 @echo off :: 设置需要打开的微信数量 set count=2 :: 循环启动微信 for /l %%i in (1,1,%count%) do ( :: 需要填写微信实际安装路径 start &#34;&#34; &#34;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&#34; ) 美化 可以给写好的脚本创建个桌面快捷方式，然后在快捷方式上右键属性，更改图标，选择WeChat.exe，选择微信自己的图标即可。
+若有开机启动的需求了，再把快捷方式加入开机启动项即可。
+linux 注意：官方已经出了原生的linux版微信，以下方法是基于官方linux版，至于某些特供版是否适用尚不清楚。
+在linux上多开的原理也不复杂：微信启动后会生成个锁文件（~/.xwechat/lock/lock.ini），删除即可再开一个微信。可以手动删除，当然依然是写成脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 11 12 #!/bin/bash # 设置需要打开的微信数量 count=2 # 循环启动微信 for ((i=0; i&lt;${count}; i&#43;&#43;)); do # 需要填写微信实际安装路径 /usr/bin/wechat &amp; # 0."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🖥️操作系统",
+      "item": "https://afrusrsc.github.io/posts/os/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "PC上多开微信的方法",
+      "item": "https://afrusrsc.github.io/posts/os/pc_mult_wechat/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "PC上多开微信的方法",
+  "name": "PC上多开微信的方法",
+  "description": "背景 随着微信在工作场景中使用得越来越多，为避免工作微信对个人生活的无缝入侵，多账号成了一个有效隔离工作和生活的手段。\n但是，微信官方客户端默认不支持多账号登录，这就对有多账号登录需求的人造成了不便。\n解决方案 多开的方法有很多，个人更倾向使用脚本完成，不推荐安装第三方软件。\nwindows win上多开的原理很简单，就是在微信彻底启动完成前启动多次，最终就会实现微信多开。可以拼手速，当然写成bat脚本更可靠。\n1 2 3 4 5 6 7 8 9 10 @echo off :: 设置需要打开的微信数量 set count=2 :: 循环启动微信 for /l %%i in (1,1,%count%) do ( :: 需要填写微信实际安装路径 start \u0026#34;\u0026#34; \u0026#34;C:\\Program Files (x86)\\Tencent\\WeChat\\WeChat.exe\u0026#34; ) 美化 可以给写好的脚本创建个桌面快捷方式，然后在快捷方式上右键属性，更改图标，选择WeChat.exe，选择微信自己的图标即可。\n若有开机启动的需求了，再把快捷方式加入开机启动项即可。\nlinux 注意：官方已经出了原生的linux版微信，以下方法是基于官方linux版，至于某些特供版是否适用尚不清楚。\n在linux上多开的原理也不复杂：微信启动后会生成个锁文件（~/.xwechat/lock/lock.ini），删除即可再开一个微信。可以手动删除，当然依然是写成脚本更可靠。\n1 2 3 4 5 6 7 8 9 10 11 12 #!/bin/bash # 设置需要打开的微信数量 count=2 # 循环启动微信 for ((i=0; i\u0026lt;${count}; i++)); do # 需要填写微信实际安装路径 /usr/bin/wechat \u0026amp; # 0.",
+  "keywords": [
+    
+  ],
+  "articleBody": "背景 随着微信在工作场景中使用得越来越多，为避免工作微信对个人生活的无缝入侵，多账号成了一个有效隔离工作和生活的手段。\n但是，微信官方客户端默认不支持多账号登录，这就对有多账号登录需求的人造成了不便。\n解决方案 多开的方法有很多，个人更倾向使用脚本完成，不推荐安装第三方软件。\nwindows win上多开的原理很简单，就是在微信彻底启动完成前启动多次，最终就会实现微信多开。可以拼手速，当然写成bat脚本更可靠。\n1 2 3 4 5 6 7 8 9 10 @echo off :: 设置需要打开的微信数量 set count=2 :: 循环启动微信 for /l %%i in (1,1,%count%) do ( :: 需要填写微信实际安装路径 start \"\" \"C:\\Program Files (x86)\\Tencent\\WeChat\\WeChat.exe\" ) 美化 可以给写好的脚本创建个桌面快捷方式，然后在快捷方式上右键属性，更改图标，选择WeChat.exe，选择微信自己的图标即可。\n若有开机启动的需求了，再把快捷方式加入开机启动项即可。\nlinux 注意：官方已经出了原生的linux版微信，以下方法是基于官方linux版，至于某些特供版是否适用尚不清楚。\n在linux上多开的原理也不复杂：微信启动后会生成个锁文件（~/.xwechat/lock/lock.ini），删除即可再开一个微信。可以手动删除，当然依然是写成脚本更可靠。\n1 2 3 4 5 6 7 8 9 10 11 12 #!/bin/bash # 设置需要打开的微信数量 count=2 # 循环启动微信 for ((i=0; i\u003c${count}; i++)); do # 需要填写微信实际安装路径 /usr/bin/wechat \u0026 # 0.1秒后删除锁文件，若系统不支持小数秒则改为1 sleep 0.1 \u0026\u0026 rm $HOME/.xwechat/lock/lock.ini done 美化 官方微信默认创建的快捷方式（.desktop文件）是/usr/share/applications/wechat.desktop，可以先备份一下，然后把其中的Exec=/usr/bin/wechat %U替换为Exec=脚本的绝对路径即可。注意：需要使用root权限。\n注意：Linux版双开后，遇到了进入微信设置界面会导致微信退出的问题（不知道是否是个例），目前暂未寻找原因及解决办法。\n",
+  "wordCount" : "85",
+  "inLanguage": "zh",
+  "datePublished": "2025-07-22T21:13:32+08:00",
+  "dateModified": "2025-07-22T21:13:32+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/os/pc_mult_wechat/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/os/">🖥️操作系统</a></div>
+    <h1 class="post-title entry-hint-parent">
+      PC上多开微信的方法
+    </h1>
+    <div class="post-meta"><span title='2025-07-22 21:13:32 +0800 CST'>2025-07-22 21:13:32</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="解决方案">解决方案</a><ul>
+                            
+                    <li>
+                        <a href="#windows" aria-label="windows">windows</a><ul>
+                            
+                    <li>
+                        <a href="#%e7%be%8e%e5%8c%96" aria-label="美化">美化</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#linux" aria-label="linux">linux</a><ul>
+                            
+                    <li>
+                        <a href="#%e7%be%8e%e5%8c%96-1" aria-label="美化">美化</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p>随着微信在工作场景中使用得越来越多，为避免工作微信对个人生活的无缝入侵，多账号成了一个有效隔离工作和生活的手段。</p>
+<p>但是，微信官方客户端默认不支持多账号登录，这就对有多账号登录需求的人造成了不便。</p>
+<h1 id="解决方案">解决方案<a hidden class="anchor" aria-hidden="true" href="#解决方案">#</a></h1>
+<p>多开的方法有很多，个人更倾向使用脚本完成，不推荐安装第三方软件。</p>
+<h2 id="windows">windows<a hidden class="anchor" aria-hidden="true" href="#windows">#</a></h2>
+<p><code>win</code>上多开的原理很简单，就是在微信彻底启动完成前启动多次，最终就会实现微信多开。可以拼手速，当然写成<code>bat</code>脚本更可靠。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bat" data-lang="bat"><span class="line"><span class="cl"><span class="p">@</span><span class="k">echo</span> off
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">:</span><span class="c1">: 设置需要打开的微信数量</span>
+</span></span><span class="line"><span class="cl"><span class="k">set</span> <span class="nv">count</span><span class="p">=</span>2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">:</span><span class="c1">: 循环启动微信</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="k">/l</span> <span class="se">%%</span>i <span class="k">in</span> <span class="p">(</span><span class="mi">1</span>,<span class="mi">1</span>,<span class="nv">%count%</span><span class="p">)</span> <span class="k">do</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">:</span><span class="c1">: 需要填写微信实际安装路径</span>
+</span></span><span class="line"><span class="cl">    <span class="k">start</span> <span class="s2">&#34;&#34;</span> <span class="s2">&#34;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="美化">美化<a hidden class="anchor" aria-hidden="true" href="#美化">#</a></h3>
+<p>可以给写好的脚本创建个桌面快捷方式，然后在快捷方式上右键属性，更改图标，选择<code>WeChat.exe</code>，选择微信自己的图标即可。</p>
+<p>若有开机启动的需求了，再把快捷方式加入开机启动项即可。</p>
+<h2 id="linux">linux<a hidden class="anchor" aria-hidden="true" href="#linux">#</a></h2>
+<p><strong>注意：官方已经出了原生的<code>linux</code>版微信，以下方法是基于官方<code>linux版</code>，至于某些<code>特供版</code>是否适用尚不清楚。</strong></p>
+<p>在<code>linux</code>上多开的原理也不复杂：微信启动后会生成个锁文件（<code>~/.xwechat/lock/lock.ini</code>），删除即可再开一个微信。可以手动删除，当然依然是写成脚本更可靠。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置需要打开的微信数量</span>
+</span></span><span class="line"><span class="cl"><span class="nv">count</span><span class="o">=</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 循环启动微信</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="si">${</span><span class="nv">count</span><span class="si">}</span><span class="p">;</span> i++<span class="o">))</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># 需要填写微信实际安装路径</span>
+</span></span><span class="line"><span class="cl">  /usr/bin/wechat <span class="p">&amp;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># 0.1秒后删除锁文件，若系统不支持小数秒则改为1</span>
+</span></span><span class="line"><span class="cl">  sleep 0.1 <span class="o">&amp;&amp;</span> rm <span class="nv">$HOME</span>/.xwechat/lock/lock.ini
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="美化-1">美化<a hidden class="anchor" aria-hidden="true" href="#美化-1">#</a></h3>
+<p>官方微信默认创建的快捷方式（<code>.desktop</code>文件）是<code>/usr/share/applications/wechat.desktop</code>，可以先备份一下，然后把其中的<code>Exec=/usr/bin/wechat %U</code>替换为<code>Exec=脚本的绝对路径</code>即可。<strong>注意：需要使用root权限。</strong></p>
+<hr>
+<p><strong>注意：Linux版双开后，遇到了进入微信设置界面会导致微信退出的问题（不知道是否是个例），目前暂未寻找原因及解决办法。</strong></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/os/debian_12to13/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Debian从12升到13的翻车记</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/os/xfce4_user_dirs/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Xfce4自定义用户文件夹</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

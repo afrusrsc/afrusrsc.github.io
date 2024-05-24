@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Linux下使用Nvidia驱动玩Minecraft | 慢步道人</title>
+<meta name="keywords" content="linux, nvidia">
+<meta name="description" content="背景 一直以来，想放松一下玩个游戏了，都是习惯性地切到win下，但其实很多时候并不想进行系统的切换，毕竟越来越觉得linux极度顺手，而win各种反人类，那么能在linux下玩游戏就完美了。
+Minecraft java版是天生跨平台的版本，就先拿来试水了。
+开始 Nvidia驱动 驱动是基础，具体安装详见Debian安装Nvidia驱动
+下载启动器 Minecraft有多种启动器，选择的是比较经典的HMCL，去官网下载linux版。下载完之后是个sh文件，这是个自解压sh脚本，前半部分是sh脚本，后半部分是二进制的jar包。
+分配执行权限 1 chmod &#43;x HMCL-3.12.4.sh 运行 cd到启动器所在目录，执行以下命令：
+1 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 也可以在~/.local/bin下写个runmc.sh脚本，内容如下：
+1 2 3 4 #!/bin/bash cd 启动器所在目录 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 分配执行权限后直接运行runmc.sh即可。
+验证 执行以下命令监控N卡使用情况。
+1 watch -n 1 nvidia-smi 题外话 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia 程序这种命令方式，也适用于其它一些可以使用N卡的应用，如FreeCAD、LibreCAD等，但也有无效的，如浏览器、gimp 3等。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/other/linux_mc_nvidia/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/other/linux_mc_nvidia/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Linux下使用Nvidia驱动玩Minecraft" />
+<meta property="og:description" content="背景 一直以来，想放松一下玩个游戏了，都是习惯性地切到win下，但其实很多时候并不想进行系统的切换，毕竟越来越觉得linux极度顺手，而win各种反人类，那么能在linux下玩游戏就完美了。
+Minecraft java版是天生跨平台的版本，就先拿来试水了。
+开始 Nvidia驱动 驱动是基础，具体安装详见Debian安装Nvidia驱动
+下载启动器 Minecraft有多种启动器，选择的是比较经典的HMCL，去官网下载linux版。下载完之后是个sh文件，这是个自解压sh脚本，前半部分是sh脚本，后半部分是二进制的jar包。
+分配执行权限 1 chmod &#43;x HMCL-3.12.4.sh 运行 cd到启动器所在目录，执行以下命令：
+1 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 也可以在~/.local/bin下写个runmc.sh脚本，内容如下：
+1 2 3 4 #!/bin/bash cd 启动器所在目录 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 分配执行权限后直接运行runmc.sh即可。
+验证 执行以下命令监控N卡使用情况。
+1 watch -n 1 nvidia-smi 题外话 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia 程序这种命令方式，也适用于其它一些可以使用N卡的应用，如FreeCAD、LibreCAD等，但也有无效的，如浏览器、gimp 3等。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/other/linux_mc_nvidia/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-04-12T11:08:50+08:00" />
+<meta property="article:modified_time" content="2026-04-12T11:08:50+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux下使用Nvidia驱动玩Minecraft"/>
+<meta name="twitter:description" content="背景 一直以来，想放松一下玩个游戏了，都是习惯性地切到win下，但其实很多时候并不想进行系统的切换，毕竟越来越觉得linux极度顺手，而win各种反人类，那么能在linux下玩游戏就完美了。
+Minecraft java版是天生跨平台的版本，就先拿来试水了。
+开始 Nvidia驱动 驱动是基础，具体安装详见Debian安装Nvidia驱动
+下载启动器 Minecraft有多种启动器，选择的是比较经典的HMCL，去官网下载linux版。下载完之后是个sh文件，这是个自解压sh脚本，前半部分是sh脚本，后半部分是二进制的jar包。
+分配执行权限 1 chmod &#43;x HMCL-3.12.4.sh 运行 cd到启动器所在目录，执行以下命令：
+1 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 也可以在~/.local/bin下写个runmc.sh脚本，内容如下：
+1 2 3 4 #!/bin/bash cd 启动器所在目录 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 分配执行权限后直接运行runmc.sh即可。
+验证 执行以下命令监控N卡使用情况。
+1 watch -n 1 nvidia-smi 题外话 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia 程序这种命令方式，也适用于其它一些可以使用N卡的应用，如FreeCAD、LibreCAD等，但也有无效的，如浏览器、gimp 3等。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "⚜️其它",
+      "item": "https://afrusrsc.github.io/posts/other/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Linux下使用Nvidia驱动玩Minecraft",
+      "item": "https://afrusrsc.github.io/posts/other/linux_mc_nvidia/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Linux下使用Nvidia驱动玩Minecraft",
+  "name": "Linux下使用Nvidia驱动玩Minecraft",
+  "description": "背景 一直以来，想放松一下玩个游戏了，都是习惯性地切到win下，但其实很多时候并不想进行系统的切换，毕竟越来越觉得linux极度顺手，而win各种反人类，那么能在linux下玩游戏就完美了。\nMinecraft java版是天生跨平台的版本，就先拿来试水了。\n开始 Nvidia驱动 驱动是基础，具体安装详见Debian安装Nvidia驱动\n下载启动器 Minecraft有多种启动器，选择的是比较经典的HMCL，去官网下载linux版。下载完之后是个sh文件，这是个自解压sh脚本，前半部分是sh脚本，后半部分是二进制的jar包。\n分配执行权限 1 chmod +x HMCL-3.12.4.sh 运行 cd到启动器所在目录，执行以下命令：\n1 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 也可以在~/.local/bin下写个runmc.sh脚本，内容如下：\n1 2 3 4 #!/bin/bash cd 启动器所在目录 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 分配执行权限后直接运行runmc.sh即可。\n验证 执行以下命令监控N卡使用情况。\n1 watch -n 1 nvidia-smi 题外话 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia 程序这种命令方式，也适用于其它一些可以使用N卡的应用，如FreeCAD、LibreCAD等，但也有无效的，如浏览器、gimp 3等。",
+  "keywords": [
+    "linux", "nvidia"
+  ],
+  "articleBody": "背景 一直以来，想放松一下玩个游戏了，都是习惯性地切到win下，但其实很多时候并不想进行系统的切换，毕竟越来越觉得linux极度顺手，而win各种反人类，那么能在linux下玩游戏就完美了。\nMinecraft java版是天生跨平台的版本，就先拿来试水了。\n开始 Nvidia驱动 驱动是基础，具体安装详见Debian安装Nvidia驱动\n下载启动器 Minecraft有多种启动器，选择的是比较经典的HMCL，去官网下载linux版。下载完之后是个sh文件，这是个自解压sh脚本，前半部分是sh脚本，后半部分是二进制的jar包。\n分配执行权限 1 chmod +x HMCL-3.12.4.sh 运行 cd到启动器所在目录，执行以下命令：\n1 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 也可以在~/.local/bin下写个runmc.sh脚本，内容如下：\n1 2 3 4 #!/bin/bash cd 启动器所在目录 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./HMCL-3.12.4.sh 分配执行权限后直接运行runmc.sh即可。\n验证 执行以下命令监控N卡使用情况。\n1 watch -n 1 nvidia-smi 题外话 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia 程序这种命令方式，也适用于其它一些可以使用N卡的应用，如FreeCAD、LibreCAD等，但也有无效的，如浏览器、gimp 3等。\n",
+  "wordCount" : "44",
+  "inLanguage": "zh",
+  "datePublished": "2026-04-12T11:08:50+08:00",
+  "dateModified": "2026-04-12T11:08:50+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/other/linux_mc_nvidia/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/other/">⚜️其它</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Linux下使用Nvidia驱动玩Minecraft
+    </h1>
+    <div class="post-meta"><span title='2026-04-12 11:08:50 +0800 CST'>2026-04-12 11:08:50</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e5%bc%80%e5%a7%8b" aria-label="开始">开始</a><ul>
+                            
+                    <li>
+                        <a href="#nvidia%e9%a9%b1%e5%8a%a8" aria-label="Nvidia驱动">Nvidia驱动</a></li>
+                    <li>
+                        <a href="#%e4%b8%8b%e8%bd%bd%e5%90%af%e5%8a%a8%e5%99%a8" aria-label="下载启动器">下载启动器</a></li>
+                    <li>
+                        <a href="#%e5%88%86%e9%85%8d%e6%89%a7%e8%a1%8c%e6%9d%83%e9%99%90" aria-label="分配执行权限">分配执行权限</a></li>
+                    <li>
+                        <a href="#%e8%bf%90%e8%a1%8c" aria-label="运行">运行</a></li>
+                    <li>
+                        <a href="#%e9%aa%8c%e8%af%81" aria-label="验证">验证</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e9%a2%98%e5%a4%96%e8%af%9d" aria-label="题外话">题外话</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p>一直以来，想放松一下玩个游戏了，都是习惯性地切到<code>win</code>下，但其实很多时候并不想进行系统的切换，毕竟越来越觉得<code>linux</code>极度顺手，而<code>win</code>各种反人类，那么能在<code>linux</code>下玩游戏就完美了。</p>
+<p><code>Minecraft java版</code>是天生跨平台的版本，就先拿来试水了。</p>
+<h1 id="开始">开始<a hidden class="anchor" aria-hidden="true" href="#开始">#</a></h1>
+<h2 id="nvidia驱动">Nvidia驱动<a hidden class="anchor" aria-hidden="true" href="#nvidia驱动">#</a></h2>
+<p>驱动是基础，具体安装详见<a href="/posts/os/debian_nvidia_driver/">Debian安装Nvidia驱动</a></p>
+<h2 id="下载启动器">下载启动器<a hidden class="anchor" aria-hidden="true" href="#下载启动器">#</a></h2>
+<p><code>Minecraft</code>有多种启动器，选择的是比较经典的<code>HMCL</code>，去<a href="https://hmcl.huangyuhui.net/download/">官网</a>下载<code>linux</code>版。下载完之后是个<code>sh</code>文件，这是个<code>自解压sh脚本</code>，前半部分是<code>sh脚本</code>，后半部分是二进制的<code>jar包</code>。</p>
+<h2 id="分配执行权限">分配执行权限<a hidden class="anchor" aria-hidden="true" href="#分配执行权限">#</a></h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">chmod +x HMCL-3.12.4.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="运行">运行<a hidden class="anchor" aria-hidden="true" href="#运行">#</a></h2>
+<p><code>cd</code>到启动器所在目录，执行以下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">__NV_PRIME_RENDER_OFFLOAD</span><span class="o">=</span><span class="m">1</span> <span class="nv">__GLX_VENDOR_LIBRARY_NAME</span><span class="o">=</span>nvidia ./HMCL-3.12.4.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也可以在<code>~/.local/bin</code>下写个<code>runmc.sh</code>脚本，内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> 启动器所在目录
+</span></span><span class="line"><span class="cl"><span class="nv">__NV_PRIME_RENDER_OFFLOAD</span><span class="o">=</span><span class="m">1</span> <span class="nv">__GLX_VENDOR_LIBRARY_NAME</span><span class="o">=</span>nvidia ./HMCL-3.12.4.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>分配执行权限后直接运行<code>runmc.sh</code>即可。</p>
+<h2 id="验证">验证<a hidden class="anchor" aria-hidden="true" href="#验证">#</a></h2>
+<p>执行以下命令监控<code>N卡</code>使用情况。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">watch -n <span class="m">1</span> nvidia-smi
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="题外话">题外话<a hidden class="anchor" aria-hidden="true" href="#题外话">#</a></h1>
+<p><code>__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia 程序</code>这种命令方式，也适用于其它一些可以使用N卡的应用，如<code>FreeCAD</code>、<code>LibreCAD</code>等，但也有无效的，如<code>浏览器</code>、<code>gimp 3</code>等。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/nvidia/">Nvidia</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://afrusrsc.github.io/posts/os/debian_mobile_mtp/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Debian使用MTP和手机互传文件</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
