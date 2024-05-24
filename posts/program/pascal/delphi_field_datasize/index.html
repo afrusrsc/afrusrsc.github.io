@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>关于TField.DataSize的坑 | 慢步道人</title>
+<meta name="keywords" content="delphi, pascal">
+<meta name="description" content="从其它平台迁移而来
+在从数据库中查询数据时，有时需要事先取得字段内容的大小，再根据情况进行处理。
+对于ADO之类返回TField类型的，可以使用DataSize属性，但是！！！这里有很深的坑！！！。
+首先看如下代码：
+1 2 3 4 if ADOQuery.FieldByName(&#39;Test&#39;).DataSize &gt; 3 then {处理1} else {处理2}; 按预想，当Test字段里的数据超过3B时，应该执行处理1的代码，但事实上无论该内容长短，都是执行处理2的代码，WHY?
+扒一下Delphi的源码就明白了。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 function TField.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/delphi_field_datasize/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/delphi_field_datasize/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="关于TField.DataSize的坑" />
+<meta property="og:description" content="从其它平台迁移而来
+在从数据库中查询数据时，有时需要事先取得字段内容的大小，再根据情况进行处理。
+对于ADO之类返回TField类型的，可以使用DataSize属性，但是！！！这里有很深的坑！！！。
+首先看如下代码：
+1 2 3 4 if ADOQuery.FieldByName(&#39;Test&#39;).DataSize &gt; 3 then {处理1} else {处理2}; 按预想，当Test字段里的数据超过3B时，应该执行处理1的代码，但事实上无论该内容长短，都是执行处理2的代码，WHY?
+扒一下Delphi的源码就明白了。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 function TField." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/delphi_field_datasize/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-07-11T20:03:00+08:00" />
+<meta property="article:modified_time" content="2019-07-11T20:03:00+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="关于TField.DataSize的坑"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+在从数据库中查询数据时，有时需要事先取得字段内容的大小，再根据情况进行处理。
+对于ADO之类返回TField类型的，可以使用DataSize属性，但是！！！这里有很深的坑！！！。
+首先看如下代码：
+1 2 3 4 if ADOQuery.FieldByName(&#39;Test&#39;).DataSize &gt; 3 then {处理1} else {处理2}; 按预想，当Test字段里的数据超过3B时，应该执行处理1的代码，但事实上无论该内容长短，都是执行处理2的代码，WHY?
+扒一下Delphi的源码就明白了。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 function TField."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "关于TField.DataSize的坑",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/delphi_field_datasize/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "关于TField.DataSize的坑",
+  "name": "关于TField.DataSize的坑",
+  "description": "从其它平台迁移而来\n在从数据库中查询数据时，有时需要事先取得字段内容的大小，再根据情况进行处理。\n对于ADO之类返回TField类型的，可以使用DataSize属性，但是！！！这里有很深的坑！！！。\n首先看如下代码：\n1 2 3 4 if ADOQuery.FieldByName(\u0026#39;Test\u0026#39;).DataSize \u0026gt; 3 then {处理1} else {处理2}; 按预想，当Test字段里的数据超过3B时，应该执行处理1的代码，但事实上无论该内容长短，都是执行处理2的代码，WHY?\n扒一下Delphi的源码就明白了。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 function TField.",
+  "keywords": [
+    "delphi", "pascal"
+  ],
+  "articleBody": " 从其它平台迁移而来\n在从数据库中查询数据时，有时需要事先取得字段内容的大小，再根据情况进行处理。\n对于ADO之类返回TField类型的，可以使用DataSize属性，但是！！！这里有很深的坑！！！。\n首先看如下代码：\n1 2 3 4 if ADOQuery.FieldByName('Test').DataSize \u003e 3 then {处理1} else {处理2}; 按预想，当Test字段里的数据超过3B时，应该执行处理1的代码，但事实上无论该内容长短，都是执行处理2的代码，WHY?\n扒一下Delphi的源码就明白了。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 function TField.GetDataSize: Integer; begin Result := 0; end; function TStringField.GetDataSize: Integer; begin Result := Size + 1; end; function TWideStringField.GetDataSize: Integer; begin Result := (Size + 1) * SizeOf(WideChar); end; function TIntegerField.GetDataSize: Integer; begin Result := SizeOf(Integer); end; function TLongWordField.GetDataSize: Integer; begin Result := SizeOf(LongWord); end; function TSmallintField.GetDataSize: Integer; begin Result := SizeOf(SmallInt); end; function TShortintField.GetDataSize: Integer; begin Result := SizeOf(ShortInt); end; function TByteField.GetDataSize: Integer; begin Result := SizeOf(Byte); end; function TLargeintField.GetDataSize: Integer; begin Result := SizeOf(Largeint); end; function TWordField.GetDataSize: Integer; begin Result := SizeOf(Word); end; function TFloatField.GetDataSize: Integer; begin Result := SizeOf(Double); end; function TSingleField.GetDataSize: Integer; begin Result := SizeOf(Single); end; function TExtendedField.GetDataSize: Integer; begin Result := SizeOf(Extended); end; function TBooleanField.GetDataSize: Integer; begin Result := SizeOf(WordBool); end; function TDateTimeField.GetDataSize: Integer; begin Result := SizeOf(TDateTime); end; function TSQLTimeStampField.GetDataSize: Integer; begin Result := SizeOf(TSQLTimeStamp); end; function TSQLTimeStampOffsetField.GetDataSize: Integer; begin Result := SizeOf(TSQLTimeStampOffset); end; function TDateField.GetDataSize: Integer; begin Result := SizeOf(Integer); end; function TTimeField.GetDataSize: Integer; begin Result := SizeOf(Integer); end; function TBytesField.GetDataSize: Integer; begin Result := Size; end; function TVarBytesField.GetDataSize: Integer; begin Result := Size + SizeOf(Word) {Length Prefix}; end; function TBCDField.GetDataSize: Integer; begin // SizeOf(TBcd) is used here instead of SizeOf(Currency) because some // datasets store the currency data in TBcd format in the record buffer. // For these classes (TBDEDataset \u0026 TClientDataset) a call to // TField.GetData(Buffer, True) will return a TBcd. Result := SizeOf(TBcd); end; function TFMTBCDField.GetDataSize: Integer; begin Result := SizeOf(TBcd); end; function TBlobField.GetDataSize: Integer; begin // Blob data is not stored in the record buffer and can not be read // with a call to TField.GetData. Use GetBlobSize instead. Result := 0; end; function TReferenceField.GetDataSize: Integer; begin Result := FSize + 2; end; 也就是说，不能直接取DataSize，而是需要转换为实际的类型后再取DataSize，而且TBlobField是特例，需要使用TBlobField.BlobSize。那么，刚才的例子应该这样写（假设字段类型是Blob）：\n1 2 3 4 if TBlobField(ADOQuery.FieldByName('Test')).BlobSize \u003e 3 then {处理1} else {处理2}; ",
+  "wordCount" : "437",
+  "inLanguage": "zh",
+  "datePublished": "2019-07-11T20:03:00+08:00",
+  "dateModified": "2019-07-11T20:03:00+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/pascal/delphi_field_datasize/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/pascal/">⚒️pascal</a></div>
+    <h1 class="post-title entry-hint-parent">
+      关于TField.DataSize的坑
+    </h1>
+    <div class="post-meta"><span title='2019-07-11 20:03:00 +0800 CST'>2019-07-11 20:03:00</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> 
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>在从数据库中查询数据时，有时需要事先取得字段内容的大小，再根据情况进行处理。</p>
+<p>对于<code>ADO</code>之类返回<code>TField</code>类型的，可以使用<code>DataSize</code>属性，<strong>但是！！！这里有很深的坑！！！</strong>。</p>
+<p>首先看如下代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">if ADOQuery.FieldByName(&#39;Test&#39;).DataSize &gt; 3 then
+</span></span><span class="line"><span class="cl">  {处理1}
+</span></span><span class="line"><span class="cl">else
+</span></span><span class="line"><span class="cl">  {处理2};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>按预想，当<code>Test</code>字段里的数据超过3B时，应该执行<code>处理1</code>的代码，但事实上无论该内容长短，都是执行<code>处理2</code>的代码，WHY?</p>
+<p>扒一下<code>Delphi</code>的源码就明白了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">function TField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := 0;
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TStringField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := Size + 1;
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TWideStringField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := (Size + 1) * SizeOf(WideChar);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TIntegerField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Integer);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TLongWordField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(LongWord);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TSmallintField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(SmallInt);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TShortintField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(ShortInt);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TByteField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Byte);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TLargeintField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Largeint);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TWordField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Word);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TFloatField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Double);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TSingleField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Single);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TExtendedField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Extended);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TBooleanField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(WordBool);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TDateTimeField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(TDateTime);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TSQLTimeStampField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(TSQLTimeStamp);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TSQLTimeStampOffsetField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(TSQLTimeStampOffset);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TDateField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Integer);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TTimeField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(Integer);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TBytesField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := Size;
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TVarBytesField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := Size + SizeOf(Word) {Length Prefix};
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TBCDField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  // SizeOf(TBcd) is used here instead of SizeOf(Currency) because some
+</span></span><span class="line"><span class="cl">  // datasets store the currency data in TBcd format in the record buffer.
+</span></span><span class="line"><span class="cl">  // For these classes (TBDEDataset &amp; TClientDataset) a call to
+</span></span><span class="line"><span class="cl">  // TField.GetData(Buffer, True) will return a TBcd.
+</span></span><span class="line"><span class="cl">  Result := SizeOf(TBcd);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TFMTBCDField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := SizeOf(TBcd);
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TBlobField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  // Blob data is not stored in the record buffer and can not be read
+</span></span><span class="line"><span class="cl">  // with a call to TField.GetData. Use GetBlobSize instead.
+</span></span><span class="line"><span class="cl">  Result := 0;
+</span></span><span class="line"><span class="cl">end;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function TReferenceField.GetDataSize: Integer;
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  Result := FSize + 2;
+</span></span><span class="line"><span class="cl">end;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也就是说，不能直接取<code>DataSize</code>，而是需要转换为实际的类型后再取<code>DataSize</code>，而且<code>TBlobField</code>是特例，需要使用<code>TBlobField.BlobSize</code>。那么，刚才的例子应该这样写（假设字段类型是<code>Blob</code>）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">if TBlobField(ADOQuery.FieldByName(&#39;Test&#39;)).BlobSize &gt; 3 then
+</span></span><span class="line"><span class="cl">  {处理1}
+</span></span><span class="line"><span class="cl">else
+</span></span><span class="line"><span class="cl">  {处理2};
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/delphi/">Delphi</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_delphi_base/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>从Delphi到Go——基础</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_vscod/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Windows &#43; VS Code搭建 Go 开发环境</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

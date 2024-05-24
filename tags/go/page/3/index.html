@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/tags/go/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/tags/go/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/tags/go/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/tags/go/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/tags/">🔖标签</a></div>
+  <h1>
+    Go
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">使用gomod
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+初学Go时，用的都是GOPATH模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。
+还好有GO MOD模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。
+准备 golang v1.11&#43; 据说要使用GO MOD模式，必须要使用v1.11以上的版本（这里是直接用最新的v1.15.3）。
+IDE 好用的果然还是JB家的Goland，不过吾等P民囊中羞涩，还是果断VS Code&#43;插件。
+代理 由于众所周知的原因，我们需要准备好代理，代理的使用略。
+GO MOD 打开命令行
+在GOPATH之外任意新建一个空测试目录，并cd进去
+执行命令go mod init XXX（XXX为项目名），会生成一个go.mod文件，内容如下：
+1 2 3 module gmtest go 1.15 以使用GoFrame为例， 修改go.mod加上gf 1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/go latest latest表示使用最新版本。
+编写Go代码 1 2 3 4 5 6 7 8 9 10 11 package main import ( &#34;fmt&#34; &#34;github.com/gogf/gf&#34; ) func main() { fmt.Println(&#34;Hello GF&#34;, gf.VERSION) } 执行go run main....</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-10-26 23:08:47 +0800 CST'>2020-10-26 23:08:47</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 使用gomod" href="https://afrusrsc.github.io/posts/program/go/go_gomod/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——接口
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+由于没有太多编写接口的经验，此处仅简单说明语法。后期对接口有更多认知和经验后再进行详细记录。
+Delphi Delphi的接口是侵入式接口，并且是单继承的，但类可以同时实现多个接口，类声明时需要显示声明实现了哪些接口。
+声明 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 type //直接声明 IMyInterface1 = interface function Func1: Integer; //函数 procedure Proc1(Value: Integer); //过程 property MI: Integer read Func1 write Proc1; //属性 end; //从已有接口继承 IMyInterface2 = interface(IMyInterface1) procedure Proc2; end; //含有 GUID 的接口可以公开给其它进程调用 IMyInterface3 = interface [&#39;{3E51374A-D0E8-4C84-AA30-9634409E45DD}&#39;] procedure Proc3; end; Delphi已经提供了基接口IInterface，自己声明的接口最好从IInterface继承。
+实现 1 2 3 4 5 6 7 8 9 10 11 type //含接口的类的声明 TMyClass = class(基类, 接口) public procedure Proc; //接口方法 end; //接口实现 procedure TMyClass....</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-01-30 12:52:16 +0800 CST'>2020-01-30 12:52:16</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——接口" href="https://afrusrsc.github.io/posts/program/go/go_delphi_interface/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">简单数学运算的比较
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+人到中年，总是不免生出些危机感，长年使用Delphi，心中自是不踏实，闲来便看两眼java，不想却发现个从未注意过的小问题。
+java 1 2 3 4 5 double a = 1 / 10; //0.0 double b = 1.0 / 10; //0.1 double c = 1 / 10.0; //0.1 double d = 1 - 9.0 / 10; //0.09999999999999998 double e = 1 - 9 / 10; //1.0 Delphi 1 2 3 4 5 a := 1 / 10; //0.1 b := 1.0 / 10; //0.1 c := 1 / 10....</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-01-01 22:37:24 +0800 CST'>2020-01-01 22:37:24</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 简单数学运算的比较" href="https://afrusrsc.github.io/posts/program/misc/float_precision_calc/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——方法
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+结构体的方法 Delphi Delphi结构体的方法与类的方法几乎是一致的，主要区别是内存的管理方式和可见性不同。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 //定义 type TMyStruct = record No: Integer; Name: string; function ToString: string; end; //实现 function TMyStruct.ToString: string; begin Result := Format(&#39;No:%d, Name:%s&#39;, [Self.No, Self.Name]); end; //调用 var ms: TMyStruct; s: string; begin s := ms.ToString; end; Go 方法其实就是加了接收器的函数，语法如下：
+1 2 3 func (接收器变量 接收器类型) 方法名(参数列表) (返回参数) { 函数体 } Go结构体的方法无需声明，直接实现即可。...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-12-02 22:56:02 +0800 CST'>2019-12-02 22:56:02</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——方法" href="https://afrusrsc.github.io/posts/program/go/go_delphi_method/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——异常处理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+Delphi try…finally…end 1 2 3 4 5 6 //创建、打开、加锁等 try //具体处理 finally //释放、关闭、解锁等 end; raise 1 raise Exception.Create(&#39;异常信息&#39;); //手动抛出异常 try…except…end 1 2 3 4 5 6 7 8 9 try //可能产生异常的语句块 except //异常的相关处理 on E: Exception do begin //对应类型的异常的处理 end; end; Go defer 加defer的语句会延迟到函数调用结束返回时才执行，相当于finally...end区。存在多个defer语句时，最先出现的总是最后才执行。
+1 2 3 4 5 func F(){ //打开、加锁等 defer //关闭、解锁等 //具体处理 } panic 1 panic(异常信息) recover 1 2 3 4 5 6 7 func FF(){ defer func(){ e := recover() //异常处理 }() //可能产生异常的语句块，或调用 panic() 抛出异常 } 虽然panic/recover组合可以模拟try....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-12-01 22:35:02 +0800 CST'>2019-12-01 22:35:02</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——异常处理" href="https://afrusrsc.github.io/posts/program/go/go_delphi_except/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——函数的可变参数
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+Delphi 事实上，Delphi并没有什么可以直接为函数传递可变参数（数量可变、类型可变）的语法，但是并不是说不可能实现，最常用的Format()函数就是最好的例子。
+虽然不能直接传递可变参数，但是通过一种叫做可变类型的开放数组即可实现为函数传递数量不定、类型不一的可变参数。
+可变类型 可变类型不是变体类型，而是一个记录类型TVarRec，在System单元中的定义如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 TVarRec = record { do not pack this record; it is compiler-generated } case Integer of 0: (case Byte of vtInteger: (VInteger: Integer); vtBoolean: (VBoolean: Boolean); vtChar: (VChar: _AnsiChr); vtExtended: (VExtended: PExtended); {$IFNDEF NEXTGEN} vtString: (VString: _PShortStr); {$ENDIF !...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-11-27 22:24:05 +0800 CST'>2019-11-27 22:24:05</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——函数的可变参数" href="https://afrusrsc.github.io/posts/program/go/go_delphi_func_args/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——匿名函数
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+早期的Delphi版本是没有匿名函数的，不过可以定义一个函数类型来实现类似的功能；后期的版本已经支持匿名函数，随用随写。Go天生就支持匿名函数。
+Delphi 函数类型 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 //声明函数类型 type TMyProc = procedure(A: Integer); //过程 TMyFunc = function(x: Integer): Integer; //函数 //定义符合函数类型的函数 procedure MyProc(A: Integer); begin ShowMessage(IntToHex(A)); end; function MyFunc1(x: Integer): Integer; begin Result := x &#43; x; end; function MyFunc2(x: Integer): Integer; begin Result := x * x; end; //使用 var mp: TMyProc; mf: TMyFunc; begin mp := MyProc; mf := MyFunc1; mp(mf(99)); end; //作为参数进行传递，这才是函数类型最主要的使用方法 procedure Test(x: Integer; Func: TMyFunc); begin ShowMessage(Func(x)....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-11-03 12:14:24 +0800 CST'>2019-11-03 12:14:24</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——匿名函数" href="https://afrusrsc.github.io/posts/program/go/go_delphi_func/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——列表
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+Delphi中最基本的列表是TList类和TList&lt;T&gt;泛型类，还有线程安全的TThreadList类和TThreadList&lt;T&gt;泛型类，底层实现是数组。Go用的是container/list包，内部实现是双向链表。
+Delphi TList TList里存的是指针，使用时注意处理好指针即可。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 //声明 var l: TList; //构造 l := TList.Create; //添加 l.Add(p); //元素个数 n := l.Count; //列表容量 cap := l.Capacity; //取值 p1 := l.Items[0]; p2 := l.Extract(p1); //找到指针p1并从列表中取出，列表中将不再有p1，若其后还有元素，则前移填充空缺。 p := l.First; //取第一个元素 p := l.Last; //取最后一个元素 //查找元素的索引 i := l.IndexOf(p); //修改 l....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-10-30 21:58:48 +0800 CST'>2019-10-30 21:58:48</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——列表" href="https://afrusrsc.github.io/posts/program/go/go_delphi_list/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——字典
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+字典，又称为哈希表，是一种能够快速寻找值的理想结构。Go语言中对应的数据类型是map，Delphi中是TDictionary泛型类。
+声明 Delphi
+1 2 uses System.Generics.Collections; var 字典名: TDictionary&lt;键类型, 值类型&gt;; Go
+1 var 字典名 map[键类型]值类型 初始化 Delphi
+1 字典名 := TDictionary&lt;键类型, 值类型&gt;.Create(初始容量); Go
+1 2 3 4 //使用make构造 字典名 = make(map[键类型]值类型, 初始容量) //直接赋初值 字典名 = map[键类型]值类型{键1: 值1, 键2: 值2} 元素操作 Delphi
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 var m: TDictionary&lt;Integer, string&gt;; //构造 m := TDictionary&lt;Integer, string&gt;....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-10-28 22:09:02 +0800 CST'>2019-10-28 22:09:02</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——字典" href="https://afrusrsc.github.io/posts/program/go/go_delphi_map/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从Delphi到Go——数组
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+静态数组 一维数组 声明 Delphi
+1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go
+1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、&#39;a&#39;..&#39;z&#39;等。子界元素就是数组元素的下标。
+Go的数组长度只能是整型，下标为0~数组长度-1。
+初始化 Delphi
+1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go
+1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-10-08 22:03:53 +0800 CST'>2019-10-08 22:03:53</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从Delphi到Go——数组" href="https://afrusrsc.github.io/posts/program/go/go_delphi_array/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="https://afrusrsc.github.io/tags/go/page/2/">
+      «&nbsp;上一页&nbsp;2/4
+    </a>
+    <a class="next" href="https://afrusrsc.github.io/tags/go/page/4/">下一页&nbsp;4/4&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

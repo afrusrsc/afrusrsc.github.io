@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Mount on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/mount/</link>
+    <description>Recent content in Mount on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Thu, 12 Jun 2025 20:06:17 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/mount/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Debian开机自动挂载ntfs分区</title>
+      <link>https://afrusrsc.github.io/posts/os/debian_mount_ntfs/</link>
+      <pubDate>Thu, 12 Jun 2025 20:06:17 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/os/debian_mount_ntfs/</guid>
+      <description>背景 由于是win和debian双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是ntfs格式。虽说xfce桌面环境挂载ntfs分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。
+解决方案 以需要把win下的D:盘挂载到/mnt/d下为例进行说明。
+准备工作 安装ntfs-3g驱动，已安装则忽略（桌面环境可挂载则证明已有驱动） 1 sudo apt update &amp;amp;&amp;amp; sudo apt install ntfs-3g 查看待挂载的ntfs分区的设备名称和UUID 1 lsblk -f # 假设设备名为 /dev/sda3，UUID 为 ABCDFE 手动创建挂载点 1 sudo mkdir /mnt/d 查看当前用户的uid和gid 1 id # 一般第一个非root的用户的 uid 和 gid 均为 1000 修改配置 编辑/etc/fstab 1 sudo vi /etc/fstab 添加如下内容并保存 1 UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0 重启 配置详解 1 &amp;lt;file system&amp;gt; &amp;lt;mount point&amp;gt; &amp;lt;type&amp;gt; &amp;lt;options&amp;gt; &amp;lt;dump&amp;gt; &amp;lt;pass&amp;gt; &amp;lt;file system&amp;gt;要挂载的设备，常见格式如下： 格式 示例 说明 设备路径 /dev/sda1 直接指定分区（不推荐，设备名可能变化） UUID UUID=1234-5678 唯一标识符（推荐，通过 blkid 或 lsblk -f 查看） 卷标 LABEL=Data 文件系统卷标（需提前用 e2label 等工具设置） 网络路径 nas:/share NFS/Samba 等网络共享路径 &amp;lt;mount point&amp;gt;挂载点，必须是已存在的空目录，一般在/mnt下</description>
+    </item>
+  </channel>
+</rss>

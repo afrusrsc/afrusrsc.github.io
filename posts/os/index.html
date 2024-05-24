@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>🖥️操作系统 | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="🖥️操作系统 - 慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/os/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/posts/os/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/os/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="🖥️操作系统" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/os/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="🖥️操作系统"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🖥️操作系统",
+      "item": "https://afrusrsc.github.io/posts/os/"
+    }
+  ]
+}
+</script>
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a></div>
+  <h1>
+    🖥️操作系统
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Bye~~ win10！
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>一个消息 听说，win10停更了，第一反应是：哦，已经到时间了啊，停吧，反正也就玩游戏时会用用。
+事实上，这个消息如果是在半年前，第一反应肯定是这样：哎呀，太好了，SBbug10终于不会再自动更新了，再也不用担心这SB偷偷自动更新半天、然后更新失败再回滚半天，浪费时间、浪费精力、浪费生命！
+但是，不管是哪种情况，对于新的继任者——瘟尸疫（win11），打死我也不会用的，更不会买预装了瘟尸疫的电脑，实在迫不得已要在别人的瘟尸疫设备上操作，心里也是要多骂几句的。
+话再说回来，现在对待win10的态度能这么平淡，其实是因为已经使用linux做主力了，毕竟最近几年在win10上使个劲儿地折腾wsl和虚拟机，就是为了转linux做主力。
+转战场 其实，大概从2009年有第一台自己的电脑后不到一年，就开始接触linux了，第一次安装的发行版是wubi安装的ubuntu，再后来是物理分区装双系统；工作后5~6年，基本上都是在虚拟机里玩，ubuntu、centos、mint、debian等主流发行版都尝试过，gnome、kde、mate、xfce、cinnamon等主流的桌面环境也尝试过，不过也仅仅是尝试过而已；后来，bug10（win10）出了wsl，又玩起了wsl。
+有一阵子，python爆火，无意间发现同样的python程序在wsl和win10下的性能天差地别，对win的不满（之前主要集中在SB自动更新上）瞬间爆涨。
+后来学了git并做为主力工具后，linux的tab补全简直爱死了，于是wsl&#43;git就正式成为生产力工具了。
+再后来，固态硬盘开始大行其道，这本是件好事，但是无奈那些互联网大厂都推出了自己的桌面应用——清一色的浏览器套壳，真TM SB到极致了，于是，原本就喜欢绿色版的自己就变得更喜欢那些小而美的东西了。所以，debian&#43;xfce的组合也就慢慢固定下来了。
+由于一直做的是delphi开发，基本上被win锁死了，所以，很长一段时间里都是在用win，即便是双系统。
+做了十年的delphi，早已厌倦了那种因个人审美及习惯不同而导致的各种算不上是真需求的需求，所以越来越倾向于去做更关注逻辑的后端。还好，碰巧遇到了这么一个机会，于是就从delphi转go了，顺便也转为linux做主力了。
+其实，有了wsl&#43;git做主力的那段经历，完全转linux做主力并没有太多不适，真要说的话，主要还是那些消费级的应用不多（在信创大环境下，还是比以前好了不少，比如：微信、QQ、wps等），以及一些硬件的驱动麻烦些，但是那些生产级的应用真的是挺好的。
+不知不觉，使用linux做主力已经半年了，win10除了偶尔玩玩游戏外，几乎已经不用了，除非是需要使用个别只能在win上运行的应用。
+后话 中间也尝试过很短一段时间的free bsd，除了生态更小外，没明显感觉出与linux有太大不同。
+使用linux才真正感觉自己的电脑是自己的，虽然有时也会被玩坏点东西，但是网上查一下，照着敲几下命令，一般问题都能解决。</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-20 21:13:08 +0800 CST'>2025-10-20 21:13:08</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Bye~~ win10！" href="https://afrusrsc.github.io/posts/os/bye_win10/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">关于xfce4-pulseaudio-plugin中文翻译的bug
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 系统从debian 12升到debian 13后，一直有个地方很不爽：鼠标放到状态栏的音量图标上时无法显示当前的具体音量。但是，由于升级过程出了点状况（详见Debian从12升到13的翻车记），一时不确定是自己搞出来的问题还是本来就有bug。
+过程 新发现 今天无意间查看~/.xsession-errors内容时，看到大段如下重复的内容：
+1 2 (wrapper-2.0:1621): Gtk-WARNING **: 21:29:52.802: Failed to set text &#39;音量 30% &lt;/b&gt;&lt;small&gt;内置音频 模拟立体声&lt;/small&gt;&#39; from markup due to error parsing markup: 第 2 行第 5 个字符出错： 元素“b”已经闭合，当前仍开放的元素是“markup” 然后瞬间就觉得这可能是个bug！查看插件的关于信息：xfce4-pulseaudio-plugin 0.4.9，卸载并重装插件：
+1 2 3 4 5 6 # 卸载 sudo apt purge xfce4-pulseaudio-plugin # 重新安装 sudo apt install xfce4-pulseaudio-plugin # 重启面板 xfce4-panel -r 重启后，问题仍在。全盘搜索相关文件：
+1 2 3 4 5 6 7 8 9 10 11 12 13 sudo find / -name &#34;*xfce4-pulseaudio-plugin*&#34; # 部分结果如下 /usr/share/icons/hicolor/48x48/apps/xfce4-pulseaudio-plugin....</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-10 22:46:05 +0800 CST'>2025-10-10 22:46:05</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 关于xfce4-pulseaudio-plugin中文翻译的bug" href="https://afrusrsc.github.io/posts/os/xfce4-pulseaudio-plugin_zh_cn_mo/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Debian从12升到13的翻车记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 之前都是在虚拟机里玩玩Debian，也就最近两年才实打实地在物理机上装了Debian 12，也一直用得挺好。
+前段时间，关注已久的trixie也就是Debian 13终于发布了，虽然告诫过自己要等稳定一段时间再升级，但终究挡不过尝鲜的念头一起再起，于是在发布的第二天晚上开启了升级之路。
+虽然已经研究了官方的升级文档，但还是翻车了。
+升级过程 先更新当前系统的补丁 1 sudo apt update &amp;&amp; sudo apt upgrade -y 备份源，然后修改源，把bookworm替换为trixie 1 2 3 4 5 6 7 # 备份 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak # 修改 sudo sed -i &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list # 也可用一个命令备份并修改 sudo sed -i.bak &#39;s/bookworm/trixie/g&#39; /etc/apt/sources.list 再进行大版本更新 1 sudo apt update &amp;&amp; sudo apt full-upgrade -y 更新完成后会有类似执行apt autoremove的提示，慎重执行 翻车记 翻车根源在于：大版本更新时使用了sudo apt update &amp;&amp; sudo apt upgrade -y，之后又无脑执行了sudo apt autoremove，好巧不巧把network-manager卸载了，没法上网了！
+若是可以接有线网，插上网线，sudo apt install network-manager也就不会有后面的问题了。但是，偏偏这是在一个没有有线网的环境下。...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-20 20:45:47 +0800 CST'>2025-08-20 20:45:47</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Debian从12升到13的翻车记" href="https://afrusrsc.github.io/posts/os/debian_12to13/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">PC上多开微信的方法
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 随着微信在工作场景中使用得越来越多，为避免工作微信对个人生活的无缝入侵，多账号成了一个有效隔离工作和生活的手段。
+但是，微信官方客户端默认不支持多账号登录，这就对有多账号登录需求的人造成了不便。
+解决方案 多开的方法有很多，个人更倾向使用脚本完成，不推荐安装第三方软件。
+windows win上多开的原理很简单，就是在微信彻底启动完成前启动多次，最终就会实现微信多开。可以拼手速，当然写成bat脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 @echo off :: 设置需要打开的微信数量 set count=2 :: 循环启动微信 for /l %%i in (1,1,%count%) do ( :: 需要填写微信实际安装路径 start &#34;&#34; &#34;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&#34; ) 美化 可以给写好的脚本创建个桌面快捷方式，然后在快捷方式上右键属性，更改图标，选择WeChat.exe，选择微信自己的图标即可。
+若有开机启动的需求了，再把快捷方式加入开机启动项即可。
+linux 注意：官方已经出了原生的linux版微信，以下方法是基于官方linux版，至于某些特供版是否适用尚不清楚。
+在linux上多开的原理也不复杂：微信启动后会生成个锁文件（~/.xwechat/lock/lock.ini），删除即可再开一个微信。可以手动删除，当然依然是写成脚本更可靠。
+1 2 3 4 5 6 7 8 9 10 11 12 #!/bin/bash # 设置需要打开的微信数量 count=2 # 循环启动微信 for ((i=0; i&lt;${count}; i&#43;&#43;)); do # 需要填写微信实际安装路径 /usr/bin/wechat &amp; # 0....</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-07-22 21:13:32 +0800 CST'>2025-07-22 21:13:32</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to PC上多开微信的方法" href="https://afrusrsc.github.io/posts/os/pc_mult_wechat/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Xfce4自定义用户文件夹
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 在Linux上，一直使用的是xfce桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。
+但是，在中文环境下，默认的下载目录名字就是下载，在命令行下使用时还要切换输入法，麻烦，虽然可以建立软链接解决，但还是想知道有没有更直接的方法。
+解决方案 一番折腾后，发现了$HOME/.config/目录下的user-dirs.dirs文件，内容如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # This file is written by xdg-user-dirs-update # If you want to change or add directories, just edit the line you&#39;re # interested in. All local changes will be retained on the next run. # Format is XDG_xxx_DIR=&#34;$HOME/yyy&#34;, where yyy is a shell-escaped # homedir-relative path, or XDG_xxx_DIR=&#34;/yyy&#34;, where /yyy is an # absolute path....</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-07-13 10:26:19 +0800 CST'>2025-07-13 10:26:19</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Xfce4自定义用户文件夹" href="https://afrusrsc.github.io/posts/os/xfce4_user_dirs/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Debian开机自动挂载ntfs分区
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 由于是win和debian双系统，并且需要在两个系统间共享使用资料分区，因此数据分区采用的是ntfs格式。虽说xfce桌面环境挂载ntfs分区不算麻烦（点下鼠标，再输个密码），但还是希望开机时就能自动挂载。
+解决方案 以需要把win下的D:盘挂载到/mnt/d下为例进行说明。
+准备工作 安装ntfs-3g驱动，已安装则忽略（桌面环境可挂载则证明已有驱动） 1 sudo apt update &amp;&amp; sudo apt install ntfs-3g 查看待挂载的ntfs分区的设备名称和UUID 1 lsblk -f # 假设设备名为 /dev/sda3，UUID 为 ABCDFE 手动创建挂载点 1 sudo mkdir /mnt/d 查看当前用户的uid和gid 1 id # 一般第一个非root的用户的 uid 和 gid 均为 1000 修改配置 编辑/etc/fstab 1 sudo vi /etc/fstab 添加如下内容并保存 1 UUID=ABCDFE /mnt/d ntfs-3g defaults,uid=1000,gid=1000,dmask=022,fmask=133,noatime,windows_names 0 0 重启 配置详解 1 &lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt; &lt;file system&gt;要挂载的设备，常见格式如下： 格式 示例 说明 设备路径 /dev/sda1 直接指定分区（不推荐，设备名可能变化） UUID UUID=1234-5678 唯一标识符（推荐，通过 blkid 或 lsblk -f 查看） 卷标 LABEL=Data 文件系统卷标（需提前用 e2label 等工具设置） 网络路径 nas:/share NFS/Samba 等网络共享路径 &lt;mount point&gt;挂载点，必须是已存在的空目录，一般在/mnt下...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-06-12 20:06:17 +0800 CST'>2025-06-12 20:06:17</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Debian开机自动挂载ntfs分区" href="https://afrusrsc.github.io/posts/os/debian_mount_ntfs/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">tar分卷打包解包
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前言 tar是个极其常用的命令，也是个功能很强大的命令，单是tar --help就出来好几屏，所以常用的也只是其中一小部分。
+最近看到别人用tar解压分卷大文件时，自己对tar分卷完全不了解，搜索后记录一下。
+分卷打包 tar自身不包含分卷功能，需要配合split完成。
+1 tar -cvf - 文件夹名/ | split -b 大小 - 输出文件名前缀 # 注意两个`-`不能省 tar也可以带上其它参数，比如-z、-j等压缩参数。
+split也可以带其它参数，比如-d使用数字后缀。
+解包分卷 同分卷打包类似，tar需要配合cat完成对分卷的解包。
+1 2 3 4 5 6 # 先拼接后解包 cat 文件前缀* &gt; 合并后的文件名 tar -xvf 合并后的文件名 # 不产生中间文件 cat 文件前缀* | tar -xvf - # 注意这个`-`不能省 注意： 1. 分卷文件要全部在同一个目录下；2. 分卷文件的顺序特别重要，务必保证顺序正确无误。</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-06-07 10:19:51 +0800 CST'>2025-06-07 10:19:51</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to tar分卷打包解包" href="https://afrusrsc.github.io/posts/os/tar_split/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Debian安装Nvidia驱动
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 系统安装完之后，默认的显卡驱动就能好好的工作，这点还是比较满意的，但用久了之后就会发现：看个高清视频啥的，CPU使用率就会蹭蹭上去，风扇呼呼的，总感觉N卡压根就没派上用场，所以就想换上Nvidia的闭源驱动看看效果。
+安装驱动 准备工作 修改/etc/apt/sources.list，在main后加入contrib non-free，已有则跳过
+禁用BIOS中的Secure Boot（！！！非常非常非常重要！！！）
+由于我一开始没有禁用Secure Boot，反复安装并修改了许多配置，浪费时间不说，原始安装能否像以下步骤那样光滑已无法考证，除非把系统也重装了。
+安装 更新包索引 1 sudo apt update 安装nvidia-detect 1 sudo apt install nvidia-detect 运行nvidia-detect，我的提示安装nvidia-driver即可
+安装nvidia-driver
+1 sudo apt install nvidia-driver 重启 双卡切换 Debian官方仓库中并没有nvidia-prime，所以使用envycontrol来实现。
+下载envycontrol
+安装
+1 sudo apt install ./python3-envycontrol_3.5.1-1_all.deb 查看当前显卡模式sudo envycontrol --query
+切换显卡
+1 2 3 sudo envycontrol -s integrated # 切换到 集显 sudo envycontrol -s hybrid # 切换到 混合模式 sudo envycontrol -s nvidia # 切换到 N卡 重启 </p>
+  </div>
+  <footer class="entry-footer"><span title='2025-03-28 23:00:49 +0800 CST'>2025-03-28 23:00:49</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Debian安装Nvidia驱动" href="https://afrusrsc.github.io/posts/os/debian_nvidia_driver/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">解决Debian安装巨慢的问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>问题及原因 Debian安装过程中会有一个阶段下载特别慢，即便是在安装过程中更换了国内源，仍然是巨慢无比，其根本原因是：更换的源并不包含安全更新部分。
+当然，如果是网卡硬件不在默认的安装包驱动范围内，这种情况如果不在安装过程中安装相关驱动，压根也不会遇到下载慢的情况。如果使用的是最新的完整的DVD安装包，可能也不会遇到下载慢的情况。
+解决方案 断网安装 最简单的办法就是断网安装，安装完之后再彻底更换源，最后再进行更新。这也是比较适合小白的方案。
+至于断网的时机，可选择一开始就不联网，也可选择在下载慢的时候断网。建议小白选择后者。
+安装过程中彻底更换源 原理 安装过程其实本身就是运行了一个简版的、定制的linux系统，只不过整个安装过程是在其中一个终端中（命令终端或图形终端）完成的，那么，安装过程中自然可以从别的终端界入并完成更换源，如此即可解决下载过程巨慢的问题，同时，系统安装好之后也无需再考虑更换源的问题。
+具体操作 正常安装进行到选择国内源这一步
+按Ctrl&#43;Alt&#43;F2或Ctrl&#43;Alt&#43;F3进入终端，会有提示，直接回车
+注意：
+Ctrl&#43;Alt&#43;F1为命令行安装终端，图形安装后台也使用该终端
+Ctrl&#43;Alt&#43;F2和Ctrl&#43;Alt&#43;F3为暂未使用的命令行终端
+Ctrl&#43;Alt&#43;F4为日志输出终端
+Ctrl&#43;Alt&#43;F5为图形终端
+执行如下命令 1 2 cat /target/etc/apt/sources.list # /target 是正在安装的新系统的挂载点 如果第1.步选择完国内源之后没有继续，这里空的，或者只有deb cdrom: [pebian GNu/Linux 12.9.0Bookworm- 0fficial amd64 NETINST with irmware 20250111-10:54]/ bookworm contrib main non-free-firmware；如果第1.步选择完国内源之后继续了，并且此时已经进入下载阶段了，则会看到类似以下的内容：
+1 2 3 4 5 6 7 8 9 deb cdrom: [pebian GNu/Linux 12.9.0Bookworm- 0fficial amd64 NETINST with irmware 20250111-10:54]/ bookworm contrib main non-free-firmware deb http://mirrors.ustc.edu.cn/debian/ bookworm main non-free-firmware deb-src http://mirrors....</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-03-26 12:46:29 +0800 CST'>2025-03-26 12:46:29</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 解决Debian安装巨慢的问题" href="https://afrusrsc.github.io/posts/os/debian_install_slowly/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">祼盘安装win10时调整EFI分区大小
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>背景 鸟枪换大炮，把旧电脑的HDD升级成SSD了，是替换而非加装，所以需要重新安装系统。
+依旧是安装windows&#43;linux双系统，由于windows安装时会覆盖EFI分区，不想折腾的话就先装windows再装linux。
+手里有windows的安装盘（原版iso，不带pe），安装时分区会自动分出来100M的EFI分区，但装双系统的话，很可能会不够用，但又不想再烧个pe，也不想装完系统再折腾分区。
+尝试过程中发现可以进入命令提示符，于是网上搜索命令行分区工具，找到了DiskPart，尝试后可以完美实现需求。
+解决方案 使用安装盘引导启动，进入到分区界面
+取消安装，回到初始界面
+按win&#43;r会跳出一个新的界面，找到命令提示符并运行
+输入diskpart回车，进入分区工具
+list disk列出磁盘列表，记住需要分区的磁盘号
+select disk n选择要分区的磁盘（n为上一步查出的磁盘号）
+clean all删除所有分区（如果有的话）
+convert gpt将磁盘转换为GPT分区列表（这年头就不要再用MBR了）
+create partition efi size=512创建512M的EFI分区
+exit退出分区工具
+关闭命令提示符
+继续安装
+注意 该方案适用于win10，其它版本windows未测试！</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-03-04 23:09:36 +0800 CST'>2025-03-04 23:09:36</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 祼盘安装win10时调整EFI分区大小" href="https://afrusrsc.github.io/posts/os/win_efi/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="https://afrusrsc.github.io/posts/os/page/2/">下一页&nbsp;2/2&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

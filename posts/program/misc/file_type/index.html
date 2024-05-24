@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>简单确定文件格式 | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="从其它平台迁移而来
+有时候，我们会下载到或者从邮箱接收到一些莫名其妙的文件——只有名字，没有后缀名（文件扩展名），排除不安全因素后，确定这就是我们想要的文件，但是不知道文件格式或者不知道用什么软件来打开查看，对于大多数人来说这可是个比较头疼的问题。
+但是，如果掌握一些基础知识的话，这样的问题其实是很好解决的！
+知识点一： 文件后缀名（扩展名）和文件格式没有半毛钱关系！
+文件格式实际上是由文件开头的若干字节来描述的，这些文件描述称为文件头（注意，不是c/c&#43;&#43;里的.h头文件）。
+那么，后缀名是用来做什么的呢？后缀名仅仅是为了方便从文件名中知道文件是什么格式，一方面给用户（你，我，他）看，另一方面给操作系统看，由操作系统判断使用哪个阅读器、浏览器、工具等软件打开，而这些软件对文件的解析就是根据文件头的描述来进行的。
+知识点二： 本质上所有的文件都是二进制文件！
+文本、源码（其实也是文本）、word、excel、ppt、pdf、dll、exe、图片、压缩包……都是二进制文件，因为现代计算机系统只认识0和1。不信的话可以用十六进制工具打开来查看。
+好了，有了这两个基础知识，我们就可以进行继续了。上面提到了十六进制工具，这里我们要使用的神器也正是它！
+这是一张png图片，用十六进制打开后是这样的，可以明显看到有PNG字样。
+这是一个pdf文件，也可以明显看到PDF字样。
+就不再贴图了，套路就是这么个套路，下面就直接上整理好的常用的对应表了！
+文件格式 文件头 bmp图片 42 4D (BM) png图片 89 50 4E 47 (‰PNG) jpg图片 FF D8 pdf文档 25 50 44 46 (%PDF) zip压缩包 50 4B (PK) rar压缩包 52 61 72 (Rar) 7z压缩包 37 7A (7z) docx、xlsx、pptx 50 4B (PK) dll或exe 4D 5A (MZ) 可看到，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 与 zip压缩包的文件头是一样的，是不是搞错了？没错，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 实际上就是一个 zip压缩包，不信的小伙伴儿们可以把后缀名改为zip用解压工具打开看看真面目。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/misc/file_type/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/misc/file_type/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="简单确定文件格式" />
+<meta property="og:description" content="从其它平台迁移而来
+有时候，我们会下载到或者从邮箱接收到一些莫名其妙的文件——只有名字，没有后缀名（文件扩展名），排除不安全因素后，确定这就是我们想要的文件，但是不知道文件格式或者不知道用什么软件来打开查看，对于大多数人来说这可是个比较头疼的问题。
+但是，如果掌握一些基础知识的话，这样的问题其实是很好解决的！
+知识点一： 文件后缀名（扩展名）和文件格式没有半毛钱关系！
+文件格式实际上是由文件开头的若干字节来描述的，这些文件描述称为文件头（注意，不是c/c&#43;&#43;里的.h头文件）。
+那么，后缀名是用来做什么的呢？后缀名仅仅是为了方便从文件名中知道文件是什么格式，一方面给用户（你，我，他）看，另一方面给操作系统看，由操作系统判断使用哪个阅读器、浏览器、工具等软件打开，而这些软件对文件的解析就是根据文件头的描述来进行的。
+知识点二： 本质上所有的文件都是二进制文件！
+文本、源码（其实也是文本）、word、excel、ppt、pdf、dll、exe、图片、压缩包……都是二进制文件，因为现代计算机系统只认识0和1。不信的话可以用十六进制工具打开来查看。
+好了，有了这两个基础知识，我们就可以进行继续了。上面提到了十六进制工具，这里我们要使用的神器也正是它！
+这是一张png图片，用十六进制打开后是这样的，可以明显看到有PNG字样。
+这是一个pdf文件，也可以明显看到PDF字样。
+就不再贴图了，套路就是这么个套路，下面就直接上整理好的常用的对应表了！
+文件格式 文件头 bmp图片 42 4D (BM) png图片 89 50 4E 47 (‰PNG) jpg图片 FF D8 pdf文档 25 50 44 46 (%PDF) zip压缩包 50 4B (PK) rar压缩包 52 61 72 (Rar) 7z压缩包 37 7A (7z) docx、xlsx、pptx 50 4B (PK) dll或exe 4D 5A (MZ) 可看到，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 与 zip压缩包的文件头是一样的，是不是搞错了？没错，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 实际上就是一个 zip压缩包，不信的小伙伴儿们可以把后缀名改为zip用解压工具打开看看真面目。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/misc/file_type/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-03-31T16:33:46+08:00" />
+<meta property="article:modified_time" content="2018-03-31T16:33:46+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="简单确定文件格式"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+有时候，我们会下载到或者从邮箱接收到一些莫名其妙的文件——只有名字，没有后缀名（文件扩展名），排除不安全因素后，确定这就是我们想要的文件，但是不知道文件格式或者不知道用什么软件来打开查看，对于大多数人来说这可是个比较头疼的问题。
+但是，如果掌握一些基础知识的话，这样的问题其实是很好解决的！
+知识点一： 文件后缀名（扩展名）和文件格式没有半毛钱关系！
+文件格式实际上是由文件开头的若干字节来描述的，这些文件描述称为文件头（注意，不是c/c&#43;&#43;里的.h头文件）。
+那么，后缀名是用来做什么的呢？后缀名仅仅是为了方便从文件名中知道文件是什么格式，一方面给用户（你，我，他）看，另一方面给操作系统看，由操作系统判断使用哪个阅读器、浏览器、工具等软件打开，而这些软件对文件的解析就是根据文件头的描述来进行的。
+知识点二： 本质上所有的文件都是二进制文件！
+文本、源码（其实也是文本）、word、excel、ppt、pdf、dll、exe、图片、压缩包……都是二进制文件，因为现代计算机系统只认识0和1。不信的话可以用十六进制工具打开来查看。
+好了，有了这两个基础知识，我们就可以进行继续了。上面提到了十六进制工具，这里我们要使用的神器也正是它！
+这是一张png图片，用十六进制打开后是这样的，可以明显看到有PNG字样。
+这是一个pdf文件，也可以明显看到PDF字样。
+就不再贴图了，套路就是这么个套路，下面就直接上整理好的常用的对应表了！
+文件格式 文件头 bmp图片 42 4D (BM) png图片 89 50 4E 47 (‰PNG) jpg图片 FF D8 pdf文档 25 50 44 46 (%PDF) zip压缩包 50 4B (PK) rar压缩包 52 61 72 (Rar) 7z压缩包 37 7A (7z) docx、xlsx、pptx 50 4B (PK) dll或exe 4D 5A (MZ) 可看到，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 与 zip压缩包的文件头是一样的，是不是搞错了？没错，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 实际上就是一个 zip压缩包，不信的小伙伴儿们可以把后缀名改为zip用解压工具打开看看真面目。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "🧺杂项",
+      "item": "https://afrusrsc.github.io/posts/program/misc/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "简单确定文件格式",
+      "item": "https://afrusrsc.github.io/posts/program/misc/file_type/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "简单确定文件格式",
+  "name": "简单确定文件格式",
+  "description": "从其它平台迁移而来\n有时候，我们会下载到或者从邮箱接收到一些莫名其妙的文件——只有名字，没有后缀名（文件扩展名），排除不安全因素后，确定这就是我们想要的文件，但是不知道文件格式或者不知道用什么软件来打开查看，对于大多数人来说这可是个比较头疼的问题。\n但是，如果掌握一些基础知识的话，这样的问题其实是很好解决的！\n知识点一： 文件后缀名（扩展名）和文件格式没有半毛钱关系！\n文件格式实际上是由文件开头的若干字节来描述的，这些文件描述称为文件头（注意，不是c/c++里的.h头文件）。\n那么，后缀名是用来做什么的呢？后缀名仅仅是为了方便从文件名中知道文件是什么格式，一方面给用户（你，我，他）看，另一方面给操作系统看，由操作系统判断使用哪个阅读器、浏览器、工具等软件打开，而这些软件对文件的解析就是根据文件头的描述来进行的。\n知识点二： 本质上所有的文件都是二进制文件！\n文本、源码（其实也是文本）、word、excel、ppt、pdf、dll、exe、图片、压缩包……都是二进制文件，因为现代计算机系统只认识0和1。不信的话可以用十六进制工具打开来查看。\n好了，有了这两个基础知识，我们就可以进行继续了。上面提到了十六进制工具，这里我们要使用的神器也正是它！\n这是一张png图片，用十六进制打开后是这样的，可以明显看到有PNG字样。\n这是一个pdf文件，也可以明显看到PDF字样。\n就不再贴图了，套路就是这么个套路，下面就直接上整理好的常用的对应表了！\n文件格式 文件头 bmp图片 42 4D (BM) png图片 89 50 4E 47 (‰PNG) jpg图片 FF D8 pdf文档 25 50 44 46 (%PDF) zip压缩包 50 4B (PK) rar压缩包 52 61 72 (Rar) 7z压缩包 37 7A (7z) docx、xlsx、pptx 50 4B (PK) dll或exe 4D 5A (MZ) 可看到，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 与 zip压缩包的文件头是一样的，是不是搞错了？没错，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 实际上就是一个 zip压缩包，不信的小伙伴儿们可以把后缀名改为zip用解压工具打开看看真面目。",
+  "keywords": [
+    
+  ],
+  "articleBody": " 从其它平台迁移而来\n有时候，我们会下载到或者从邮箱接收到一些莫名其妙的文件——只有名字，没有后缀名（文件扩展名），排除不安全因素后，确定这就是我们想要的文件，但是不知道文件格式或者不知道用什么软件来打开查看，对于大多数人来说这可是个比较头疼的问题。\n但是，如果掌握一些基础知识的话，这样的问题其实是很好解决的！\n知识点一： 文件后缀名（扩展名）和文件格式没有半毛钱关系！\n文件格式实际上是由文件开头的若干字节来描述的，这些文件描述称为文件头（注意，不是c/c++里的.h头文件）。\n那么，后缀名是用来做什么的呢？后缀名仅仅是为了方便从文件名中知道文件是什么格式，一方面给用户（你，我，他）看，另一方面给操作系统看，由操作系统判断使用哪个阅读器、浏览器、工具等软件打开，而这些软件对文件的解析就是根据文件头的描述来进行的。\n知识点二： 本质上所有的文件都是二进制文件！\n文本、源码（其实也是文本）、word、excel、ppt、pdf、dll、exe、图片、压缩包……都是二进制文件，因为现代计算机系统只认识0和1。不信的话可以用十六进制工具打开来查看。\n好了，有了这两个基础知识，我们就可以进行继续了。上面提到了十六进制工具，这里我们要使用的神器也正是它！\n这是一张png图片，用十六进制打开后是这样的，可以明显看到有PNG字样。\n这是一个pdf文件，也可以明显看到PDF字样。\n就不再贴图了，套路就是这么个套路，下面就直接上整理好的常用的对应表了！\n文件格式 文件头 bmp图片 42 4D (BM) png图片 89 50 4E 47 (‰PNG) jpg图片 FF D8 pdf文档 25 50 44 46 (%PDF) zip压缩包 50 4B (PK) rar压缩包 52 61 72 (Rar) 7z压缩包 37 7A (7z) docx、xlsx、pptx 50 4B (PK) dll或exe 4D 5A (MZ) 可看到，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 与 zip压缩包的文件头是一样的，是不是搞错了？没错，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 实际上就是一个 zip压缩包，不信的小伙伴儿们可以把后缀名改为zip用解压工具打开看看真面目。\n就到这里吧，更多文件格式就烦请亲自动手尝试了，说不定会有什么惊奇的发现呢！\n",
+  "wordCount" : "70",
+  "inLanguage": "zh",
+  "datePublished": "2018-03-31T16:33:46+08:00",
+  "dateModified": "2018-03-31T16:33:46+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/misc/file_type/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/misc/">🧺杂项</a></div>
+    <h1 class="post-title entry-hint-parent">
+      简单确定文件格式
+    </h1>
+    <div class="post-meta"><span title='2018-03-31 16:33:46 +0800 CST'>2018-03-31 16:33:46</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e7%9f%a5%e8%af%86%e7%82%b9%e4%b8%80" aria-label="知识点一：">知识点一：</a></li>
+                    <li>
+                        <a href="#%e7%9f%a5%e8%af%86%e7%82%b9%e4%ba%8c" aria-label="知识点二：">知识点二：</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>有时候，我们会下载到或者从邮箱接收到一些莫名其妙的文件——只有名字，没有后缀名（文件扩展名），排除不安全因素后，确定这就是我们想要的文件，但是不知道<code>文件格式</code>或者不知道用什么软件来打开查看，对于大多数人来说这可是个比较头疼的问题。</p>
+<p>但是，如果掌握一些基础知识的话，这样的问题其实是很好解决的！</p>
+<h1 id="知识点一">知识点一：<a hidden class="anchor" aria-hidden="true" href="#知识点一">#</a></h1>
+<p><strong>文件后缀名（扩展名）和文件格式没有半毛钱关系！</strong></p>
+<p><code>文件格式</code>实际上是由文件开头的若干字节来描述的，这些文件描述称为<code>文件头</code>（注意，不是<code>c/c++</code>里的<code>.h头文件</code>）。</p>
+<p>那么，后缀名是用来做什么的呢？后缀名仅仅是为了方便从文件名中知道文件是什么格式，一方面给用户（你，我，他）看，另一方面给操作系统看，由操作系统判断使用哪个阅读器、浏览器、工具等软件打开，而这些软件对文件的解析就是根据<code>文件头</code>的描述来进行的。</p>
+<h1 id="知识点二">知识点二：<a hidden class="anchor" aria-hidden="true" href="#知识点二">#</a></h1>
+<p><strong>本质上所有的文件都是二进制文件！</strong></p>
+<p>文本、源码（其实也是文本）、word、excel、ppt、pdf、dll、exe、图片、压缩包……都是二进制文件，因为现代计算机系统只认识0和1。不信的话可以用十六进制工具打开来查看。</p>
+<p>好了，有了这两个基础知识，我们就可以进行继续了。上面提到了十六进制工具，这里我们要使用的神器也正是它！</p>
+<p><img loading="lazy" src="../../../../blogpic/file_type1.jpg" alt=""  />
+</p>
+<p>这是一张png图片，用十六进制打开后是这样的，可以明显看到有PNG字样。</p>
+<p><img loading="lazy" src="../../../../blogpic/file_type2.jpg" alt=""  />
+</p>
+<p>这是一个pdf文件，也可以明显看到PDF字样。</p>
+<p>就不再贴图了，套路就是这么个套路，下面就直接上整理好的常用的对应表了！</p>
+<table>
+<thead>
+<tr>
+<th>文件格式</th>
+<th>文件头</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bmp图片</td>
+<td>42 4D (BM)</td>
+</tr>
+<tr>
+<td>png图片</td>
+<td>89 50 4E 47 (‰PNG)</td>
+</tr>
+<tr>
+<td>jpg图片</td>
+<td>FF D8</td>
+</tr>
+<tr>
+<td>pdf文档</td>
+<td>25 50 44 46 (%PDF)</td>
+</tr>
+<tr>
+<td>zip压缩包</td>
+<td>50 4B (PK)</td>
+</tr>
+<tr>
+<td>rar压缩包</td>
+<td>52 61 72 (Rar)</td>
+</tr>
+<tr>
+<td>7z压缩包</td>
+<td>37 7A (7z)</td>
+</tr>
+<tr>
+<td>docx、xlsx、pptx</td>
+<td>50 4B (PK)</td>
+</tr>
+<tr>
+<td>dll或exe</td>
+<td>4D 5A (MZ)</td>
+</tr>
+</tbody>
+</table>
+<p>可看到，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 与 zip压缩包的文件头是一样的，是不是搞错了？没错，Microsoft Office 2007 及以上版本的 docx、xlsx、pptx 实际上就是一个 zip压缩包，不信的小伙伴儿们可以把后缀名改为<code>zip</code>用解压工具打开看看真面目。</p>
+<p>就到这里吧，更多文件格式就烦请亲自动手尝试了，说不定会有什么惊奇的发现呢！</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>多线程、多进程、多核</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdquery_firebird/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>使用FireDAC的TFDQuery查询Firebird遇到的坑</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

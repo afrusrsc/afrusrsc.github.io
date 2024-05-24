@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Oracle on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/oracle/</link>
+    <description>Recent content in Oracle on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Mon, 31 Mar 2025 17:04:49 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/oracle/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用函数索引优化特定查询</title>
+      <link>https://afrusrsc.github.io/posts/db/functional_index/</link>
+      <pubDate>Mon, 31 Mar 2025 17:04:49 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/functional_index/</guid>
+      <description>问题 业务中遇到一个非常慢的查询，大致可以简化为以下SQL：
+1 2 3 4 5 select * from t1 where c1 not in (...) and c2 not like &amp;#39;ABC%&amp;#39; and c3 in (...) and c4=-1 and c5&amp;gt;&amp;#39;2020-01-01,00:00:00&amp;#39; 其中：
+有索引且命中的条件已简化掉了
+c5为自定义格式的时间字符串
+c2和c5有索引（普通索引），c1、c3和c4无索引
+c3和c4为绑定条件
+c1、c3和c4均为小值域列
+分析 not in和not like会导致普通索引失效
+为小值域列添加普通索引无法提供预期的效果
+c3和c4为绑定条件，且条件固定不变，视为一体进行处理的话，可一定程度上扩充列的值域
+c5虽然已有索引，但字符串比较操作还是太低效
+解决方案 基于以上特殊的情形，搜索并尝试后发现，函数索引恰好可以达到预期，而使用的数据库又刚好支持（Oracel和PostgreSQL完全支持）。
+添加索引 将c1的not in手动改为in查询，即可利用已有索引
+c2的not like为后模糊查询，为其创建函数索引：
+1 CREATE INDEX idx_t1_func_c2 ON t1(CASE WHEN c2 NOT LIKE &amp;#39;ABC%&amp;#39; THEN 1 ELSE 0 END); 为c3和c4的绑定条件创建函数索引： 1 CREATE INDEX idx_t1_func_c3c4 ON t1(CASE WHEN c3 in (.</description>
+    </item>
+    <item>
+      <title>Oracle基础使用</title>
+      <link>https://afrusrsc.github.io/posts/db/oracle_base/</link>
+      <pubDate>Mon, 11 Mar 2024 21:47:05 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/oracle_base/</guid>
+      <description> 从其它平台迁移而来
+用户 取消密码生命周期 1 ALTER profile default limit password_life_time unlimited; 修改用户密码 1 ALTER USER xxx IDENTIFIED BY xxx; 文件夹 查看文件夹 1 SELECT * FROM All_Directories; 表空间 查询表空间 1 SELECT * FROM Dba_Data_Files; 创建表空间 1 2 3 4 5 6 7 CREATE TABLESPACE 表空间名 DATAFILE &amp;#39;文件名&amp;#39; SIZE 初始大小 --单位k或m AUTOEXTEND ON --自动扩展 NEXT 扩展大小 MAXSIZE 最大大小 ; 表空间追加数据文件 1 2 3 4 5 6 7 ALTER TABLESPACE 表空间名 ADD DATAFILE &amp;#39;文件名&amp;#39; SIZE 初始大小 --单位k或m AUTOEXTEND ON --自动扩展 NEXT 扩展大小 MAXSIZE 最大大小 ; 删除表空间 1 2 DROP TABLESPACE 表空间名; --仅删除表空间 DROP TABLESPACE 表空间名 INCLUDING CONTENTS AND DATAFILES; --删除表空间及数据文件 导入数据 1 2 3 4 5 6 7 8 --原模式(用户名)导入 IMPDP 登录名/密码 DIRECTORY=泵导文件夹 DUMPFILE=泵导文件 LOGFILE=日志文件 SCHEMAS=模式名 --指定模式(用户名)导入 IMPDP 登录名/密码 DIRECTORY=泵导文件夹 DUMPFILE=泵导文件 LOGFILE=日志文件 SCHEMAS=原模式名:新模式名 --多模式(用户名)导入 IMPDP 登录名/密码 DIRECTORY=泵导文件夹 DUMPFILE=泵导文件 LOGFILE=日志文件 SCHEMAS=模式名1,模式名2 导出数据 1 EXPDP 登录名/密码@SID名 DIRECTORY=泵导文件夹 DUMPFILE=泵导文件 SCHEMAS=模式名 </description>
+    </item>
+    <item>
+      <title>Navicat连接Oracle数据库的坑</title>
+      <link>https://afrusrsc.github.io/posts/db/navicat_oracle/</link>
+      <pubDate>Wed, 25 May 2022 21:11:03 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/navicat_oracle/</guid>
+      <description>从其它平台迁移而来
+坑 首次使用Oracle数据库，习惯性的用Navicat连起来，嗯？？？怎么报错连不上？
+数据库安装有问题？SQL Plus能连上啊！
+检查配置，没问题！
+重启，还是不行！
+重装Navicat，然并卵！
+解决 出现解决不了的问题，那就果断面向搜索引擎，看了好多文章，也试了个遍，甚至都开始更换dll了，最后发现其实还真和dll有关系。
+这是默认的配置，可以看到，OCI用的是Navicat自带的oci.dll，换成Oracle安装路径的oci.dll，重启Navicat，完美！</description>
+    </item>
+  </channel>
+</rss>
