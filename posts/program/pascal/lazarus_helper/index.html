@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>给类型、记录、类添加助手 | 慢步道人</title>
+<meta name="keywords" content="lazarus, pascal">
+<meta name="description" content="从其它平台迁移而来
+通常情况下，类型和记录是没有方法的，只有类有方法，但是可以通过给类型和记录添加助手来达到类似于类的方法的功能，当然，也可以给类添加助手。
+语法 1 2 3 HelperName = class|record|type helper[(OptionalBaseHelper)] for TypeName [properties, procedures, functions, constructors, consts, vars] end [hint modifiers]; 类助手 FPC 2.6&#43;版本可用，ObjFPC模式下无需特别设置。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 //定义 TObjectHelper = class helper for TObject function SomeFunc: string; end; //实现 function TObjectHelper.SomeFunc: string; begin Result := &#39;类名:&#39; &#43; Self.ClassName; end; //使用 var o: TObject; begin Writeln(o.SomeFunc); end. 一般情况下，给类添加方法可直接在类中添加，但这样添加的方法会直接在所有后代类中显示，如果只是想在特定的范围内添加方法，就可以使用类助手。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_helper/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_helper/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="给类型、记录、类添加助手" />
+<meta property="og:description" content="从其它平台迁移而来
+通常情况下，类型和记录是没有方法的，只有类有方法，但是可以通过给类型和记录添加助手来达到类似于类的方法的功能，当然，也可以给类添加助手。
+语法 1 2 3 HelperName = class|record|type helper[(OptionalBaseHelper)] for TypeName [properties, procedures, functions, constructors, consts, vars] end [hint modifiers]; 类助手 FPC 2.6&#43;版本可用，ObjFPC模式下无需特别设置。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 //定义 TObjectHelper = class helper for TObject function SomeFunc: string; end; //实现 function TObjectHelper.SomeFunc: string; begin Result := &#39;类名:&#39; &#43; Self.ClassName; end; //使用 var o: TObject; begin Writeln(o.SomeFunc); end. 一般情况下，给类添加方法可直接在类中添加，但这样添加的方法会直接在所有后代类中显示，如果只是想在特定的范围内添加方法，就可以使用类助手。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/lazarus_helper/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-25T20:38:35+08:00" />
+<meta property="article:modified_time" content="2023-08-25T20:38:35+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="给类型、记录、类添加助手"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+通常情况下，类型和记录是没有方法的，只有类有方法，但是可以通过给类型和记录添加助手来达到类似于类的方法的功能，当然，也可以给类添加助手。
+语法 1 2 3 HelperName = class|record|type helper[(OptionalBaseHelper)] for TypeName [properties, procedures, functions, constructors, consts, vars] end [hint modifiers]; 类助手 FPC 2.6&#43;版本可用，ObjFPC模式下无需特别设置。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 //定义 TObjectHelper = class helper for TObject function SomeFunc: string; end; //实现 function TObjectHelper.SomeFunc: string; begin Result := &#39;类名:&#39; &#43; Self.ClassName; end; //使用 var o: TObject; begin Writeln(o.SomeFunc); end. 一般情况下，给类添加方法可直接在类中添加，但这样添加的方法会直接在所有后代类中显示，如果只是想在特定的范围内添加方法，就可以使用类助手。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "给类型、记录、类添加助手",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/lazarus_helper/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "给类型、记录、类添加助手",
+  "name": "给类型、记录、类添加助手",
+  "description": "从其它平台迁移而来\n通常情况下，类型和记录是没有方法的，只有类有方法，但是可以通过给类型和记录添加助手来达到类似于类的方法的功能，当然，也可以给类添加助手。\n语法 1 2 3 HelperName = class|record|type helper[(OptionalBaseHelper)] for TypeName [properties, procedures, functions, constructors, consts, vars] end [hint modifiers]; 类助手 FPC 2.6+版本可用，ObjFPC模式下无需特别设置。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 //定义 TObjectHelper = class helper for TObject function SomeFunc: string; end; //实现 function TObjectHelper.SomeFunc: string; begin Result := \u0026#39;类名:\u0026#39; + Self.ClassName; end; //使用 var o: TObject; begin Writeln(o.SomeFunc); end. 一般情况下，给类添加方法可直接在类中添加，但这样添加的方法会直接在所有后代类中显示，如果只是想在特定的范围内添加方法，就可以使用类助手。",
+  "keywords": [
+    "lazarus", "pascal"
+  ],
+  "articleBody": " 从其它平台迁移而来\n通常情况下，类型和记录是没有方法的，只有类有方法，但是可以通过给类型和记录添加助手来达到类似于类的方法的功能，当然，也可以给类添加助手。\n语法 1 2 3 HelperName = class|record|type helper[(OptionalBaseHelper)] for TypeName [properties, procedures, functions, constructors, consts, vars] end [hint modifiers]; 类助手 FPC 2.6+版本可用，ObjFPC模式下无需特别设置。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 //定义 TObjectHelper = class helper for TObject function SomeFunc: string; end; //实现 function TObjectHelper.SomeFunc: string; begin Result := '类名:' + Self.ClassName; end; //使用 var o: TObject; begin Writeln(o.SomeFunc); end. 一般情况下，给类添加方法可直接在类中添加，但这样添加的方法会直接在所有后代类中显示，如果只是想在特定的范围内添加方法，就可以使用类助手。\n记录助手 FPC 2.6+版本可用，ObjFPC模式下需打开ADVANCEDRECORDS编译开关，Delphi模式无需特别设置。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 {$mode objfpc}{$H+} {$MODESWITCH ADVANCEDRECORDS} //打开编译开关 //记录定义 TTest = record x: integer; end; //记录助手定义 TTestHelper = record helper for TTest procedure SomeMethod; end; //使用 var t: TTest; begin t.SomeMethod; end; 也可以像类一样直接定义方法。\n1 2 3 4 5 6 7 8 9 10 11 12 13 {$mode objfpc}{$H+} {$MODESWITCH ADVANCEDRECORDS} //打开编译开关 //直接定义 TTest = record x: integer; procedure SomeMethod; end; //使用 var t: TTest; begin t.SomeMethod; end; 记录助手可以把与记录相关的方法/函数集中管理，同时也可避开方法重名的问题，一般用在对记录进行构造、清理、转换/变换等场景。\n类型助手 FPC 3.0+版本可用，所有模式下均需打开TYPEHELPERS编译开关。\n1 2 3 4 5 6 7 8 9 {$mode objfpc}{$H+} {$MODESWITCH TYPEHELPERS} //打开编译开关 //自定义类型 type TIntArray = array of integer; //定义助手 HIntArray = type helper for TIntArray procedure Clear; end; 类型助手可以把与类型（通常是自定义类型）相关的方法/函数集中管理，同时也可避开方法重名的问题，一般用在对自定义类型进行初始化、类型转换等场景。\n",
+  "wordCount" : "188",
+  "inLanguage": "zh",
+  "datePublished": "2023-08-25T20:38:35+08:00",
+  "dateModified": "2023-08-25T20:38:35+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/pascal/lazarus_helper/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/pascal/">⚒️pascal</a></div>
+    <h1 class="post-title entry-hint-parent">
+      给类型、记录、类添加助手
+    </h1>
+    <div class="post-meta"><span title='2023-08-25 20:38:35 +0800 CST'>2023-08-25 20:38:35</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%af%ad%e6%b3%95" aria-label="语法">语法</a></li>
+                    <li>
+                        <a href="#%e7%b1%bb%e5%8a%a9%e6%89%8b" aria-label="类助手">类助手</a></li>
+                    <li>
+                        <a href="#%e8%ae%b0%e5%bd%95%e5%8a%a9%e6%89%8b" aria-label="记录助手">记录助手</a></li>
+                    <li>
+                        <a href="#%e7%b1%bb%e5%9e%8b%e5%8a%a9%e6%89%8b" aria-label="类型助手">类型助手</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>通常情况下，<code>类型</code>和<code>记录</code>是没有方法的，只有<code>类</code>有方法，但是可以通过给<code>类型</code>和<code>记录</code>添加<code>助手</code>来达到类似于<code>类</code>的<code>方法</code>的功能，当然，也可以给<code>类</code>添加<code>助手</code>。</p>
+<h1 id="语法">语法<a hidden class="anchor" aria-hidden="true" href="#语法">#</a></h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">HelperName</span> <span class="o">=</span> <span class="k">class</span><span class="o">|</span><span class="n">record</span><span class="o">|</span><span class="n">type</span> <span class="n">helper</span><span class="p">[(</span><span class="n">OptionalBaseHelper</span><span class="p">)]</span> <span class="k">for</span> <span class="n">TypeName</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="n">properties</span><span class="p">,</span> <span class="n">procedures</span><span class="p">,</span> <span class="n">functions</span><span class="p">,</span> <span class="n">constructors</span><span class="p">,</span> <span class="n">consts</span><span class="p">,</span> <span class="n">vars</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span> <span class="p">[</span><span class="n">hint</span> <span class="n">modifiers</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="类助手">类助手<a hidden class="anchor" aria-hidden="true" href="#类助手">#</a></h1>
+<p><code>FPC 2.6+</code>版本可用，<code>ObjFPC</code>模式下无需特别设置。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">//</span><span class="err">定义</span>
+</span></span><span class="line"><span class="cl"><span class="n">TObjectHelper</span> <span class="o">=</span> <span class="k">class</span> <span class="n">helper</span> <span class="k">for</span> <span class="n">TObject</span>
+</span></span><span class="line"><span class="cl">  <span class="n">function</span> <span class="n">SomeFunc</span><span class="p">:</span> <span class="n">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">实现</span>
+</span></span><span class="line"><span class="cl"><span class="n">function</span> <span class="n">TObjectHelper</span><span class="o">.</span><span class="n">SomeFunc</span><span class="p">:</span> <span class="n">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">begin</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Result</span> <span class="p">:</span><span class="o">=</span> <span class="s1">&#39;类名:&#39;</span> <span class="o">+</span> <span class="n">Self</span><span class="o">.</span><span class="n">ClassName</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">使用</span>
+</span></span><span class="line"><span class="cl"><span class="k">var</span>
+</span></span><span class="line"><span class="cl">  <span class="n">o</span><span class="p">:</span> <span class="n">TObject</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">begin</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Writeln</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">SomeFunc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="o">.</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>一般情况下，给<code>类</code>添加方法可直接在<code>类</code>中添加，但这样添加的方法会直接在所有<code>后代类</code>中显示，如果只是想在特定的范围内添加方法，就可以使用<code>类助手</code>。</p>
+<h1 id="记录助手">记录助手<a hidden class="anchor" aria-hidden="true" href="#记录助手">#</a></h1>
+<p><code>FPC 2.6+</code>版本可用，<code>ObjFPC</code>模式下需打开<code>ADVANCEDRECORDS</code>编译开关，<code>Delphi</code>模式无需特别设置。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">{</span><span class="o">$</span><span class="n">mode</span> <span class="n">objfpc</span><span class="p">}{</span><span class="o">$</span><span class="n">H</span><span class="o">+</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="o">$</span><span class="n">MODESWITCH</span> <span class="n">ADVANCEDRECORDS</span><span class="p">}</span> <span class="o">//</span><span class="err">打开编译开关</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">记录定义</span>
+</span></span><span class="line"><span class="cl"><span class="n">TTest</span> <span class="o">=</span> <span class="n">record</span>
+</span></span><span class="line"><span class="cl">  <span class="n">x</span><span class="p">:</span> <span class="n">integer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">记录助手定义</span>
+</span></span><span class="line"><span class="cl"><span class="n">TTestHelper</span> <span class="o">=</span> <span class="n">record</span> <span class="n">helper</span> <span class="k">for</span> <span class="n">TTest</span>
+</span></span><span class="line"><span class="cl">  <span class="n">procedure</span> <span class="n">SomeMethod</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">使用</span>
+</span></span><span class="line"><span class="cl"><span class="k">var</span>
+</span></span><span class="line"><span class="cl">  <span class="n">t</span><span class="p">:</span> <span class="n">TTest</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">begin</span>
+</span></span><span class="line"><span class="cl">  <span class="n">t</span><span class="o">.</span><span class="n">SomeMethod</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也可以像<code>类</code>一样直接定义方法。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">{</span><span class="o">$</span><span class="n">mode</span> <span class="n">objfpc</span><span class="p">}{</span><span class="o">$</span><span class="n">H</span><span class="o">+</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="o">$</span><span class="n">MODESWITCH</span> <span class="n">ADVANCEDRECORDS</span><span class="p">}</span> <span class="o">//</span><span class="err">打开编译开关</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">直接定义</span>
+</span></span><span class="line"><span class="cl"><span class="n">TTest</span> <span class="o">=</span> <span class="n">record</span>
+</span></span><span class="line"><span class="cl">  <span class="n">x</span><span class="p">:</span> <span class="n">integer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">procedure</span> <span class="n">SomeMethod</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">//</span><span class="err">使用</span>
+</span></span><span class="line"><span class="cl"><span class="k">var</span>
+</span></span><span class="line"><span class="cl">  <span class="n">t</span><span class="p">:</span> <span class="n">TTest</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">begin</span>
+</span></span><span class="line"><span class="cl">  <span class="n">t</span><span class="o">.</span><span class="n">SomeMethod</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>记录助手</code>可以把与<code>记录</code>相关的<code>方法/函数</code>集中管理，同时也可避开方法<code>重名</code>的问题，一般用在对<code>记录</code>进行<code>构造</code>、<code>清理</code>、<code>转换/变换</code>等场景。</p>
+<h1 id="类型助手">类型助手<a hidden class="anchor" aria-hidden="true" href="#类型助手">#</a></h1>
+<p><code>FPC 3.0+</code>版本可用，所有模式下均需打开<code>TYPEHELPERS</code>编译开关。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{$mode objfpc}{$H+}
+</span></span><span class="line"><span class="cl">{$MODESWITCH TYPEHELPERS} //打开编译开关
+</span></span><span class="line"><span class="cl">//自定义类型
+</span></span><span class="line"><span class="cl">type
+</span></span><span class="line"><span class="cl">  TIntArray = array of integer;
+</span></span><span class="line"><span class="cl">//定义助手
+</span></span><span class="line"><span class="cl">  HIntArray = type helper for TIntArray
+</span></span><span class="line"><span class="cl">    procedure Clear;
+</span></span><span class="line"><span class="cl">  end;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>类型助手</code>可以把与<code>类型</code>（通常是<code>自定义类型</code>）相关的<code>方法/函数</code>集中管理，同时也可避开方法<code>重名</code>的问题，一般用在对<code>自定义类型</code>进行<code>初始化</code>、<code>类型转换</code>等场景。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/os/debian_install/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>安装Debian</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/git/git_wsl_win_linux/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>在wsl中使用Git同时管理windows项目和linux项目</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

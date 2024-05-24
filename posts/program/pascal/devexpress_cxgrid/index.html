@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>cxGrid基本用法小记 | 慢步道人</title>
+<meta name="keywords" content="pascal, Dev Express">
+<meta name="description" content="从其它平台迁移而来
+汉化 在DevExpress选项卡找到TcxLocalizer控件放到窗体上，为了通用，我是放到DataModule窗体上。 准备好汉化的资源文件或配置文件（我使用的是后者），在DataModule的Create事件里写上如下代码 1 2 3 4 5 6 7 with cxLocalizer1 do begin StorageType := lstIni; LoadFromFile(IniPath &#43; &#39;DevChs.ini&#39;); locale := 2052; Active := True; end; 在有cxGrid或其实Dev控件的单元引用DataModule单元。 更改视觉样式 在DevExpress选项卡找到TcxLookAndFeelController控件放到DataModule窗体上。
+在有cxGrid或其它Dev控件的单元引用DataModule单元。
+在要更改视觉样式的代码段里设置TcxLookAndFeelController控件的Kind属性和NativeStyle属性。
+让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式 在DevExpress选项卡找到TcxStyleRepository控件放到DataModule窗体上。
+双击cxStyleRepository控件，打开如下窗口，点Add添加两个样式，并命名。
+分别在属性中设置不同的样式，颜色、字体、字号、字体颜色等。 在有cxGrid的单元中引用DataModule单元。
+选中cxGrid的cxGridDBTableView，展开Styles，分别关联ContentEven和ContentOdd。
+另外也可设置Header、Selection和Inactive。Header改变的是表头的样式，Selection改变的是当前选择行的样式，Inactive改变的是cxGrid失去焦点时当前选择行的样式。
+不显示分组框 设置cxGridDBTableView的OptionsView下的GroupByBox属性为False。
+显示合计等脚注 设置cxGridDBTableView的OptionsView下的Footer属性为True。
+点cxGrid的Customize...按钮，弹出对话框，选择Summary标签页，在Footer子标签页中点Add增加合计项目。
+选择增加的项目，在属性中设置关联的列、字段名等属性。 设置行号 增加一列，不关联数据库字段，设置好属性。
+在该列的OnGetDataText事件中写如下代码：
+1 AText := IntToStr(ARecordIndex &#43; 1); 编辑完成前光标不能离开当前行 在cxGridDBTableView的OnCanFocusRecord事件中写入类似以下的代码： 1 AAllow := DbState in [dsBrowse]; 只读 设置cxGridDBTableView.OptionsData.Editing属性为False。
+选择整行 设置cxGridDBTableView.OptionsSelection.CellSelect属性为False。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/devexpress_cxgrid/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/devexpress_cxgrid/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="cxGrid基本用法小记" />
+<meta property="og:description" content="从其它平台迁移而来
+汉化 在DevExpress选项卡找到TcxLocalizer控件放到窗体上，为了通用，我是放到DataModule窗体上。 准备好汉化的资源文件或配置文件（我使用的是后者），在DataModule的Create事件里写上如下代码 1 2 3 4 5 6 7 with cxLocalizer1 do begin StorageType := lstIni; LoadFromFile(IniPath &#43; &#39;DevChs.ini&#39;); locale := 2052; Active := True; end; 在有cxGrid或其实Dev控件的单元引用DataModule单元。 更改视觉样式 在DevExpress选项卡找到TcxLookAndFeelController控件放到DataModule窗体上。
+在有cxGrid或其它Dev控件的单元引用DataModule单元。
+在要更改视觉样式的代码段里设置TcxLookAndFeelController控件的Kind属性和NativeStyle属性。
+让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式 在DevExpress选项卡找到TcxStyleRepository控件放到DataModule窗体上。
+双击cxStyleRepository控件，打开如下窗口，点Add添加两个样式，并命名。
+分别在属性中设置不同的样式，颜色、字体、字号、字体颜色等。 在有cxGrid的单元中引用DataModule单元。
+选中cxGrid的cxGridDBTableView，展开Styles，分别关联ContentEven和ContentOdd。
+另外也可设置Header、Selection和Inactive。Header改变的是表头的样式，Selection改变的是当前选择行的样式，Inactive改变的是cxGrid失去焦点时当前选择行的样式。
+不显示分组框 设置cxGridDBTableView的OptionsView下的GroupByBox属性为False。
+显示合计等脚注 设置cxGridDBTableView的OptionsView下的Footer属性为True。
+点cxGrid的Customize...按钮，弹出对话框，选择Summary标签页，在Footer子标签页中点Add增加合计项目。
+选择增加的项目，在属性中设置关联的列、字段名等属性。 设置行号 增加一列，不关联数据库字段，设置好属性。
+在该列的OnGetDataText事件中写如下代码：
+1 AText := IntToStr(ARecordIndex &#43; 1); 编辑完成前光标不能离开当前行 在cxGridDBTableView的OnCanFocusRecord事件中写入类似以下的代码： 1 AAllow := DbState in [dsBrowse]; 只读 设置cxGridDBTableView.OptionsData.Editing属性为False。
+选择整行 设置cxGridDBTableView.OptionsSelection.CellSelect属性为False。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/devexpress_cxgrid/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2017-11-25T20:41:33+08:00" />
+<meta property="article:modified_time" content="2017-11-25T20:41:33+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="cxGrid基本用法小记"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+汉化 在DevExpress选项卡找到TcxLocalizer控件放到窗体上，为了通用，我是放到DataModule窗体上。 准备好汉化的资源文件或配置文件（我使用的是后者），在DataModule的Create事件里写上如下代码 1 2 3 4 5 6 7 with cxLocalizer1 do begin StorageType := lstIni; LoadFromFile(IniPath &#43; &#39;DevChs.ini&#39;); locale := 2052; Active := True; end; 在有cxGrid或其实Dev控件的单元引用DataModule单元。 更改视觉样式 在DevExpress选项卡找到TcxLookAndFeelController控件放到DataModule窗体上。
+在有cxGrid或其它Dev控件的单元引用DataModule单元。
+在要更改视觉样式的代码段里设置TcxLookAndFeelController控件的Kind属性和NativeStyle属性。
+让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式 在DevExpress选项卡找到TcxStyleRepository控件放到DataModule窗体上。
+双击cxStyleRepository控件，打开如下窗口，点Add添加两个样式，并命名。
+分别在属性中设置不同的样式，颜色、字体、字号、字体颜色等。 在有cxGrid的单元中引用DataModule单元。
+选中cxGrid的cxGridDBTableView，展开Styles，分别关联ContentEven和ContentOdd。
+另外也可设置Header、Selection和Inactive。Header改变的是表头的样式，Selection改变的是当前选择行的样式，Inactive改变的是cxGrid失去焦点时当前选择行的样式。
+不显示分组框 设置cxGridDBTableView的OptionsView下的GroupByBox属性为False。
+显示合计等脚注 设置cxGridDBTableView的OptionsView下的Footer属性为True。
+点cxGrid的Customize...按钮，弹出对话框，选择Summary标签页，在Footer子标签页中点Add增加合计项目。
+选择增加的项目，在属性中设置关联的列、字段名等属性。 设置行号 增加一列，不关联数据库字段，设置好属性。
+在该列的OnGetDataText事件中写如下代码：
+1 AText := IntToStr(ARecordIndex &#43; 1); 编辑完成前光标不能离开当前行 在cxGridDBTableView的OnCanFocusRecord事件中写入类似以下的代码： 1 AAllow := DbState in [dsBrowse]; 只读 设置cxGridDBTableView.OptionsData.Editing属性为False。
+选择整行 设置cxGridDBTableView.OptionsSelection.CellSelect属性为False。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "cxGrid基本用法小记",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/devexpress_cxgrid/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "cxGrid基本用法小记",
+  "name": "cxGrid基本用法小记",
+  "description": "从其它平台迁移而来\n汉化 在DevExpress选项卡找到TcxLocalizer控件放到窗体上，为了通用，我是放到DataModule窗体上。 准备好汉化的资源文件或配置文件（我使用的是后者），在DataModule的Create事件里写上如下代码 1 2 3 4 5 6 7 with cxLocalizer1 do begin StorageType := lstIni; LoadFromFile(IniPath + \u0026#39;DevChs.ini\u0026#39;); locale := 2052; Active := True; end; 在有cxGrid或其实Dev控件的单元引用DataModule单元。 更改视觉样式 在DevExpress选项卡找到TcxLookAndFeelController控件放到DataModule窗体上。\n在有cxGrid或其它Dev控件的单元引用DataModule单元。\n在要更改视觉样式的代码段里设置TcxLookAndFeelController控件的Kind属性和NativeStyle属性。\n让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式 在DevExpress选项卡找到TcxStyleRepository控件放到DataModule窗体上。\n双击cxStyleRepository控件，打开如下窗口，点Add添加两个样式，并命名。\n分别在属性中设置不同的样式，颜色、字体、字号、字体颜色等。 在有cxGrid的单元中引用DataModule单元。\n选中cxGrid的cxGridDBTableView，展开Styles，分别关联ContentEven和ContentOdd。\n另外也可设置Header、Selection和Inactive。Header改变的是表头的样式，Selection改变的是当前选择行的样式，Inactive改变的是cxGrid失去焦点时当前选择行的样式。\n不显示分组框 设置cxGridDBTableView的OptionsView下的GroupByBox属性为False。\n显示合计等脚注 设置cxGridDBTableView的OptionsView下的Footer属性为True。\n点cxGrid的Customize...按钮，弹出对话框，选择Summary标签页，在Footer子标签页中点Add增加合计项目。\n选择增加的项目，在属性中设置关联的列、字段名等属性。 设置行号 增加一列，不关联数据库字段，设置好属性。\n在该列的OnGetDataText事件中写如下代码：\n1 AText := IntToStr(ARecordIndex + 1); 编辑完成前光标不能离开当前行 在cxGridDBTableView的OnCanFocusRecord事件中写入类似以下的代码： 1 AAllow := DbState in [dsBrowse]; 只读 设置cxGridDBTableView.OptionsData.Editing属性为False。\n选择整行 设置cxGridDBTableView.OptionsSelection.CellSelect属性为False。",
+  "keywords": [
+    "pascal", "Dev Express"
+  ],
+  "articleBody": " 从其它平台迁移而来\n汉化 在DevExpress选项卡找到TcxLocalizer控件放到窗体上，为了通用，我是放到DataModule窗体上。 准备好汉化的资源文件或配置文件（我使用的是后者），在DataModule的Create事件里写上如下代码 1 2 3 4 5 6 7 with cxLocalizer1 do begin StorageType := lstIni; LoadFromFile(IniPath + 'DevChs.ini'); locale := 2052; Active := True; end; 在有cxGrid或其实Dev控件的单元引用DataModule单元。 更改视觉样式 在DevExpress选项卡找到TcxLookAndFeelController控件放到DataModule窗体上。\n在有cxGrid或其它Dev控件的单元引用DataModule单元。\n在要更改视觉样式的代码段里设置TcxLookAndFeelController控件的Kind属性和NativeStyle属性。\n让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式 在DevExpress选项卡找到TcxStyleRepository控件放到DataModule窗体上。\n双击cxStyleRepository控件，打开如下窗口，点Add添加两个样式，并命名。\n分别在属性中设置不同的样式，颜色、字体、字号、字体颜色等。 在有cxGrid的单元中引用DataModule单元。\n选中cxGrid的cxGridDBTableView，展开Styles，分别关联ContentEven和ContentOdd。\n另外也可设置Header、Selection和Inactive。Header改变的是表头的样式，Selection改变的是当前选择行的样式，Inactive改变的是cxGrid失去焦点时当前选择行的样式。\n不显示分组框 设置cxGridDBTableView的OptionsView下的GroupByBox属性为False。\n显示合计等脚注 设置cxGridDBTableView的OptionsView下的Footer属性为True。\n点cxGrid的Customize...按钮，弹出对话框，选择Summary标签页，在Footer子标签页中点Add增加合计项目。\n选择增加的项目，在属性中设置关联的列、字段名等属性。 设置行号 增加一列，不关联数据库字段，设置好属性。\n在该列的OnGetDataText事件中写如下代码：\n1 AText := IntToStr(ARecordIndex + 1); 编辑完成前光标不能离开当前行 在cxGridDBTableView的OnCanFocusRecord事件中写入类似以下的代码： 1 AAllow := DbState in [dsBrowse]; 只读 设置cxGridDBTableView.OptionsData.Editing属性为False。\n选择整行 设置cxGridDBTableView.OptionsSelection.CellSelect属性为False。\n",
+  "wordCount" : "67",
+  "inLanguage": "zh",
+  "datePublished": "2017-11-25T20:41:33+08:00",
+  "dateModified": "2017-11-25T20:41:33+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/pascal/devexpress_cxgrid/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/pascal/">⚒️pascal</a></div>
+    <h1 class="post-title entry-hint-parent">
+      cxGrid基本用法小记
+    </h1>
+    <div class="post-meta"><span title='2017-11-25 20:41:33 +0800 CST'>2017-11-25 20:41:33</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e6%b1%89%e5%8c%96" aria-label="汉化">汉化</a></li>
+                    <li>
+                        <a href="#%e6%9b%b4%e6%94%b9%e8%a7%86%e8%a7%89%e6%a0%b7%e5%bc%8f" aria-label="更改视觉样式">更改视觉样式</a></li>
+                    <li>
+                        <a href="#%e8%ae%a9cxgrid%e7%9a%84%e6%95%b0%e6%8d%ae%e4%bb%a5%e6%96%91%e9%a9%ac%e7%ba%bf%e7%9a%84%e6%96%b9%e5%bc%8f%e6%98%be%e7%a4%ba%e5%8d%b3%e5%a5%87%e5%81%b6%e8%a1%8c%e5%88%86%e5%88%ab%e4%bd%bf%e7%94%a8%e4%b8%8d%e5%90%8c%e6%a0%b7%e5%bc%8f" aria-label="让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式">让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式</a></li>
+                    <li>
+                        <a href="#%e4%b8%8d%e6%98%be%e7%a4%ba%e5%88%86%e7%bb%84%e6%a1%86" aria-label="不显示分组框">不显示分组框</a></li>
+                    <li>
+                        <a href="#%e6%98%be%e7%a4%ba%e5%90%88%e8%ae%a1%e7%ad%89%e8%84%9a%e6%b3%a8" aria-label="显示合计等脚注">显示合计等脚注</a></li>
+                    <li>
+                        <a href="#%e8%ae%be%e7%bd%ae%e8%a1%8c%e5%8f%b7" aria-label="设置行号">设置行号</a></li>
+                    <li>
+                        <a href="#%e7%bc%96%e8%be%91%e5%ae%8c%e6%88%90%e5%89%8d%e5%85%89%e6%a0%87%e4%b8%8d%e8%83%bd%e7%a6%bb%e5%bc%80%e5%bd%93%e5%89%8d%e8%a1%8c" aria-label="编辑完成前光标不能离开当前行">编辑完成前光标不能离开当前行</a></li>
+                    <li>
+                        <a href="#%e5%8f%aa%e8%af%bb" aria-label="只读">只读</a></li>
+                    <li>
+                        <a href="#%e9%80%89%e6%8b%a9%e6%95%b4%e8%a1%8c" aria-label="选择整行">选择整行</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<h1 id="汉化">汉化<a hidden class="anchor" aria-hidden="true" href="#汉化">#</a></h1>
+<ol>
+<li>在<code>DevExpress</code>选项卡找到<code>TcxLocalizer</code>控件放到窗体上，为了通用，我是放到<code>DataModule</code>窗体上。</li>
+</ol>
+<p><img loading="lazy" src="https://s21.ax1x.com/2024/07/19/pkovdc6.jpg" alt=""  />
+</p>
+<ol start="2">
+<li>准备好汉化的资源文件或配置文件（我使用的是后者），在<code>DataModule</code>的<code>Create</code>事件里写上如下代码</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">with cxLocalizer1 do
+</span></span><span class="line"><span class="cl">begin
+</span></span><span class="line"><span class="cl">  StorageType := lstIni;
+</span></span><span class="line"><span class="cl">  LoadFromFile(IniPath + &#39;DevChs.ini&#39;);
+</span></span><span class="line"><span class="cl">  locale := 2052;
+</span></span><span class="line"><span class="cl">  Active := True;
+</span></span><span class="line"><span class="cl">end;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>在有cxGrid或其实Dev控件的单元引用DataModule单元。</li>
+</ol>
+<h1 id="更改视觉样式">更改视觉样式<a hidden class="anchor" aria-hidden="true" href="#更改视觉样式">#</a></h1>
+<ol>
+<li>
+<p>在<code>DevExpress</code>选项卡找到<code>TcxLookAndFeelController</code>控件放到<code>DataModule</code>窗体上。</p>
+</li>
+<li>
+<p>在有<code>cxGrid</code>或其它<code>Dev控件</code>的单元引用<code>DataModule</code>单元。</p>
+</li>
+<li>
+<p>在要更改视觉样式的代码段里设置<code>TcxLookAndFeelController</code>控件的<code>Kind</code>属性和<code>NativeStyle</code>属性。</p>
+</li>
+</ol>
+<p><img loading="lazy" src="https://s21.ax1x.com/2024/07/19/pkovwjK.jpg" alt=""  />
+</p>
+<h1 id="让cxgrid的数据以斑马线的方式显示即奇偶行分别使用不同样式">让cxGrid的数据以斑马线的方式显示，即奇偶行分别使用不同样式<a hidden class="anchor" aria-hidden="true" href="#让cxgrid的数据以斑马线的方式显示即奇偶行分别使用不同样式">#</a></h1>
+<ol>
+<li>
+<p>在<code>DevExpress</code>选项卡找到<code>TcxStyleRepository</code>控件放到<code>DataModule</code>窗体上。</p>
+</li>
+<li>
+<p>双击<code>cxStyleRepository</code>控件，打开如下窗口，点<code>Add</code>添加两个样式，并命名。</p>
+</li>
+</ol>
+<p><img loading="lazy" src="https://s21.ax1x.com/2024/07/19/pkovrHe.jpg" alt=""  />
+</p>
+<ol start="3">
+<li>分别在属性中设置不同的样式，颜色、字体、字号、字体颜色等。</li>
+</ol>
+<p><img loading="lazy" src="https://s21.ax1x.com/2024/07/19/pkovc4A.jpg" alt=""  />
+</p>
+<ol start="4">
+<li>
+<p>在有<code>cxGrid</code>的单元中引用<code>DataModule</code>单元。</p>
+</li>
+<li>
+<p>选中<code>cxGrid</code>的<code>cxGridDBTableView</code>，展开<code>Styles</code>，分别关联<code>ContentEven</code>和<code>ContentOdd</code>。</p>
+</li>
+<li>
+<p>另外也可设置<code>Header</code>、<code>Selection</code>和<code>Inactive</code>。<code>Header</code>改变的是表头的样式，<code>Selection</code>改变的是当前选择行的样式，<code>Inactive</code>改变的是<code>cxGrid</code>失去焦点时当前选择行的样式。</p>
+</li>
+</ol>
+<h1 id="不显示分组框">不显示分组框<a hidden class="anchor" aria-hidden="true" href="#不显示分组框">#</a></h1>
+<p>设置<code>cxGridDBTableView</code>的<code>OptionsView</code>下的<code>GroupByBox</code>属性为<code>False</code>。</p>
+<h1 id="显示合计等脚注">显示合计等脚注<a hidden class="anchor" aria-hidden="true" href="#显示合计等脚注">#</a></h1>
+<ol>
+<li>
+<p>设置<code>cxGridDBTableView</code>的<code>OptionsView</code>下的<code>Footer</code>属性为<code>True</code>。</p>
+</li>
+<li>
+<p>点<code>cxGrid</code>的<code>Customize...</code>按钮，弹出对话框，选择<code>Summary</code>标签页，在<code>Footer</code>子标签页中点<code>Add</code>增加合计项目。</p>
+</li>
+</ol>
+<p><img loading="lazy" src="https://s21.ax1x.com/2024/07/19/pkov29I.jpg" alt=""  />
+</p>
+<ol start="3">
+<li>选择增加的项目，在属性中设置关联的列、字段名等属性。</li>
+</ol>
+<p><img loading="lazy" src="https://s21.ax1x.com/2024/07/19/pkovWgP.jpg" alt=""  />
+</p>
+<h1 id="设置行号">设置行号<a hidden class="anchor" aria-hidden="true" href="#设置行号">#</a></h1>
+<ol>
+<li>
+<p>增加一列，不关联数据库字段，设置好属性。</p>
+</li>
+<li>
+<p>在该列的<code>OnGetDataText</code>事件中写如下代码：</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AText := IntToStr(ARecordIndex + 1);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="编辑完成前光标不能离开当前行">编辑完成前光标不能离开当前行<a hidden class="anchor" aria-hidden="true" href="#编辑完成前光标不能离开当前行">#</a></h1>
+<ol>
+<li>在<code>cxGridDBTableView</code>的<code>OnCanFocusRecord</code>事件中写入类似以下的代码：</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AAllow := DbState in [dsBrowse];
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="只读">只读<a hidden class="anchor" aria-hidden="true" href="#只读">#</a></h1>
+<p>设置<code>cxGridDBTableView.OptionsData.Editing</code>属性为<code>False</code>。</p>
+<h1 id="选择整行">选择整行<a hidden class="anchor" aria-hidden="true" href="#选择整行">#</a></h1>
+<p>设置<code>cxGridDBTableView.OptionsSelection.CellSelect</code>属性为<code>False</code>。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/dev-express/">Dev Express</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/misc/gbk/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>GBK编码</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdstoredproc/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>FireDAC之TFDStoredProc</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

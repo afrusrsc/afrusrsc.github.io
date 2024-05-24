@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Mermaid学习笔记之——流程图 | 慢步道人</title>
+<meta name="keywords" content="Mermaid">
+<meta name="description" content="从其它平台迁移而来
+语法 1 2 3 4 5 6 7 --- title: 流程图名称 # 可能会有渲染不支持 --- graph/flowchart [TB/TD|BT|LR|RL] 节点名即内容 节点名1[节点内容] 节点名2[&#34;节点内容&#34;] graph 节点名即内容 节点名1[节点内容] 节点名2[&#34;带引号节点内容&#34;] 节点 1 2 graph 默认节点 graph 默认节点 1 2 graph a1[矩形] graph a1[矩形] 1 2 graph a2(圆角矩形) graph a2(圆角矩形) 1 2 graph a3{菱形} graph a3{菱形} 1 2 graph a4((圆形)) graph a4((圆形)) 1 2 graph a5&gt;旗形] graph a5&gt;旗形] 1 2 graph a6{{尖端矩形}} graph a6{{尖端矩形}} 1 2 graph a7([圆端矩形]) graph a7([圆端矩形]) 1 2 graph a8[\平行四边形1\] graph a8[\平行四边形1\] 1 2 graph a9[/平行四边形2/] graph a9[/平行四边形2/] 1 2 graph a10[/梯形1\] graph a10[/梯形1\] 1 2 graph a11[\梯形2/] graph a11[\梯形2/] 1 2 graph a12[[子程序]] graph a12[[子程序]] 1 2 graph a13[(圆柱形)] graph a13[(圆柱形)] 1 2 graph a14(((双圆))) # 高版本渲染支持 graph a14(((双圆))) 布局 标识 含义 备注 TB/TD 从上到下 默认 BT 从下到上 LR 从左到右 RL 从右到左 TB/TD graph a --&gt; b BT graph BT a --&gt; b LR graph LR a --&gt; b RL graph RL a --&gt; b 连线 普通连线 线形 1单位长 2单位长 3单位长 细实线 --- ---- ----- 细实线箭头 --&gt; ---&gt; ----&gt; 粗实线 === ==== ===== 粗实线箭头 ==&gt; ===&gt; ====&gt; 虚线 -.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/other/mermaid_graph/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/other/mermaid_graph/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Mermaid学习笔记之——流程图" />
+<meta property="og:description" content="从其它平台迁移而来
+语法 1 2 3 4 5 6 7 --- title: 流程图名称 # 可能会有渲染不支持 --- graph/flowchart [TB/TD|BT|LR|RL] 节点名即内容 节点名1[节点内容] 节点名2[&#34;节点内容&#34;] graph 节点名即内容 节点名1[节点内容] 节点名2[&#34;带引号节点内容&#34;] 节点 1 2 graph 默认节点 graph 默认节点 1 2 graph a1[矩形] graph a1[矩形] 1 2 graph a2(圆角矩形) graph a2(圆角矩形) 1 2 graph a3{菱形} graph a3{菱形} 1 2 graph a4((圆形)) graph a4((圆形)) 1 2 graph a5&gt;旗形] graph a5&gt;旗形] 1 2 graph a6{{尖端矩形}} graph a6{{尖端矩形}} 1 2 graph a7([圆端矩形]) graph a7([圆端矩形]) 1 2 graph a8[\平行四边形1\] graph a8[\平行四边形1\] 1 2 graph a9[/平行四边形2/] graph a9[/平行四边形2/] 1 2 graph a10[/梯形1\] graph a10[/梯形1\] 1 2 graph a11[\梯形2/] graph a11[\梯形2/] 1 2 graph a12[[子程序]] graph a12[[子程序]] 1 2 graph a13[(圆柱形)] graph a13[(圆柱形)] 1 2 graph a14(((双圆))) # 高版本渲染支持 graph a14(((双圆))) 布局 标识 含义 备注 TB/TD 从上到下 默认 BT 从下到上 LR 从左到右 RL 从右到左 TB/TD graph a --&gt; b BT graph BT a --&gt; b LR graph LR a --&gt; b RL graph RL a --&gt; b 连线 普通连线 线形 1单位长 2单位长 3单位长 细实线 --- ---- ----- 细实线箭头 --&gt; ---&gt; ----&gt; 粗实线 === ==== ===== 粗实线箭头 ==&gt; ===&gt; ====&gt; 虚线 -." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/other/mermaid_graph/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-02-06T21:24:16+08:00" />
+<meta property="article:modified_time" content="2023-02-06T21:24:16+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mermaid学习笔记之——流程图"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+语法 1 2 3 4 5 6 7 --- title: 流程图名称 # 可能会有渲染不支持 --- graph/flowchart [TB/TD|BT|LR|RL] 节点名即内容 节点名1[节点内容] 节点名2[&#34;节点内容&#34;] graph 节点名即内容 节点名1[节点内容] 节点名2[&#34;带引号节点内容&#34;] 节点 1 2 graph 默认节点 graph 默认节点 1 2 graph a1[矩形] graph a1[矩形] 1 2 graph a2(圆角矩形) graph a2(圆角矩形) 1 2 graph a3{菱形} graph a3{菱形} 1 2 graph a4((圆形)) graph a4((圆形)) 1 2 graph a5&gt;旗形] graph a5&gt;旗形] 1 2 graph a6{{尖端矩形}} graph a6{{尖端矩形}} 1 2 graph a7([圆端矩形]) graph a7([圆端矩形]) 1 2 graph a8[\平行四边形1\] graph a8[\平行四边形1\] 1 2 graph a9[/平行四边形2/] graph a9[/平行四边形2/] 1 2 graph a10[/梯形1\] graph a10[/梯形1\] 1 2 graph a11[\梯形2/] graph a11[\梯形2/] 1 2 graph a12[[子程序]] graph a12[[子程序]] 1 2 graph a13[(圆柱形)] graph a13[(圆柱形)] 1 2 graph a14(((双圆))) # 高版本渲染支持 graph a14(((双圆))) 布局 标识 含义 备注 TB/TD 从上到下 默认 BT 从下到上 LR 从左到右 RL 从右到左 TB/TD graph a --&gt; b BT graph BT a --&gt; b LR graph LR a --&gt; b RL graph RL a --&gt; b 连线 普通连线 线形 1单位长 2单位长 3单位长 细实线 --- ---- ----- 细实线箭头 --&gt; ---&gt; ----&gt; 粗实线 === ==== ===== 粗实线箭头 ==&gt; ===&gt; ====&gt; 虚线 -."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "⚜️其它",
+      "item": "https://afrusrsc.github.io/posts/other/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Mermaid学习笔记之——流程图",
+      "item": "https://afrusrsc.github.io/posts/other/mermaid_graph/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Mermaid学习笔记之——流程图",
+  "name": "Mermaid学习笔记之——流程图",
+  "description": "从其它平台迁移而来 语法 1 2 3 4 5 6 7 --- title: 流程图名称 # 可能会有渲染不支持 --- graph/flowchart [TB/TD|BT|LR|RL] 节点名即内容 节点名1[节点内容] 节点名2[\u0026#34;节点内容\u0026#34;] graph 节点名即内容 节点名1[节点内容] 节点名2[\"带引号节点内容\"] 节点 1 2 graph 默认节点 graph 默认节点 1 2 graph a1[矩形] graph a1[矩形] 1 2 graph a2(圆角矩形) graph a2(圆角矩形) 1 2 graph a3{菱形} graph a3{菱形} 1 2 graph a4((圆形)) graph a4((圆形)) 1 2 graph a5\u0026gt;旗形] graph a5\u003e旗形] 1 2 graph a6{{尖端矩形}} graph a6{{尖端矩形}} 1 2 graph a7([圆端矩形]) graph a7([圆端矩形]) 1 2 graph a8[\\平行四边形1\\] graph a8[\\平行四边形1\\] 1 2 graph a9[/平行四边形2/] graph a9[/平行四边形2/] 1 2 graph a10[/梯形1\\] graph a10[/梯形1\\] 1 2 graph a11[\\梯形2/] graph a11[\\梯形2/] 1 2 graph a12[[子程序]] graph a12[[子程序]] 1 2 graph a13[(圆柱形)] graph a13[(圆柱形)] 1 2 graph a14(((双圆))) # 高版本渲染支持 graph a14(((双圆))) 布局 标识 含义 备注 TB/TD 从上到下 默认 BT 从下到上 LR 从左到右 RL 从右到左 TB/TD graph a --\u003e b BT graph BT a --\u003e b LR graph LR a --\u003e b RL graph RL a --\u003e b 连线 普通连线 线形 1单位长 2单位长 3单位长 细实线 --- ---- ----- 细实线箭头 --\u0026gt; ---\u0026gt; ----\u0026gt; 粗实线 === ==== ===== 粗实线箭头 ==\u0026gt; ===\u0026gt; ====\u0026gt; 虚线 -.",
+  "keywords": [
+    "Mermaid"
+  ],
+  "articleBody": " 从其它平台迁移而来\n语法 1 2 3 4 5 6 7 --- title: 流程图名称 # 可能会有渲染不支持 --- graph/flowchart [TB/TD|BT|LR|RL] 节点名即内容 节点名1[节点内容] 节点名2[\"节点内容\"] graph 节点名即内容 节点名1[节点内容] 节点名2[\"带引号节点内容\"] 节点 1 2 graph 默认节点 graph 默认节点 1 2 graph a1[矩形] graph a1[矩形] 1 2 graph a2(圆角矩形) graph a2(圆角矩形) 1 2 graph a3{菱形} graph a3{菱形} 1 2 graph a4((圆形)) graph a4((圆形)) 1 2 graph a5\u003e旗形] graph a5\u003e旗形] 1 2 graph a6{{尖端矩形}} graph a6{{尖端矩形}} 1 2 graph a7([圆端矩形]) graph a7([圆端矩形]) 1 2 graph a8[\\平行四边形1\\] graph a8[\\平行四边形1\\] 1 2 graph a9[/平行四边形2/] graph a9[/平行四边形2/] 1 2 graph a10[/梯形1\\] graph a10[/梯形1\\] 1 2 graph a11[\\梯形2/] graph a11[\\梯形2/] 1 2 graph a12[[子程序]] graph a12[[子程序]] 1 2 graph a13[(圆柱形)] graph a13[(圆柱形)] 1 2 graph a14(((双圆))) # 高版本渲染支持 graph a14(((双圆))) 布局 标识 含义 备注 TB/TD 从上到下 默认 BT 从下到上 LR 从左到右 RL 从右到左 TB/TD graph a --\u003e b BT graph BT a --\u003e b LR graph LR a --\u003e b RL graph RL a --\u003e b 连线 普通连线 线形 1单位长 2单位长 3单位长 细实线 --- ---- ----- 细实线箭头 --\u003e ---\u003e ----\u003e 粗实线 === ==== ===== 粗实线箭头 ==\u003e ===\u003e ====\u003e 虚线 -.- -..- -...- 虚线箭头 -.-\u003e -..-\u003e -...-\u003e --- graph LR a --- b ---- graph LR a ---- b ----- graph LR a ----- b --\u003e graph LR a --\u003e b === graph LR a === b ==\u003e graph LR a ==\u003e b -.- graph LR a -.- b -.-\u003e graph LR a -.-\u003e b 箭头 --\u003e三角箭头 graph LR a --\u003e b --o圆点箭头 graph LR a --o b --x叉箭头 graph LR a --x b \u003c--\u003e两端三角箭头 graph LR a \u003c--\u003e b o--o两端圆点箭头 graph LR a o--o b x--x两端叉箭头 graph LR a x--x b 带文字连线 --\u003e|文字| graph LR a --\u003e|文字| b -- 文字 --\u003e graph LR a -- 文字 --\u003e b 子图 语法 1 2 3 4 subgraph 子图名 direction [TB/TD|BT|LR|RL] # 子图中的方向 子图内容 end 1 2 3 4 5 6 7 8 9 --- title: 子图示例 --- graph LR subgraph s direction BT a --\u003e b end s ==\u003e c graph LR subgraph s direction BT a --\u003e b end s ==\u003e c ",
+  "wordCount" : "338",
+  "inLanguage": "zh",
+  "datePublished": "2023-02-06T21:24:16+08:00",
+  "dateModified": "2023-02-06T21:24:16+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/other/mermaid_graph/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/other/">⚜️其它</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Mermaid学习笔记之——流程图
+    </h1>
+    <div class="post-meta"><span title='2023-02-06 21:24:16 +0800 CST'>2023-02-06 21:24:16</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%af%ad%e6%b3%95" aria-label="语法">语法</a></li>
+                    <li>
+                        <a href="#%e8%8a%82%e7%82%b9" aria-label="节点">节点</a></li>
+                    <li>
+                        <a href="#%e5%b8%83%e5%b1%80" aria-label="布局">布局</a></li>
+                    <li>
+                        <a href="#%e8%bf%9e%e7%ba%bf" aria-label="连线">连线</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%99%ae%e9%80%9a%e8%bf%9e%e7%ba%bf" aria-label="普通连线">普通连线</a></li>
+                    <li>
+                        <a href="#%e7%ae%ad%e5%a4%b4" aria-label="箭头">箭头</a></li>
+                    <li>
+                        <a href="#%e5%b8%a6%e6%96%87%e5%ad%97%e8%bf%9e%e7%ba%bf" aria-label="带文字连线">带文字连线</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e5%ad%90%e5%9b%be" aria-label="子图">子图</a><ul>
+                            
+                    <li>
+                        <a href="#%e8%af%ad%e6%b3%95-1" aria-label="语法">语法</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<h1 id="语法">语法<a hidden class="anchor" aria-hidden="true" href="#语法">#</a></h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">title: 流程图名称   # 可能会有渲染不支持
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">graph/flowchart [TB/TD|BT|LR|RL]
+</span></span><span class="line"><span class="cl">    节点名即内容
+</span></span><span class="line"><span class="cl">    节点名1[节点内容]
+</span></span><span class="line"><span class="cl">    节点名2[&#34;节点内容&#34;]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    节点名即内容
+    节点名1[节点内容]
+    节点名2["带引号节点内容"]
+
+</div>
+<hr>
+<h1 id="节点">节点<a hidden class="anchor" aria-hidden="true" href="#节点">#</a></h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    默认节点
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    默认节点
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a1[矩形]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a1[矩形]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a2(圆角矩形)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a2(圆角矩形)
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a3{菱形}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a3{菱形}
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a4((圆形))
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a4((圆形))
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a5&gt;旗形]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a5>旗形]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a6{{尖端矩形}}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a6{{尖端矩形}}
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a7([圆端矩形])
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a7([圆端矩形])
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a8[\平行四边形1\]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a8[\平行四边形1\]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a9[/平行四边形2/]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a9[/平行四边形2/]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a10[/梯形1\]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a10[/梯形1\]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a11[\梯形2/]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a11[\梯形2/]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a12[[子程序]]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a12[[子程序]]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a13[(圆柱形)]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a13[(圆柱形)]
+
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph
+</span></span><span class="line"><span class="cl">    a14(((双圆)))   # 高版本渲染支持
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph
+    a14(((双圆)))
+
+</div>
+<hr>
+<h1 id="布局">布局<a hidden class="anchor" aria-hidden="true" href="#布局">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>标识</th>
+<th>含义</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TB/TD</td>
+<td>从上到下</td>
+<td>默认</td>
+</tr>
+<tr>
+<td>BT</td>
+<td>从下到上</td>
+<td></td>
+</tr>
+<tr>
+<td>LR</td>
+<td>从左到右</td>
+<td></td>
+</tr>
+<tr>
+<td>RL</td>
+<td>从右到左</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>TB</code>/<code>TD</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph
+    a --> b
+
+</div>
+<ul>
+<li><code>BT</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph BT
+    a --> b
+
+</div>
+<ul>
+<li><code>LR</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a --> b
+
+</div>
+<ul>
+<li><code>RL</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph RL
+    a --> b
+
+</div>
+<hr>
+<h1 id="连线">连线<a hidden class="anchor" aria-hidden="true" href="#连线">#</a></h1>
+<h2 id="普通连线">普通连线<a hidden class="anchor" aria-hidden="true" href="#普通连线">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>线形</th>
+<th>1单位长</th>
+<th>2单位长</th>
+<th>3单位长</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>细实线</td>
+<td><code>---</code></td>
+<td><code>----</code></td>
+<td><code>-----</code></td>
+</tr>
+<tr>
+<td>细实线箭头</td>
+<td><code>--&gt;</code></td>
+<td><code>---&gt;</code></td>
+<td><code>----&gt;</code></td>
+</tr>
+<tr>
+<td>粗实线</td>
+<td><code>===</code></td>
+<td><code>====</code></td>
+<td><code>=====</code></td>
+</tr>
+<tr>
+<td>粗实线箭头</td>
+<td><code>==&gt;</code></td>
+<td><code>===&gt;</code></td>
+<td><code>====&gt;</code></td>
+</tr>
+<tr>
+<td>虚线</td>
+<td><code>-.-</code></td>
+<td><code>-..-</code></td>
+<td><code>-...-</code></td>
+</tr>
+<tr>
+<td>虚线箭头</td>
+<td><code>-.-&gt;</code></td>
+<td><code>-..-&gt;</code></td>
+<td><code>-...-&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>---</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a --- b
+
+</div>
+<ul>
+<li><code>----</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a ---- b
+
+</div>
+<ul>
+<li><code>-----</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a ----- b
+
+</div>
+<ul>
+<li><code>--&gt;</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a --> b
+
+</div>
+<ul>
+<li><code>===</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a === b
+
+</div>
+<ul>
+<li><code>==&gt;</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a ==> b
+
+</div>
+<ul>
+<li><code>-.-</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a -.- b
+
+</div>
+<ul>
+<li><code>-.-&gt;</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a -.-> b
+
+</div>
+<h2 id="箭头">箭头<a hidden class="anchor" aria-hidden="true" href="#箭头">#</a></h2>
+<ul>
+<li><code>--&gt;</code>三角箭头</li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a --> b
+
+</div>
+<ul>
+<li><code>--o</code>圆点箭头</li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a --o b
+
+</div>
+<ul>
+<li><code>--x</code>叉箭头</li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a --x b
+
+</div>
+<ul>
+<li><code>&lt;--&gt;</code>两端三角箭头</li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a <--> b
+
+</div>
+<ul>
+<li><code>o--o</code>两端圆点箭头</li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a o--o b
+
+</div>
+<ul>
+<li><code>x--x</code>两端叉箭头</li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a x--x b
+
+</div>
+<h2 id="带文字连线">带文字连线<a hidden class="anchor" aria-hidden="true" href="#带文字连线">#</a></h2>
+<ul>
+<li><code>--&gt;|文字|</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a -->|文字| b
+
+</div>
+<ul>
+<li><code>-- 文字 --&gt;</code></li>
+</ul>
+<div class="mermaid" align="center">
+  
+graph LR
+    a -- 文字 --> b
+
+</div>
+<h1 id="子图">子图<a hidden class="anchor" aria-hidden="true" href="#子图">#</a></h1>
+<h2 id="语法-1">语法<a hidden class="anchor" aria-hidden="true" href="#语法-1">#</a></h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">subgraph 子图名
+</span></span><span class="line"><span class="cl">    direction [TB/TD|BT|LR|RL]   # 子图中的方向
+</span></span><span class="line"><span class="cl">    子图内容
+</span></span><span class="line"><span class="cl">end
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">title: 子图示例
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">graph LR
+</span></span><span class="line"><span class="cl">    subgraph s
+</span></span><span class="line"><span class="cl">        direction BT
+</span></span><span class="line"><span class="cl">        a --&gt; b
+</span></span><span class="line"><span class="cl">    end
+</span></span><span class="line"><span class="cl">    s ==&gt; c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="mermaid" align="center">
+  
+graph LR
+    subgraph s
+        direction BT
+        a --> b
+    end
+    s ==> c
+
+</div>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/mermaid/">Mermaid</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_fphttpclient_https/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>FPHTTPClient请求https</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/other/mermaid/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Mermaid学习笔记之——初识</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

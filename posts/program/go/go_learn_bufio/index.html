@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go bufio包 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="Reader 方法 含义 说明 Buffered 返回从当前缓冲区内可以读取的字节数量 Discard 跳过接下来的n字节 Peek 查看接下来的n字节 不移动读指针 Read 从bufio.Reader中读取内容到字节切片 ReadByte 从bufio.Reader中读取一个字节 ReadBytes 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 ReadLine 从bufio.Reader中读取一行数据 不包含换行符，建议使用Reader.ReadBytes(&#39;\n&#39;)、Reader.ReadString(&#39;\n&#39;)或者Scanner ReadRune 从bufio.Reader中读取一个rune ReadSlice 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符，建议使用Reader.ReadBytes或ReadString ReadString 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 Reset 重置bufio.Reader Size 返回底层缓冲区的大小 UnreadByte 回退最后读取的一个字节 UnreadRune 回退最后读取的一个rune WriteTo 将数据从bufio.Reader写入到io.Writer Writer 方法 含义 说明 Available 返回当前缓冲区中可以写入的字节数量 AvailableBuffer 返回一个空的缓冲区，容量是Available返回的值 Buffered 返回当前缓冲区中已经写入的字节数量 Flush 将缓冲区中的数据写入到io.Writer ReadFrom 从io.Reader读取数据到bufio.Writer Reset 重置bufio.Writer Size 返回底层缓冲区的大小 Write 将数据写入bufio.Writer WriteByte 将一个字节写入bufio.Writer WriteRune 将一个rune写入bufio.Writer WriteString 将一个字符串写入bufio.Writer Scanner 方法 含义 说明 Buffer 设置在扫描时要使用的初始缓冲区，及在扫描过程中可能分配的最大缓冲区大小 Bytes 返回由最近一次调用Scanner.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_learn_bufio/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_learn_bufio/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go bufio包" />
+<meta property="og:description" content="Reader 方法 含义 说明 Buffered 返回从当前缓冲区内可以读取的字节数量 Discard 跳过接下来的n字节 Peek 查看接下来的n字节 不移动读指针 Read 从bufio.Reader中读取内容到字节切片 ReadByte 从bufio.Reader中读取一个字节 ReadBytes 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 ReadLine 从bufio.Reader中读取一行数据 不包含换行符，建议使用Reader.ReadBytes(&#39;\n&#39;)、Reader.ReadString(&#39;\n&#39;)或者Scanner ReadRune 从bufio.Reader中读取一个rune ReadSlice 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符，建议使用Reader.ReadBytes或ReadString ReadString 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 Reset 重置bufio.Reader Size 返回底层缓冲区的大小 UnreadByte 回退最后读取的一个字节 UnreadRune 回退最后读取的一个rune WriteTo 将数据从bufio.Reader写入到io.Writer Writer 方法 含义 说明 Available 返回当前缓冲区中可以写入的字节数量 AvailableBuffer 返回一个空的缓冲区，容量是Available返回的值 Buffered 返回当前缓冲区中已经写入的字节数量 Flush 将缓冲区中的数据写入到io.Writer ReadFrom 从io.Reader读取数据到bufio.Writer Reset 重置bufio.Writer Size 返回底层缓冲区的大小 Write 将数据写入bufio.Writer WriteByte 将一个字节写入bufio.Writer WriteRune 将一个rune写入bufio.Writer WriteString 将一个字符串写入bufio.Writer Scanner 方法 含义 说明 Buffer 设置在扫描时要使用的初始缓冲区，及在扫描过程中可能分配的最大缓冲区大小 Bytes 返回由最近一次调用Scanner." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_learn_bufio/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-25T21:23:15+08:00" />
+<meta property="article:modified_time" content="2024-10-25T21:23:15+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go bufio包"/>
+<meta name="twitter:description" content="Reader 方法 含义 说明 Buffered 返回从当前缓冲区内可以读取的字节数量 Discard 跳过接下来的n字节 Peek 查看接下来的n字节 不移动读指针 Read 从bufio.Reader中读取内容到字节切片 ReadByte 从bufio.Reader中读取一个字节 ReadBytes 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 ReadLine 从bufio.Reader中读取一行数据 不包含换行符，建议使用Reader.ReadBytes(&#39;\n&#39;)、Reader.ReadString(&#39;\n&#39;)或者Scanner ReadRune 从bufio.Reader中读取一个rune ReadSlice 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符，建议使用Reader.ReadBytes或ReadString ReadString 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 Reset 重置bufio.Reader Size 返回底层缓冲区的大小 UnreadByte 回退最后读取的一个字节 UnreadRune 回退最后读取的一个rune WriteTo 将数据从bufio.Reader写入到io.Writer Writer 方法 含义 说明 Available 返回当前缓冲区中可以写入的字节数量 AvailableBuffer 返回一个空的缓冲区，容量是Available返回的值 Buffered 返回当前缓冲区中已经写入的字节数量 Flush 将缓冲区中的数据写入到io.Writer ReadFrom 从io.Reader读取数据到bufio.Writer Reset 重置bufio.Writer Size 返回底层缓冲区的大小 Write 将数据写入bufio.Writer WriteByte 将一个字节写入bufio.Writer WriteRune 将一个rune写入bufio.Writer WriteString 将一个字符串写入bufio.Writer Scanner 方法 含义 说明 Buffer 设置在扫描时要使用的初始缓冲区，及在扫描过程中可能分配的最大缓冲区大小 Bytes 返回由最近一次调用Scanner."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go bufio包",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_learn_bufio/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go bufio包",
+  "name": "Go bufio包",
+  "description": "Reader 方法 含义 说明 Buffered 返回从当前缓冲区内可以读取的字节数量 Discard 跳过接下来的n字节 Peek 查看接下来的n字节 不移动读指针 Read 从bufio.Reader中读取内容到字节切片 ReadByte 从bufio.Reader中读取一个字节 ReadBytes 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 ReadLine 从bufio.Reader中读取一行数据 不包含换行符，建议使用Reader.ReadBytes('\\n')、Reader.ReadString('\\n')或者Scanner ReadRune 从bufio.Reader中读取一个rune ReadSlice 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符，建议使用Reader.ReadBytes或ReadString ReadString 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 Reset 重置bufio.Reader Size 返回底层缓冲区的大小 UnreadByte 回退最后读取的一个字节 UnreadRune 回退最后读取的一个rune WriteTo 将数据从bufio.Reader写入到io.Writer Writer 方法 含义 说明 Available 返回当前缓冲区中可以写入的字节数量 AvailableBuffer 返回一个空的缓冲区，容量是Available返回的值 Buffered 返回当前缓冲区中已经写入的字节数量 Flush 将缓冲区中的数据写入到io.Writer ReadFrom 从io.Reader读取数据到bufio.Writer Reset 重置bufio.Writer Size 返回底层缓冲区的大小 Write 将数据写入bufio.Writer WriteByte 将一个字节写入bufio.Writer WriteRune 将一个rune写入bufio.Writer WriteString 将一个字符串写入bufio.Writer Scanner 方法 含义 说明 Buffer 设置在扫描时要使用的初始缓冲区，及在扫描过程中可能分配的最大缓冲区大小 Bytes 返回由最近一次调用Scanner.",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "Reader 方法 含义 说明 Buffered 返回从当前缓冲区内可以读取的字节数量 Discard 跳过接下来的n字节 Peek 查看接下来的n字节 不移动读指针 Read 从bufio.Reader中读取内容到字节切片 ReadByte 从bufio.Reader中读取一个字节 ReadBytes 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 ReadLine 从bufio.Reader中读取一行数据 不包含换行符，建议使用Reader.ReadBytes('\\n')、Reader.ReadString('\\n')或者Scanner ReadRune 从bufio.Reader中读取一个rune ReadSlice 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符，建议使用Reader.ReadBytes或ReadString ReadString 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 Reset 重置bufio.Reader Size 返回底层缓冲区的大小 UnreadByte 回退最后读取的一个字节 UnreadRune 回退最后读取的一个rune WriteTo 将数据从bufio.Reader写入到io.Writer Writer 方法 含义 说明 Available 返回当前缓冲区中可以写入的字节数量 AvailableBuffer 返回一个空的缓冲区，容量是Available返回的值 Buffered 返回当前缓冲区中已经写入的字节数量 Flush 将缓冲区中的数据写入到io.Writer ReadFrom 从io.Reader读取数据到bufio.Writer Reset 重置bufio.Writer Size 返回底层缓冲区的大小 Write 将数据写入bufio.Writer WriteByte 将一个字节写入bufio.Writer WriteRune 将一个rune写入bufio.Writer WriteString 将一个字符串写入bufio.Writer Scanner 方法 含义 说明 Buffer 设置在扫描时要使用的初始缓冲区，及在扫描过程中可能分配的最大缓冲区大小 Bytes 返回由最近一次调用Scanner.Scan生成的令牌 不会进行内存分配 Err 返回扫描过程中遇到的第一个非EOF错误 Scan 使扫描器前进到下一个令牌 Split 设置扫描器的分割函数 在扫描已经开始之后调用会触发panic Text 返回由最近一次调用Scanner.Scan生成的令牌 进行内存分配 包函数 方法 含义 说明 NewReader 从io.Reader创建一个带缓冲区的bufio.Reader NewReaderSize 从io.Reader创建一个带缓冲区的bufio.Reader，并指定缓冲区的大小 NewWriter 从io.Writer创建一个带缓冲区的bufio.Writer NewWriterSize 从io.Writer创建一个带缓冲区的bufio.Writer，并指定缓冲区的大小 NewReadWriter 将io.Reader和io.Writer包装成一个带缓冲区的bufio.ReadWriter ScanBytes bufio.Scanner的一种分割函数，将输入数据按字节进行分割 ScanLines bufio.Scanner的一种分割函数，将输入文本按行进行分割 会移除行尾的换行符 ScanRunes bufio.Scanner的一种分割函数，将输入数据按rune进行分割 ScanWords bufio.Scanner的一种分割函数，将输入文本按以空格分隔的单词进行分割 会移除单词之间的空格 ",
+  "wordCount" : "108",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-25T21:23:15+08:00",
+  "dateModified": "2024-10-25T21:23:15+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_learn_bufio/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go bufio包
+    </h1>
+    <div class="post-meta"><span title='2024-10-25 21:23:15 +0800 CST'>2024-10-25 21:23:15</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#reader" aria-label="Reader">Reader</a></li>
+                    <li>
+                        <a href="#writer" aria-label="Writer">Writer</a></li>
+                    <li>
+                        <a href="#scanner" aria-label="Scanner">Scanner</a></li>
+                    <li>
+                        <a href="#%e5%8c%85%e5%87%bd%e6%95%b0" aria-label="包函数">包函数</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="reader">Reader<a hidden class="anchor" aria-hidden="true" href="#reader">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Buffered</td>
+<td>返回从当前缓冲区内可以读取的字节数量</td>
+<td></td>
+</tr>
+<tr>
+<td>Discard</td>
+<td>跳过接下来的<code>n</code>字节</td>
+<td></td>
+</tr>
+<tr>
+<td>Peek</td>
+<td>查看接下来的<code>n</code>字节</td>
+<td>不移动读指针</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>从<code>bufio.Reader</code>中读取内容到字节切片</td>
+<td></td>
+</tr>
+<tr>
+<td>ReadByte</td>
+<td>从<code>bufio.Reader</code>中读取一个字节</td>
+<td></td>
+</tr>
+<tr>
+<td>ReadBytes</td>
+<td>从<code>bufio.Reader</code>中读取数据，直到遇到指定的分隔符<code>delim</code></td>
+<td>包含分隔符</td>
+</tr>
+<tr>
+<td>ReadLine</td>
+<td>从<code>bufio.Reader</code>中读取一行数据</td>
+<td>不包含换行符，建议使用<code>Reader.ReadBytes('\n')</code>、<code>Reader.ReadString('\n')</code>或者<code>Scanner</code></td>
+</tr>
+<tr>
+<td>ReadRune</td>
+<td>从<code>bufio.Reader</code>中读取一个<code>rune</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ReadSlice</td>
+<td>从<code>bufio.Reader</code>中读取数据，直到遇到指定的分隔符<code>delim</code></td>
+<td>包含分隔符，建议使用<code>Reader.ReadBytes</code>或<code>ReadString</code></td>
+</tr>
+<tr>
+<td>ReadString</td>
+<td>从<code>bufio.Reader</code>中读取数据，直到遇到指定的分隔符<code>delim</code></td>
+<td>包含分隔符</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>重置<code>bufio.Reader</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>返回底层缓冲区的大小</td>
+<td></td>
+</tr>
+<tr>
+<td>UnreadByte</td>
+<td>回退最后读取的一个字节</td>
+<td></td>
+</tr>
+<tr>
+<td>UnreadRune</td>
+<td>回退最后读取的一个<code>rune</code></td>
+<td></td>
+</tr>
+<tr>
+<td>WriteTo</td>
+<td>将数据从<code>bufio.Reader</code>写入到<code>io.Writer</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="writer">Writer<a hidden class="anchor" aria-hidden="true" href="#writer">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Available</td>
+<td>返回当前缓冲区中可以写入的字节数量</td>
+<td></td>
+</tr>
+<tr>
+<td>AvailableBuffer</td>
+<td>返回一个空的缓冲区，容量是<code>Available</code>返回的值</td>
+<td></td>
+</tr>
+<tr>
+<td>Buffered</td>
+<td>返回当前缓冲区中已经写入的字节数量</td>
+<td></td>
+</tr>
+<tr>
+<td>Flush</td>
+<td>将缓冲区中的数据写入到<code>io.Writer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ReadFrom</td>
+<td>从<code>io.Reader</code>读取数据到<code>bufio.Writer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>重置<code>bufio.Writer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>返回底层缓冲区的大小</td>
+<td></td>
+</tr>
+<tr>
+<td>Write</td>
+<td>将数据写入<code>bufio.Writer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>WriteByte</td>
+<td>将一个字节写入<code>bufio.Writer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>WriteRune</td>
+<td>将一个<code>rune</code>写入<code>bufio.Writer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>WriteString</td>
+<td>将一个字符串写入<code>bufio.Writer</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="scanner">Scanner<a hidden class="anchor" aria-hidden="true" href="#scanner">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Buffer</td>
+<td>设置在扫描时要使用的初始缓冲区，及在扫描过程中可能分配的最大缓冲区大小</td>
+<td></td>
+</tr>
+<tr>
+<td>Bytes</td>
+<td>返回由最近一次调用<code>Scanner.Scan</code>生成的令牌</td>
+<td>不会进行内存分配</td>
+</tr>
+<tr>
+<td>Err</td>
+<td>返回扫描过程中遇到的第一个非<code>EOF</code>错误</td>
+<td></td>
+</tr>
+<tr>
+<td>Scan</td>
+<td>使扫描器前进到下一个令牌</td>
+<td></td>
+</tr>
+<tr>
+<td>Split</td>
+<td>设置扫描器的分割函数</td>
+<td>在扫描已经开始之后调用会触发<code>panic</code></td>
+</tr>
+<tr>
+<td>Text</td>
+<td>返回由最近一次调用<code>Scanner.Scan</code>生成的令牌</td>
+<td>进行内存分配</td>
+</tr>
+</tbody>
+</table>
+<h1 id="包函数">包函数<a hidden class="anchor" aria-hidden="true" href="#包函数">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NewReader</td>
+<td>从<code>io.Reader</code>创建一个带缓冲区的<code>bufio.Reader</code></td>
+<td></td>
+</tr>
+<tr>
+<td>NewReaderSize</td>
+<td>从<code>io.Reader</code>创建一个带缓冲区的<code>bufio.Reader</code>，并指定缓冲区的大小</td>
+<td></td>
+</tr>
+<tr>
+<td>NewWriter</td>
+<td>从<code>io.Writer</code>创建一个带缓冲区的<code>bufio.Writer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>NewWriterSize</td>
+<td>从<code>io.Writer</code>创建一个带缓冲区的<code>bufio.Writer</code>，并指定缓冲区的大小</td>
+<td></td>
+</tr>
+<tr>
+<td>NewReadWriter</td>
+<td>将<code>io.Reader</code>和<code>io.Writer</code>包装成一个带缓冲区的<code>bufio.ReadWriter</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ScanBytes</td>
+<td><code>bufio.Scanner</code>的一种分割函数，将输入数据按字节进行分割</td>
+<td></td>
+</tr>
+<tr>
+<td>ScanLines</td>
+<td><code>bufio.Scanner</code>的一种分割函数，将输入文本按行进行分割</td>
+<td>会移除行尾的换行符</td>
+</tr>
+<tr>
+<td>ScanRunes</td>
+<td><code>bufio.Scanner</code>的一种分割函数，将输入数据按<code>rune</code>进行分割</td>
+<td></td>
+</tr>
+<tr>
+<td>ScanWords</td>
+<td><code>bufio.Scanner</code>的一种分割函数，将输入文本按以<code>空格</code>分隔的单词进行分割</td>
+<td>会移除单词之间的空格</td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_learn_log/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go log包</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_learn_io_fs/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go io/fs包</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
