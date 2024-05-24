@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Gimp on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/gimp/</link>
+    <description>Recent content in Gimp on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sun, 31 Aug 2025 16:35:55 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/gimp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gimp更换证件照的背景色</title>
+      <link>https://afrusrsc.github.io/posts/other/gimp_change_background_color/</link>
+      <pubDate>Sun, 31 Aug 2025 16:35:55 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/other/gimp_change_background_color/</guid>
+      <description>背景 宝宝该上幼儿园了，之前千难万难终于拍成了一张红底的一寸照，现在突然又通知需要两版蓝底的一寸照，呃～还是自己P一个吧。
+早先使用Gimp处理过换底色，方法比较笨拙，效果也差强人意。这次的效果还算不错，做个记录。
+方法 思路 不管是用什么工具，思路都是一样的：
+graph LR s1[扣出人像] --&gt; s2[删除原背景] --&gt; s3[添加新背景] 步骤 准备工作 安装Gimp 1 sudo apt install gimp 使用gimp打开红底照片，如果原图是使用Photoshop处理的话，一般都会有个转换的提示，点转换后，先另存为Gimp的*.xcf格式
+修改当前图层名为原图
+复制原图图层并改名为扣图
+新建背景图层，使用油漆桶工具填充成蓝色
+调整图层顺序，从下到上依次为背景、原图、扣图
+扣图 在扣图图层上右键添加透明通道，并锁定位置和大小，可避免拖动类的误操作
+选择前景选择工具，用鼠标粗略地围绕人物轮廓画一圈，形成一个大概的选区框，回车，画面变暗
+调整笔触宽度，在人物的内部（包括头发）涂抹，涂抹过的区域将变亮。
+注意：1.可以先用粗笔选中间区域，再用细笔选边缘区域；2.头发部分尽量不要选择到有背景色的部分；3.尽量贴近边缘选择，可以有效减少运算量
+涂抹完成后回车，等Gimp运算完，将会自动生成一个精确的人物轮廓区，可以在彩色和灰度之间切换查看效果，如果有未选择到的区别，可以调整笔触继续选择，但每一次选择都会触发运算，建议回到第2.步重新选择
+再次回车，可看到最终的选区
+反选，即选择到背景，删除
+精修 在扣图图层上右键添加图层蒙板，并选择蒙板
+选择低硬度的画笔，如硬度25的笔刷，前景色为黑色
+放大图片，在边缘有原背景色的地方进行涂抹，如果不小心把人物部分擦掉了，只需将前景色切换为白色，再涂抹就可以恢复
+导出 隐藏原图图层，显示背景图层
+菜单文件-&amp;gt;导出为，导出最终图片
+保存*.xcf文件备用，如改白底、改尺寸等
+总结 核心在扣图环节，这个环节做好了，后面基本不需要调整，或只需要微调。</description>
+    </item>
+  </channel>
+</rss>

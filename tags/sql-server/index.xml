@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>SQL Server on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/sql-server/</link>
+    <description>Recent content in SQL Server on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Thu, 04 Feb 2021 15:56:00 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/sql-server/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>愚蠢的 SQL Server</title>
+      <link>https://afrusrsc.github.io/posts/db/sqlserver_bug/</link>
+      <pubDate>Thu, 04 Feb 2021 15:56:00 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/sqlserver_bug/</guid>
+      <description>从其它平台迁移而来
+今天在SQL Server的坑里跌得鼻青脸肿，折腾两三个小时，终于爬了出来，特此纪念一下，并以此明志！
+背景 传统行业的老旧ERP项目
+数据库在公司服务器上，版本为SQL Server 2000，本地使用的数据库为SQL Server 2008 R2，数据库工具为Navicat
+多数查询是从视图里查
+部分业务是写在存储过程里
+案发过程 业务功能扩充，需要在数据库中增加几个字段，于是直接从本地SQL Server 2008 R2连接公司SQL Server 2000，在表适当的位置插入所需字段，然后在Navicat中修改对应的视图和存储过程。
+然后，奇怪的事情发生了，程序运行未报错也无错误日志，但就是出不来数据！
+打断点，跟踪调试，发现程序抛了个异常，但是没有任何代码能捕获到，而且也并未层层抛出，不知道中间哪个环节被吃了！先不管是哪吃了，把异常处理了应该就没问题了，毕竟之前都是正常的。
+异常是类型不兼容和类型转换错误，好嘛，开始排查存储过程调用……一切正常！
+把查询的SQL输出，在Navicat中查询，也无结果！把查询条件去掉，结果出来了！排查条件吧，结果发现条件没问题！这TM就有点让人抓狂了！！！
+如此这般折磨几遍之后，结果丝毫没有任何改变！法了个克！
+还是先喝口水压压惊吧，然后！居然！！竟然！！！发现了不正常的东西！！！！一个布尔型的字段里居然出现了字符串！！！！！
+再次排查存储过程，存储过程正常！
+排查视图，视图不正常，但视图的SQL是正确的！这TM是个什么鬼情况？？？
+百思不得其解！
+再喝口水压压惊，把整个修改过程回忆一遍，灵光一闪，发现了点蛛丝马迹：修改视图时，只是在Navicat中确认了下视图的SQL是否正确，因为是正确的，所以并未进行修改！嗯，问题可能就是出在这里！！！
+那就在SQL Server 2008 R2里看一下吧，然后就发现了真相！我只想说：法了个克！！！
+重新修改视图，问题解决！
+真相 真相就是：
+自作聪明的SQL Server其实愚蠢到令人发指！！！
+罢了，还是好好说话吧。
+其实问题还是出在插入字段的这操作上，正常情况下可能是不会出什么问题的，但是当遇到视图里使用SELECT a.*, b.xx, c.xx ...这种方式时，问题就来了。
+Navicat中看到的还是SELECT a.*, b.xx, c.xx ...这种方式，但是在SQL Server中却变成了SELECT a.f1, a.f2, a.f3, b.xx, c.xx ...这种方式，本来这也没什么大不了的，但是偏偏在对a表插入（并非追加）字段时就出问题了，因为SQL Server自己按字段顺序把原有的字段AS成了新字段，由于插入了字段，于是后面的字段就都错位了，结果自然就是驴唇不对马嘴了！
+思考 基于这次的发现，估计在SQL Server中调整字段的顺序也有可能会出现类似的情况，不过没有去测试验证，以后有时间了再说吧（不过估计不会再有时间了吧，就算有时间估计也不会去折腾讨厌的SQL Server吧）。
+另外，服务器的数据库是SQL Server 2000，修改时用的是SQL Server 2008 R2，还不好就此说这是哪个版本出现的问题，也许新版本已经解决过了吧，这还是留给有心的朋友去研究吧。
+最后，我只想说，MySQL它不香么？PostgreSQL它不香么？为什么要把时间浪费在SQL Server上？</description>
+    </item>
+  </channel>
+</rss>

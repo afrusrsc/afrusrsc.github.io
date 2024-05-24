@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Gin on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/gin/</link>
+    <description>Recent content in Gin on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sun, 23 Feb 2025 19:48:17 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/gin/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gin功能列表</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_gin_funclist/</link>
+      <pubDate>Sun, 23 Feb 2025 19:48:17 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_gin_funclist/</guid>
+      <description>gin版本v1.10.0
+包函数 方法 含义 说明 BasicAuth 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 底层调用BasicAuthForRealm BasicAuthForProxy 创建一个HTTP代理基本认证（Basic HTTP Proxy - Authorization）的中间件 BasicAuthForRealm 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 Bind 创建一个用于将请求中的数据绑定到指定的接口对象上的中间件 CreateTestContext 创建一个干净的Engine实例和一个与之关联的上下文对象用于测试 CreateTestContextOnly 在已有的Engine实例基础上创建一个独立的上下文用于测试 CustomRecovery 根据自定义的处理函数创建一个恢复中间件 底层调用CustomRecoveryWithWriter CustomRecoveryWithWriter 创建一个自定义的恢复中间件 Default 返回一个默认的Engine实例 默认含Logger和Recovery两个中间件 Dir 返回一个http.FileSystem接口的实现，该实现可被http.FileServer使用 DisableBindValidation 关闭默认的验证器 DisableConsoleColor 禁用控制台的颜色输出 EnableJsonDecoderDisallowUnknownFields 开启JSON解码器的DisallowUnknownFields功能 即遇到未知字段时就报错 EnableJsonDecoderUseNumber 开启JSON解码器的UseNumber功能 即将数字解码为json.Number类型，而不是float64，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题 ErrorLogger 创建一个能够处理任意类型的错误的中间件 底层调用ErrorLoggerT ErrorLoggerT 创建一个能够处理指定类型的错误的中间件 ForceConsoleColor 强制在控制台输出带有颜色的内容 IsDebugging 判断当前框架是否处于调试模式 Logger 使用默认配置来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithConfig 根据传入的配置来创建一个日志中间件 LoggerWithFormatter 根据指定的格式来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithWriter 根据指定的输出目标创建一个日志中间件 底层调用LoggerWithConfig Mode 返回当前Gin框架的运行模式 有debug、release和test三种模式 New 返回一个全新的、没有任何中间件的Engine实例 Recovery 使用默认配置创建一个恢复中间件 底层调用RecoveryWithWriter RecoveryWithWriter 根据指定输出目标创建一个恢复中间件 底层调用CustomRecoveryWithWriter SetMode 设置gin框架的运行模式 WrapF 将标准的http.</description>
+    </item>
+  </channel>
+</rss>

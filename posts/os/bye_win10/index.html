@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Bye~~ win10！ | 慢步道人</title>
+<meta name="keywords" content="linux">
+<meta name="description" content="一个消息 听说，win10停更了，第一反应是：哦，已经到时间了啊，停吧，反正也就玩游戏时会用用。
+事实上，这个消息如果是在半年前，第一反应肯定是这样：哎呀，太好了，SBbug10终于不会再自动更新了，再也不用担心这SB偷偷自动更新半天、然后更新失败再回滚半天，浪费时间、浪费精力、浪费生命！
+但是，不管是哪种情况，对于新的继任者——瘟尸疫（win11），打死我也不会用的，更不会买预装了瘟尸疫的电脑，实在迫不得已要在别人的瘟尸疫设备上操作，心里也是要多骂几句的。
+话再说回来，现在对待win10的态度能这么平淡，其实是因为已经使用linux做主力了，毕竟最近几年在win10上使个劲儿地折腾wsl和虚拟机，就是为了转linux做主力。
+转战场 其实，大概从2009年有第一台自己的电脑后不到一年，就开始接触linux了，第一次安装的发行版是wubi安装的ubuntu，再后来是物理分区装双系统；工作后5~6年，基本上都是在虚拟机里玩，ubuntu、centos、mint、debian等主流发行版都尝试过，gnome、kde、mate、xfce、cinnamon等主流的桌面环境也尝试过，不过也仅仅是尝试过而已；后来，bug10（win10）出了wsl，又玩起了wsl。
+有一阵子，python爆火，无意间发现同样的python程序在wsl和win10下的性能天差地别，对win的不满（之前主要集中在SB自动更新上）瞬间爆涨。
+后来学了git并做为主力工具后，linux的tab补全简直爱死了，于是wsl&#43;git就正式成为生产力工具了。
+再后来，固态硬盘开始大行其道，这本是件好事，但是无奈那些互联网大厂都推出了自己的桌面应用——清一色的浏览器套壳，真TM SB到极致了，于是，原本就喜欢绿色版的自己就变得更喜欢那些小而美的东西了。所以，debian&#43;xfce的组合也就慢慢固定下来了。
+由于一直做的是delphi开发，基本上被win锁死了，所以，很长一段时间里都是在用win，即便是双系统。
+做了十年的delphi，早已厌倦了那种因个人审美及习惯不同而导致的各种算不上是真需求的需求，所以越来越倾向于去做更关注逻辑的后端。还好，碰巧遇到了这么一个机会，于是就从delphi转go了，顺便也转为linux做主力了。
+其实，有了wsl&#43;git做主力的那段经历，完全转linux做主力并没有太多不适，真要说的话，主要还是那些消费级的应用不多（在信创大环境下，还是比以前好了不少，比如：微信、QQ、wps等），以及一些硬件的驱动麻烦些，但是那些生产级的应用真的是挺好的。
+不知不觉，使用linux做主力已经半年了，win10除了偶尔玩玩游戏外，几乎已经不用了，除非是需要使用个别只能在win上运行的应用。
+后话 中间也尝试过很短一段时间的free bsd，除了生态更小外，没明显感觉出与linux有太大不同。
+使用linux才真正感觉自己的电脑是自己的，虽然有时也会被玩坏点东西，但是网上查一下，照着敲几下命令，一般问题都能解决。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/os/bye_win10/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/os/bye_win10/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Bye~~ win10！" />
+<meta property="og:description" content="一个消息 听说，win10停更了，第一反应是：哦，已经到时间了啊，停吧，反正也就玩游戏时会用用。
+事实上，这个消息如果是在半年前，第一反应肯定是这样：哎呀，太好了，SBbug10终于不会再自动更新了，再也不用担心这SB偷偷自动更新半天、然后更新失败再回滚半天，浪费时间、浪费精力、浪费生命！
+但是，不管是哪种情况，对于新的继任者——瘟尸疫（win11），打死我也不会用的，更不会买预装了瘟尸疫的电脑，实在迫不得已要在别人的瘟尸疫设备上操作，心里也是要多骂几句的。
+话再说回来，现在对待win10的态度能这么平淡，其实是因为已经使用linux做主力了，毕竟最近几年在win10上使个劲儿地折腾wsl和虚拟机，就是为了转linux做主力。
+转战场 其实，大概从2009年有第一台自己的电脑后不到一年，就开始接触linux了，第一次安装的发行版是wubi安装的ubuntu，再后来是物理分区装双系统；工作后5~6年，基本上都是在虚拟机里玩，ubuntu、centos、mint、debian等主流发行版都尝试过，gnome、kde、mate、xfce、cinnamon等主流的桌面环境也尝试过，不过也仅仅是尝试过而已；后来，bug10（win10）出了wsl，又玩起了wsl。
+有一阵子，python爆火，无意间发现同样的python程序在wsl和win10下的性能天差地别，对win的不满（之前主要集中在SB自动更新上）瞬间爆涨。
+后来学了git并做为主力工具后，linux的tab补全简直爱死了，于是wsl&#43;git就正式成为生产力工具了。
+再后来，固态硬盘开始大行其道，这本是件好事，但是无奈那些互联网大厂都推出了自己的桌面应用——清一色的浏览器套壳，真TM SB到极致了，于是，原本就喜欢绿色版的自己就变得更喜欢那些小而美的东西了。所以，debian&#43;xfce的组合也就慢慢固定下来了。
+由于一直做的是delphi开发，基本上被win锁死了，所以，很长一段时间里都是在用win，即便是双系统。
+做了十年的delphi，早已厌倦了那种因个人审美及习惯不同而导致的各种算不上是真需求的需求，所以越来越倾向于去做更关注逻辑的后端。还好，碰巧遇到了这么一个机会，于是就从delphi转go了，顺便也转为linux做主力了。
+其实，有了wsl&#43;git做主力的那段经历，完全转linux做主力并没有太多不适，真要说的话，主要还是那些消费级的应用不多（在信创大环境下，还是比以前好了不少，比如：微信、QQ、wps等），以及一些硬件的驱动麻烦些，但是那些生产级的应用真的是挺好的。
+不知不觉，使用linux做主力已经半年了，win10除了偶尔玩玩游戏外，几乎已经不用了，除非是需要使用个别只能在win上运行的应用。
+后话 中间也尝试过很短一段时间的free bsd，除了生态更小外，没明显感觉出与linux有太大不同。
+使用linux才真正感觉自己的电脑是自己的，虽然有时也会被玩坏点东西，但是网上查一下，照着敲几下命令，一般问题都能解决。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/os/bye_win10/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-10-20T21:13:08+08:00" />
+<meta property="article:modified_time" content="2025-10-20T21:13:08+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Bye~~ win10！"/>
+<meta name="twitter:description" content="一个消息 听说，win10停更了，第一反应是：哦，已经到时间了啊，停吧，反正也就玩游戏时会用用。
+事实上，这个消息如果是在半年前，第一反应肯定是这样：哎呀，太好了，SBbug10终于不会再自动更新了，再也不用担心这SB偷偷自动更新半天、然后更新失败再回滚半天，浪费时间、浪费精力、浪费生命！
+但是，不管是哪种情况，对于新的继任者——瘟尸疫（win11），打死我也不会用的，更不会买预装了瘟尸疫的电脑，实在迫不得已要在别人的瘟尸疫设备上操作，心里也是要多骂几句的。
+话再说回来，现在对待win10的态度能这么平淡，其实是因为已经使用linux做主力了，毕竟最近几年在win10上使个劲儿地折腾wsl和虚拟机，就是为了转linux做主力。
+转战场 其实，大概从2009年有第一台自己的电脑后不到一年，就开始接触linux了，第一次安装的发行版是wubi安装的ubuntu，再后来是物理分区装双系统；工作后5~6年，基本上都是在虚拟机里玩，ubuntu、centos、mint、debian等主流发行版都尝试过，gnome、kde、mate、xfce、cinnamon等主流的桌面环境也尝试过，不过也仅仅是尝试过而已；后来，bug10（win10）出了wsl，又玩起了wsl。
+有一阵子，python爆火，无意间发现同样的python程序在wsl和win10下的性能天差地别，对win的不满（之前主要集中在SB自动更新上）瞬间爆涨。
+后来学了git并做为主力工具后，linux的tab补全简直爱死了，于是wsl&#43;git就正式成为生产力工具了。
+再后来，固态硬盘开始大行其道，这本是件好事，但是无奈那些互联网大厂都推出了自己的桌面应用——清一色的浏览器套壳，真TM SB到极致了，于是，原本就喜欢绿色版的自己就变得更喜欢那些小而美的东西了。所以，debian&#43;xfce的组合也就慢慢固定下来了。
+由于一直做的是delphi开发，基本上被win锁死了，所以，很长一段时间里都是在用win，即便是双系统。
+做了十年的delphi，早已厌倦了那种因个人审美及习惯不同而导致的各种算不上是真需求的需求，所以越来越倾向于去做更关注逻辑的后端。还好，碰巧遇到了这么一个机会，于是就从delphi转go了，顺便也转为linux做主力了。
+其实，有了wsl&#43;git做主力的那段经历，完全转linux做主力并没有太多不适，真要说的话，主要还是那些消费级的应用不多（在信创大环境下，还是比以前好了不少，比如：微信、QQ、wps等），以及一些硬件的驱动麻烦些，但是那些生产级的应用真的是挺好的。
+不知不觉，使用linux做主力已经半年了，win10除了偶尔玩玩游戏外，几乎已经不用了，除非是需要使用个别只能在win上运行的应用。
+后话 中间也尝试过很短一段时间的free bsd，除了生态更小外，没明显感觉出与linux有太大不同。
+使用linux才真正感觉自己的电脑是自己的，虽然有时也会被玩坏点东西，但是网上查一下，照着敲几下命令，一般问题都能解决。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🖥️操作系统",
+      "item": "https://afrusrsc.github.io/posts/os/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Bye~~ win10！",
+      "item": "https://afrusrsc.github.io/posts/os/bye_win10/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Bye~~ win10！",
+  "name": "Bye~~ win10！",
+  "description": "一个消息 听说，win10停更了，第一反应是：哦，已经到时间了啊，停吧，反正也就玩游戏时会用用。\n事实上，这个消息如果是在半年前，第一反应肯定是这样：哎呀，太好了，SBbug10终于不会再自动更新了，再也不用担心这SB偷偷自动更新半天、然后更新失败再回滚半天，浪费时间、浪费精力、浪费生命！\n但是，不管是哪种情况，对于新的继任者——瘟尸疫（win11），打死我也不会用的，更不会买预装了瘟尸疫的电脑，实在迫不得已要在别人的瘟尸疫设备上操作，心里也是要多骂几句的。\n话再说回来，现在对待win10的态度能这么平淡，其实是因为已经使用linux做主力了，毕竟最近几年在win10上使个劲儿地折腾wsl和虚拟机，就是为了转linux做主力。\n转战场 其实，大概从2009年有第一台自己的电脑后不到一年，就开始接触linux了，第一次安装的发行版是wubi安装的ubuntu，再后来是物理分区装双系统；工作后5~6年，基本上都是在虚拟机里玩，ubuntu、centos、mint、debian等主流发行版都尝试过，gnome、kde、mate、xfce、cinnamon等主流的桌面环境也尝试过，不过也仅仅是尝试过而已；后来，bug10（win10）出了wsl，又玩起了wsl。\n有一阵子，python爆火，无意间发现同样的python程序在wsl和win10下的性能天差地别，对win的不满（之前主要集中在SB自动更新上）瞬间爆涨。\n后来学了git并做为主力工具后，linux的tab补全简直爱死了，于是wsl+git就正式成为生产力工具了。\n再后来，固态硬盘开始大行其道，这本是件好事，但是无奈那些互联网大厂都推出了自己的桌面应用——清一色的浏览器套壳，真TM SB到极致了，于是，原本就喜欢绿色版的自己就变得更喜欢那些小而美的东西了。所以，debian+xfce的组合也就慢慢固定下来了。\n由于一直做的是delphi开发，基本上被win锁死了，所以，很长一段时间里都是在用win，即便是双系统。\n做了十年的delphi，早已厌倦了那种因个人审美及习惯不同而导致的各种算不上是真需求的需求，所以越来越倾向于去做更关注逻辑的后端。还好，碰巧遇到了这么一个机会，于是就从delphi转go了，顺便也转为linux做主力了。\n其实，有了wsl+git做主力的那段经历，完全转linux做主力并没有太多不适，真要说的话，主要还是那些消费级的应用不多（在信创大环境下，还是比以前好了不少，比如：微信、QQ、wps等），以及一些硬件的驱动麻烦些，但是那些生产级的应用真的是挺好的。\n不知不觉，使用linux做主力已经半年了，win10除了偶尔玩玩游戏外，几乎已经不用了，除非是需要使用个别只能在win上运行的应用。\n后话 中间也尝试过很短一段时间的free bsd，除了生态更小外，没明显感觉出与linux有太大不同。\n使用linux才真正感觉自己的电脑是自己的，虽然有时也会被玩坏点东西，但是网上查一下，照着敲几下命令，一般问题都能解决。",
+  "keywords": [
+    "linux"
+  ],
+  "articleBody": "一个消息 听说，win10停更了，第一反应是：哦，已经到时间了啊，停吧，反正也就玩游戏时会用用。\n事实上，这个消息如果是在半年前，第一反应肯定是这样：哎呀，太好了，SBbug10终于不会再自动更新了，再也不用担心这SB偷偷自动更新半天、然后更新失败再回滚半天，浪费时间、浪费精力、浪费生命！\n但是，不管是哪种情况，对于新的继任者——瘟尸疫（win11），打死我也不会用的，更不会买预装了瘟尸疫的电脑，实在迫不得已要在别人的瘟尸疫设备上操作，心里也是要多骂几句的。\n话再说回来，现在对待win10的态度能这么平淡，其实是因为已经使用linux做主力了，毕竟最近几年在win10上使个劲儿地折腾wsl和虚拟机，就是为了转linux做主力。\n转战场 其实，大概从2009年有第一台自己的电脑后不到一年，就开始接触linux了，第一次安装的发行版是wubi安装的ubuntu，再后来是物理分区装双系统；工作后5~6年，基本上都是在虚拟机里玩，ubuntu、centos、mint、debian等主流发行版都尝试过，gnome、kde、mate、xfce、cinnamon等主流的桌面环境也尝试过，不过也仅仅是尝试过而已；后来，bug10（win10）出了wsl，又玩起了wsl。\n有一阵子，python爆火，无意间发现同样的python程序在wsl和win10下的性能天差地别，对win的不满（之前主要集中在SB自动更新上）瞬间爆涨。\n后来学了git并做为主力工具后，linux的tab补全简直爱死了，于是wsl+git就正式成为生产力工具了。\n再后来，固态硬盘开始大行其道，这本是件好事，但是无奈那些互联网大厂都推出了自己的桌面应用——清一色的浏览器套壳，真TM SB到极致了，于是，原本就喜欢绿色版的自己就变得更喜欢那些小而美的东西了。所以，debian+xfce的组合也就慢慢固定下来了。\n由于一直做的是delphi开发，基本上被win锁死了，所以，很长一段时间里都是在用win，即便是双系统。\n做了十年的delphi，早已厌倦了那种因个人审美及习惯不同而导致的各种算不上是真需求的需求，所以越来越倾向于去做更关注逻辑的后端。还好，碰巧遇到了这么一个机会，于是就从delphi转go了，顺便也转为linux做主力了。\n其实，有了wsl+git做主力的那段经历，完全转linux做主力并没有太多不适，真要说的话，主要还是那些消费级的应用不多（在信创大环境下，还是比以前好了不少，比如：微信、QQ、wps等），以及一些硬件的驱动麻烦些，但是那些生产级的应用真的是挺好的。\n不知不觉，使用linux做主力已经半年了，win10除了偶尔玩玩游戏外，几乎已经不用了，除非是需要使用个别只能在win上运行的应用。\n后话 中间也尝试过很短一段时间的free bsd，除了生态更小外，没明显感觉出与linux有太大不同。\n使用linux才真正感觉自己的电脑是自己的，虽然有时也会被玩坏点东西，但是网上查一下，照着敲几下命令，一般问题都能解决。\n",
+  "wordCount" : "19",
+  "inLanguage": "zh",
+  "datePublished": "2025-10-20T21:13:08+08:00",
+  "dateModified": "2025-10-20T21:13:08+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/os/bye_win10/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/os/">🖥️操作系统</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Bye~~ win10！
+    </h1>
+    <div class="post-meta"><span title='2025-10-20 21:13:08 +0800 CST'>2025-10-20 21:13:08</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e4%b8%80%e4%b8%aa%e6%b6%88%e6%81%af" aria-label="一个消息">一个消息</a></li>
+                    <li>
+                        <a href="#%e8%bd%ac%e6%88%98%e5%9c%ba" aria-label="转战场">转战场</a></li>
+                    <li>
+                        <a href="#%e5%90%8e%e8%af%9d" aria-label="后话">后话</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="一个消息">一个消息<a hidden class="anchor" aria-hidden="true" href="#一个消息">#</a></h1>
+<p>听说，<code>win10</code>停更了，第一反应是：哦，已经到时间了啊，停吧，反正也就玩游戏时会用用。</p>
+<p>事实上，这个消息如果是在半年前，第一反应肯定是这样：哎呀，太好了，SB<code>bug10</code>终于不会再自动更新了，再也不用担心这SB偷偷自动更新半天、然后更新失败再回滚半天，浪费时间、浪费精力、浪费生命！</p>
+<p>但是，不管是哪种情况，对于新的继任者——<code>瘟尸疫</code>（<code>win11</code>），打死我也不会用的，更不会买预装了<code>瘟尸疫</code>的电脑，实在迫不得已要在别人的<code>瘟尸疫</code>设备上操作，心里也是要多骂几句的。</p>
+<p>话再说回来，现在对待<code>win10</code>的态度能这么平淡，其实是因为已经使用<code>linux</code>做主力了，毕竟最近几年在<code>win10</code>上使个劲儿地折腾<code>wsl</code>和<code>虚拟机</code>，就是为了转<code>linux</code>做主力。</p>
+<h1 id="转战场">转战场<a hidden class="anchor" aria-hidden="true" href="#转战场">#</a></h1>
+<p>其实，大概从<code>2009年</code>有第一台自己的电脑后不到一年，就开始接触<code>linux</code>了，第一次安装的发行版是<code>wubi</code>安装的<code>ubuntu</code>，再后来是物理分区装双系统；工作后5~6年，基本上都是在虚拟机里玩，<code>ubuntu</code>、<code>centos</code>、<code>mint</code>、<code>debian</code>等主流发行版都尝试过，<code>gnome</code>、<code>kde</code>、<code>mate</code>、<code>xfce</code>、<code>cinnamon</code>等主流的桌面环境也尝试过，不过也仅仅是尝试过而已；后来，<code>bug10</code>（<code>win10</code>）出了<code>wsl</code>，又玩起了<code>wsl</code>。</p>
+<p>有一阵子，<code>python</code>爆火，无意间发现同样的<code>python</code>程序在<code>wsl</code>和<code>win10</code>下的性能天差地别，对<code>win</code>的不满（之前主要集中在<code>SB自动更新</code>上）瞬间爆涨。</p>
+<p>后来学了<code>git</code>并做为主力工具后，<code>linux</code>的<code>tab补全</code>简直爱死了，于是<code>wsl</code>+<code>git</code>就正式成为生产力工具了。</p>
+<p>再后来，固态硬盘开始大行其道，这本是件好事，但是无奈那些互联网大厂都推出了自己的桌面应用——清一色的浏览器套壳，真TM SB到极致了，于是，原本就喜欢绿色版的自己就变得更喜欢那些<code>小而美</code>的东西了。所以，<code>debian</code>+<code>xfce</code>的组合也就慢慢固定下来了。</p>
+<p>由于一直做的是<code>delphi</code>开发，基本上被<code>win</code>锁死了，所以，很长一段时间里都是在用<code>win</code>，即便是双系统。</p>
+<p>做了十年的<code>delphi</code>，早已厌倦了那种因个人审美及习惯不同而导致的各种算不上是真需求的需求，所以越来越倾向于去做更关注逻辑的后端。还好，碰巧遇到了这么一个机会，于是就从<code>delphi</code>转<code>go</code>了，顺便也转为<code>linux</code>做主力了。</p>
+<p>其实，有了<code>wsl</code>+<code>git</code>做主力的那段经历，完全转<code>linux</code>做主力并没有太多不适，真要说的话，主要还是那些消费级的应用不多（在信创大环境下，还是比以前好了不少，比如：<code>微信</code>、<code>QQ</code>、<code>wps</code>等），以及一些硬件的驱动麻烦些，但是那些生产级的应用真的是挺好的。</p>
+<p>不知不觉，使用<code>linux</code>做主力已经半年了，<code>win10</code>除了偶尔玩玩游戏外，几乎已经不用了，除非是需要使用个别只能在<code>win</code>上运行的应用。</p>
+<h1 id="后话">后话<a hidden class="anchor" aria-hidden="true" href="#后话">#</a></h1>
+<ul>
+<li>
+<p>中间也尝试过很短一段时间的<code>free bsd</code>，除了生态更小外，没明显感觉出与<code>linux</code>有太大不同。</p>
+</li>
+<li>
+<p>使用<code>linux</code>才真正感觉自己的电脑是自己的，虽然有时也会被玩坏点东西，但是网上查一下，照着敲几下命令，一般问题都能解决。</p>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/linux/">Linux</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/devops/docker_log_opt/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Docker容器日志配置</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/os/xfce4-pulseaudio-plugin_zh_cn_mo/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>关于xfce4-pulseaudio-plugin中文翻译的bug</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

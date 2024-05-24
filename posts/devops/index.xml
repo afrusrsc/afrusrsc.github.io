@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>🚢运维 on 慢步道人</title>
+    <link>https://afrusrsc.github.io/posts/devops/</link>
+    <description>Recent content in 🚢运维 on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sat, 01 Nov 2025 15:43:00 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/posts/devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker容器日志配置</title>
+      <link>https://afrusrsc.github.io/posts/devops/docker_log_opt/</link>
+      <pubDate>Sat, 01 Nov 2025 15:43:00 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/devops/docker_log_opt/</guid>
+      <description>事件 有一个任务需要把当前正在使用的镜像导出为离线包，在导出过程中发现速度特别慢，第一反应是CPU或内存被拉満了，top查看后是正常的，那问题可能出在磁盘上。
+服务器上暂时没有合适的查看磁盘I/O的工具，只好先看下容量：
+1 df -h 瞬间发现磁盘使用率达到了95%以上，铁定有问题了！
+1 du -h -d 1 / 发现/var目录巨大无比！
+1 du -h -t 10G /var 发现有几个/var/lib/docker/containers/xxxxxx的文件特别大，问了deepseek，得到的回答是：docker默认会将容器内应用产生的日志记录在json日志文件里，且默认没有大小限制！
+查了下容器的id，嗯，这下对上了，确实是日志的问题！那就限定下日志的大小即可。
+方案 全局配置 全局配置适用于所有之后新建的容器。
+修改/etc/docker/daemon.json，添加日志限制：
+1 2 3 4 5 6 7 { &amp;#34;log-driver&amp;#34;: &amp;#34;json-file&amp;#34;, &amp;#34;log-opts&amp;#34;: { &amp;#34;max-size&amp;#34;: &amp;#34;10m&amp;#34;, &amp;#34;max-file&amp;#34;: &amp;#34;5&amp;#34; } } 单容器配置 启动时通过参数直接限制：
+1 docker run --log-opt max-size=10m --log-opt max-file=5 ... docker-compose.yaml配置 使用docker compose时，可以在docker-compose.yaml里配置：
+1 2 3 4 5 6 7 8 services: your-service: image: your-image logging: driver: &amp;#34;json-file&amp;#34; options: max-size: &amp;#34;10m&amp;#34; max-file: &amp;#34;5&amp;#34; 也可以使用yaml锚点避免重复配置：</description>
+    </item>
+    <item>
+      <title>安装Docker</title>
+      <link>https://afrusrsc.github.io/posts/devops/docker_install/</link>
+      <pubDate>Wed, 21 May 2025 08:48:00 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/devops/docker_install/</guid>
+      <description>前言 做了十多年桌面开发，虽然也会写一些服务端的东西，但毕竟不是主力，而且体量和规模也是极小的，所以很少接触docker这类。云原生已经普及很久了，而且桌面开发的路也越来越窄，是时候转变下方向了。
+docker应该算是云原生的基石吧，但刚接触，光安装就够喝一壶了，多次尝试后终于成功，记录一下。
+安装 准备 linux环境，linux发行版或wsl都可以
+网络，有时候无法安装，仅仅是因为宽带运营商（此处点名批评下一动不动的移动）的不可知问题，换个网络即可
+安装Docker 直接下载官方安装脚本进行安装 1 2 curl -fsSL https://get.docker.com -o get-docker.sh sudo sh get-docker.sh 检查是否安装成功 1 docker -v 如果无权限则增加权限 1 sudo usermod -aG docker xxx 增加国内镜像源 执行以下命令
+1 sudo vi /etc/docker/daemon.json 添加类似以下内容，可添加其它已知可用的镜像源地址
+1 2 3 4 5 6 { &amp;#34;registry-mirrors&amp;#34;: [ &amp;#34;https://docker.1ms.run&amp;#34;, &amp;#34;https://docker.xuanyuan.me&amp;#34; ] } 基本使用 命令 功能 示例 docker images 列出本地存储的所有镜像 docker images docker pull 从仓库拉取镜像 docker pull ubuntu docker load -i 从tar文件导入镜像 docker load -i xx.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>🌏博客建站 on 慢步道人</title>
+    <link>https://afrusrsc.github.io/posts/blog/</link>
+    <description>Recent content in 🌏博客建站 on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Sun, 09 Jun 2024 21:58:00 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/posts/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>用Hugo搭建个人博客——显示目录</title>
+      <link>https://afrusrsc.github.io/posts/blog/hugo04/</link>
+      <pubDate>Sun, 09 Jun 2024 21:58:00 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/blog/hugo04/</guid>
+      <description>文章参考了Hugo博客目录放在侧边
+修改配置 文章较长时，能够显示可直接跳转的目录是极好的，PaperMod原生就支持目录，只需简单修改配置即可。
+在config.yml中，添加或修改params对应的配置为以下内容：
+1 2 3 params: ShowToc: true TocOpen: true 目录移至侧边 虽然PaperMod原生就有目录，但是却是在顶部，便捷性几乎为0，放在侧边就会方便许多。
+在项目目录layouts/partials下添加toc.html文件，内容如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 {{- $headers := findRE &amp;#34;&amp;lt;h[1-6].</description>
+    </item>
+    <item>
+      <title>用Hugo搭建个人博客——支持Mermaid</title>
+      <link>https://afrusrsc.github.io/posts/blog/hugo03/</link>
+      <pubDate>Sun, 09 Jun 2024 17:38:54 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/blog/hugo03/</guid>
+      <description> 文章参考了Hugo博客添加mermaid作图
+文章可以使用Mermaid添加流程图等，来增强信息传递效率和阅读体验，但PaperMod原生似乎并不支持（或者支持得不好？）Mermaid。
+修改方法 在项目目录layouts/shortcodes下添加mermaid.html，内容如下： 1 2 3 &amp;lt;div class=&amp;#34;mermaid&amp;#34; align=&amp;#34;center&amp;#34;&amp;gt; {{.Inner}} &amp;lt;/div&amp;gt; 复制主题目录themes/hugo-PaperMod/layouts/partials下的header.html到项目目录layouts/partials，然后在开头插入以下内容： 1 2 3 {{ if (.Params.mermaid) }} &amp;lt;script async src=&amp;#34;https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; {{ end }} 在archetypes/default.md或者对应的模板头里添加以下内容： 1 mermaid: true 使用方法 把Markdown的语法标识替换为用{{}}包换的&amp;lt;mermaid&amp;gt;和&amp;lt;/mermaid&amp;gt;标签（由于会直接被识别成shortcode进行解析，只能用语言描述），包括住实际的mermaid代码。
+graph LR a--&gt;b-.-&gt;c </description>
+    </item>
+    <item>
+      <title>用Hugo搭建个人博客——配置</title>
+      <link>https://afrusrsc.github.io/posts/blog/hugo02/</link>
+      <pubDate>Sat, 01 Jun 2024 20:45:01 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/blog/hugo02/</guid>
+      <description>空空如也的页面，需要好好配置一番才能丰富多彩。
+配置config.yml 隐性配置 在上一篇config.yml的基础上先加入以下内容：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 copyright: &amp;#34;© 20xx [xxx](https://github.com/xxx)&amp;#34; # 版权说明 paginate: 5 # 每页文章数 enableInlineShortcodes: true # 是否使用短码 enableRobotsTXT: true # 是否允许被搜索引擎收录 buildDrafts: false buildFuture: false buildExpired: false enableEmoji: true # 是否使用emoji表情 pygmentsUseClasses: true mainsections: [&amp;#34;posts&amp;#34;, &amp;#34;papermod&amp;#34;] minify: disableXML: true outputs: home: - HTML - RSS - JSON markup: goldmark: renderer: unsafe: true highlight: noClasses: false codeFences: true guessSyntax: true lineNos: true services: instagram: disableInlineCSS: true twitter: disableInlineCSS: true params: env: production description: &amp;#34;xxx&amp;#39;s blog&amp;#34; author: xxx # 作者 defaultTheme: auto ShowShareButtons: false # 是否显示分享按钮 ShowReadingTime: true # 是否显示阅读时间 displayFullLangName: true ShowPostNavLinks: true # 是否显示上一页下一页 ShowBreadCrumbs: true ShowCodeCopyButtons: true # 是否在代码上显示复制按钮 ShowRssButtonInSectionTermList: false ShowAllPagesInArchive: true ShowPageNums: true # 是否显示页数 ShowToc: false # 是否显示目录 DateFormat: &amp;#34;2006-01-02 15:04:05&amp;#34; # 时间格式 socialIcons: - name: github title: View Source on Github url: &amp;#34;https://github.</description>
+    </item>
+    <item>
+      <title>用Hugo搭建个人博客——准备</title>
+      <link>https://afrusrsc.github.io/posts/blog/hugo01/</link>
+      <pubDate>Sun, 26 May 2024 17:10:12 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/blog/hugo01/</guid>
+      <description>方案制定 使用hugo（笔者使用的是v0.126.1）进行构建
+使用PaperMod主题，前言提到的基本需求都能满足
+因为hugo是命令行工具，所以使用Linux系统或Win10+的wsl比较方便
+使用Github Pages，服务器和域名问题就一并解决了，不过代价就是访问速度一言难尽。
+使用两个仓库，一个公开仓库用于部署页面，一个私有仓库用于管理源码（内容）
+工具准备 安装Git 用于源码（内容、配置）管理，也用于向Githug仓库进行推送。Git的安装、配置请自行解决。
+安装hugo 打开hugo的下载地址（自行解决科学上网），注意正确选择对应自己操作系统和架构的版本。由于使用的是PaperMod主题，基础版就够了。当然，下载扩展版也没问题，只是听说好像需要go环境，没有验证过。
+下载之后解压，只需要一个可执行的hugo即可。
+1 tar -xzf hugo_0.126.1_linux-amd64.tar.gz # 适用于linux系统amd64架构的不带扩展的0.126.1版hugo 为了方便使用，可以把hugo放到一个已有的默认搜索路径中，也可以把hugo所在的路径加入环境变量。
+在Linux环境下，运行hugo completion -h查看如何为hugo添加自动完成功能。
+仓库准备 Github 无Github账号的，自行申请一个。
+目标仓库 目标仓库即将来用于部署页面的仓库，新建名为xxx.github.io的仓库（xxx为用户名），仓库更新后会自动部署，直接访问https://xxx.github.io即可。如果想部署第二或更多的仓库，那就只能新建普通仓库，手动开启Github Pages，通过https://xxx.github.io/yyy（xxx为用户名，yyy为仓库名）访问。
+源码仓库 源码仓库即将来用于管理*.md的仓库，新建一个普通私有仓库即可，例如名为blog-src。
+本地仓库 克隆源码仓库 1 2 git clone https://github.com/xxx/blog-src.git cd blog-src # 切到仓库根目录，无特殊说明时，所有命令都在该目录下执行 添加.gitignore 1 2 echo &amp;#39;public/&amp;#39; &amp;gt; .gitignore echo &amp;#39;.hugo_build.lock&amp;#39; &amp;gt;&amp;gt; .gitignore 克隆目标仓库 1 2 mkdir public git clone git@github.com:xxx/xxx.github.io.git public 添加部署脚本 新建文本文件pushpage.sh，并赋予执行权限，然后写入以下内容
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!</description>
+    </item>
+    <item>
+      <title>用Hugo搭建个人博客——前言</title>
+      <link>https://afrusrsc.github.io/posts/blog/hugo00/</link>
+      <pubDate>Sun, 26 May 2024 15:30:12 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/blog/hugo00/</guid>
+      <description>全是废话 注意：本篇全是废话，无任何技术性内容！
+忆往昔 想当年，能有个属于自己的博客或网站，那是件很有面儿的事，可惜那时的自己是个纯纯的小白，只有眼馋的份儿。
+后来，在某些门户网站提供的博客功能里写那么些仨瓜俩枣的，也算是过把小瘾。
+再后来，自己写的东西慢慢开始有了些含金量，碰巧那阵子的门户网站也陆陆续续开始关停博客功能，无奈也就随之辗转迁移，几番下来，丢了不少东西。
+想过自己建站，不过那些前端、后端、域名之类的，搞得头大，再加上囊中羞涩，还是罢了。
+期间，了解到Markdown，简单明了，一下子就喜欢上了这种格式，随后也逐渐迁移到了几个相对靠谱并且支持Markdown的平台上。
+慢慢的，发现这些平台，不是河蟹就是死板，写起文章来束手束脚，难受得不能行。
+无意间发现，Github或Gitee对Markdown的渲染还是不错的，直接在git里写Markdown，效果有了，还不拘束，而且东西还掌握在自己手里，完美！
+看今朝 如今，随着写的东西越来越多，GitXX+Markdown的不足也慢慢暴露出来：刀耕火种不够灵活。于是，建站的想法又冒出来了，兜兜转转又盯上hugo+Githug Pages了。
+其实，当初选择GitXX+Markdown方案前，已经考虑过hugo+GitXX Pages了，不过当时没有选到合适的主题，再加上Github感人的访问速度和Gitee感人的存储空间，以及没有合适的图床，一直都是备用方案。
+如今再次盯上hugo+Githug Pages，仔细试了几个主题，最后发现如今的PaperMod还是挺符合个人需求的。
+简洁、轻量
+支持暗黑模式
+中文支持比较好
+移动端适配良好
+缺点嘛，自然也是有的，不过目前还能接受。
+望未来 暂时是决定用hugo+Githug Pages方案的，未来会不会再变，等未来再说吧。
+至于以前写的文章，看情况吧，可能会部分迁移过来，也可能全部备份完就罢了，写文章嘛，是个舒爽的活，不能给自己设限。</description>
+    </item>
+  </channel>
+</rss>

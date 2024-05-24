@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Vscode on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/vscode/</link>
+    <description>Recent content in Vscode on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Thu, 10 Aug 2023 22:12:02 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/vscode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VSCode基本使用</title>
+      <link>https://afrusrsc.github.io/posts/other/vscode/</link>
+      <pubDate>Thu, 10 Aug 2023 22:12:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/other/vscode/</guid>
+      <description>从其它平台迁移而来
+个性配置 纯文本复制 设置-&amp;gt;搜索copy-&amp;gt;取消Editor:Copy With Syntax Highlighting前的勾
+列分隔线 设置-&amp;gt;搜索rulers-&amp;gt;点Editor:Rulers项下的在settings.json中编辑-&amp;gt;如下填入分隔线位置（可设置多个，多个值之间用,隔开）
+1 2 3 &amp;#34;editor.rulers&amp;#34;: [ 80, 120 ], 显示空格 设置-&amp;gt;搜索whitespace-&amp;gt;找到Editor:Render Whitespace-&amp;gt;选择all
+自动换行 设置-&amp;gt;搜索word-&amp;gt;找到Editor:Word Wrap-&amp;gt;选择on
+使用技巧 列模式 ALT+鼠标左击：选择不连续的列进行列编辑，列可不对齐
+ALT+鼠标拖动：选择连续的列进行列编辑，列会对齐</description>
+    </item>
+    <item>
+      <title>Windows &#43; VS Code搭建 Go 开发环境</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_vscod/</link>
+      <pubDate>Sat, 15 Jun 2019 18:35:12 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_vscod/</guid>
+      <description>从其它平台迁移而来
+想学golang也就是Go语言由来已久，但苦于不像Delphi、C#这等有现成的IDE，第一步就卡壳了。所幸网上资源丰富，在尝试后终于把环境搭起来了，在此做个记录以备忘。
+安装 Git 安装Go Tools时需要用到。而且，搞开发不用Git？图样图森破！
+Git 官网（Git for windows 国内镜像），安装略。若已安装WSL则可直接使用WSL里的Git。
+安装 golang 由于众所周知的原因，Go的官网并不总是能访问，其实在国内是有一个官方镜像的。下载安装什么的就略过了。
+环境变量 安装好之后在命令行里运行go env即可查看Go环境变量。
+GOROOT：就是Go的安装目录，如C:\Go。
+GOPATH：Go的工程目录，不能是Go的安装目录，可以有多个目录，多个目录之间用;分隔，且下面安装的Go Tools会安装在第一个目录。如：C:\Users\Administrator\go。
+安装 VS Code 下载VS Code，并安装，没什么好说的。
+安装配置中文：打开VS Code，按Ctrl+Shift+P，输入display，选择Configure Display Language回车，选择zh-cn回车，若无则选择Install additional languages...回车，在左侧选择中文安装，安装完之后根据提示重启。
+按Ctrl+Shift+X搜索Go，安装微软的Go插件。
+关闭VS Code。
+安装 Go Tools 旧方案 主要是完全由VS Code来下载速度会异常感人。
+打开命令行依次执行以下语句 1 2 3 4 ::下载tools git clone https://github.com/golang/tools.git %GOPATH%\src\golang.org\x\tools ::下载lint git clone https://github.com/golang/lint.git %GOPATH%\src\golang.org\x\lint 待全部下载完之后，打开VS Code。
+Ctrl+N新建一个文档，选择语言模式为Go，会有Analysis Tools Missing的提示，点Install坐等完成（共11个），安装完成之后查看是否全部成功，最后重启VS Code。
+重启后在刚才新建的文档里写上go代码并保存，按F5调试，验证效果。
+自备梯子后，可直接运行以下批处理进行Go Tools的安装。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 ::代码补全 go get -v github.</description>
+    </item>
+  </channel>
+</rss>

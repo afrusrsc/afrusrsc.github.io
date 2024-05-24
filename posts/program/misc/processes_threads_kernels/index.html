@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>多线程、多进程、多核 | 慢步道人</title>
+<meta name="keywords" content="多线程">
+<meta name="description" content="从其它平台迁移而来
+前言 线程、进程的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。
+碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。
+鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！
+CPU 其实，CPU是个很笨的家伙，笨到只会做最简单的事，而且一次还只能做一件最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！
+CPU仅会做的那几件事呢，就叫做CPU指令。
+虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？快！准！
+时间片 虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行排列组合来完成。所以啊，CPU一点儿也不怕麻烦。
+由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是操作系统（更准确的说是分时操作系统），也叫OS。
+OS规定CPU做一件事只能用一小段时间（这一小段时间就叫时间片），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。
+由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。
+进程&amp;线程 不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个进程，一个小任务就是一个线程。
+把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。
+单线程&amp;多线程 一个大任务只有一个小任务，那这个大任务就叫做单线程，否则就叫多线程。
+举个栗子：
+小明在唱歌，而且在唱歌是其它的事都不做。这就是单线程。
+小明一边唱歌，一边跳舞。这就是多线程。
+小明一边唱歌，一边吃饭。这也是多线程，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是线程同步。
+多进程 直接举栗子：
+小明自己放风筝。这就是单进程。
+小明和小红都在放自己的风筝。这是一种多进程，只不过两个进程是独立的。
+小明和小红一起放大蜈蚣风筝。这是另一种多进程，进程之间需要配合，也存在类似多线程的麻烦。这方面的问题没有详细了解过，就不多扯了。
+多线程&amp;多进程 再次举栗子：
+小明一边唱歌，一边跳舞。这是多线程，用的都是小明的身体（资源）。
+小明唱歌，小红跳舞。这是多进程，各自用各自的身体（资源）。
+小明和小红合唱。这也是多进程，各自用各自的身体（资源）。
+多核 单核、多核是针对CPU来说的。
+继续举栗子说明：
+普通人。单核。
+哪吒。多核。
+如有不对之处，还望大侠指正！">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="多线程、多进程、多核" />
+<meta property="og:description" content="从其它平台迁移而来
+前言 线程、进程的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。
+碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。
+鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！
+CPU 其实，CPU是个很笨的家伙，笨到只会做最简单的事，而且一次还只能做一件最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！
+CPU仅会做的那几件事呢，就叫做CPU指令。
+虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？快！准！
+时间片 虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行排列组合来完成。所以啊，CPU一点儿也不怕麻烦。
+由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是操作系统（更准确的说是分时操作系统），也叫OS。
+OS规定CPU做一件事只能用一小段时间（这一小段时间就叫时间片），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。
+由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。
+进程&amp;线程 不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个进程，一个小任务就是一个线程。
+把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。
+单线程&amp;多线程 一个大任务只有一个小任务，那这个大任务就叫做单线程，否则就叫多线程。
+举个栗子：
+小明在唱歌，而且在唱歌是其它的事都不做。这就是单线程。
+小明一边唱歌，一边跳舞。这就是多线程。
+小明一边唱歌，一边吃饭。这也是多线程，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是线程同步。
+多进程 直接举栗子：
+小明自己放风筝。这就是单进程。
+小明和小红都在放自己的风筝。这是一种多进程，只不过两个进程是独立的。
+小明和小红一起放大蜈蚣风筝。这是另一种多进程，进程之间需要配合，也存在类似多线程的麻烦。这方面的问题没有详细了解过，就不多扯了。
+多线程&amp;多进程 再次举栗子：
+小明一边唱歌，一边跳舞。这是多线程，用的都是小明的身体（资源）。
+小明唱歌，小红跳舞。这是多进程，各自用各自的身体（资源）。
+小明和小红合唱。这也是多进程，各自用各自的身体（资源）。
+多核 单核、多核是针对CPU来说的。
+继续举栗子说明：
+普通人。单核。
+哪吒。多核。
+如有不对之处，还望大侠指正！" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-04-13T22:53:06+08:00" />
+<meta property="article:modified_time" content="2018-04-13T22:53:06+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="多线程、多进程、多核"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+前言 线程、进程的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。
+碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。
+鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！
+CPU 其实，CPU是个很笨的家伙，笨到只会做最简单的事，而且一次还只能做一件最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！
+CPU仅会做的那几件事呢，就叫做CPU指令。
+虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？快！准！
+时间片 虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行排列组合来完成。所以啊，CPU一点儿也不怕麻烦。
+由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是操作系统（更准确的说是分时操作系统），也叫OS。
+OS规定CPU做一件事只能用一小段时间（这一小段时间就叫时间片），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。
+由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。
+进程&amp;线程 不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个进程，一个小任务就是一个线程。
+把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。
+单线程&amp;多线程 一个大任务只有一个小任务，那这个大任务就叫做单线程，否则就叫多线程。
+举个栗子：
+小明在唱歌，而且在唱歌是其它的事都不做。这就是单线程。
+小明一边唱歌，一边跳舞。这就是多线程。
+小明一边唱歌，一边吃饭。这也是多线程，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是线程同步。
+多进程 直接举栗子：
+小明自己放风筝。这就是单进程。
+小明和小红都在放自己的风筝。这是一种多进程，只不过两个进程是独立的。
+小明和小红一起放大蜈蚣风筝。这是另一种多进程，进程之间需要配合，也存在类似多线程的麻烦。这方面的问题没有详细了解过，就不多扯了。
+多线程&amp;多进程 再次举栗子：
+小明一边唱歌，一边跳舞。这是多线程，用的都是小明的身体（资源）。
+小明唱歌，小红跳舞。这是多进程，各自用各自的身体（资源）。
+小明和小红合唱。这也是多进程，各自用各自的身体（资源）。
+多核 单核、多核是针对CPU来说的。
+继续举栗子说明：
+普通人。单核。
+哪吒。多核。
+如有不对之处，还望大侠指正！"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "🧺杂项",
+      "item": "https://afrusrsc.github.io/posts/program/misc/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "多线程、多进程、多核",
+      "item": "https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "多线程、多进程、多核",
+  "name": "多线程、多进程、多核",
+  "description": "从其它平台迁移而来\n前言 线程、进程的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。\n碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。\n鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！\nCPU 其实，CPU是个很笨的家伙，笨到只会做最简单的事，而且一次还只能做一件最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！\nCPU仅会做的那几件事呢，就叫做CPU指令。\n虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？快！准！\n时间片 虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行排列组合来完成。所以啊，CPU一点儿也不怕麻烦。\n由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是操作系统（更准确的说是分时操作系统），也叫OS。\nOS规定CPU做一件事只能用一小段时间（这一小段时间就叫时间片），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。\n由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。\n进程\u0026amp;线程 不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个进程，一个小任务就是一个线程。\n把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。\n单线程\u0026amp;多线程 一个大任务只有一个小任务，那这个大任务就叫做单线程，否则就叫多线程。\n举个栗子：\n小明在唱歌，而且在唱歌是其它的事都不做。这就是单线程。\n小明一边唱歌，一边跳舞。这就是多线程。\n小明一边唱歌，一边吃饭。这也是多线程，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是线程同步。\n多进程 直接举栗子：\n小明自己放风筝。这就是单进程。\n小明和小红都在放自己的风筝。这是一种多进程，只不过两个进程是独立的。\n小明和小红一起放大蜈蚣风筝。这是另一种多进程，进程之间需要配合，也存在类似多线程的麻烦。这方面的问题没有详细了解过，就不多扯了。\n多线程\u0026amp;多进程 再次举栗子：\n小明一边唱歌，一边跳舞。这是多线程，用的都是小明的身体（资源）。\n小明唱歌，小红跳舞。这是多进程，各自用各自的身体（资源）。\n小明和小红合唱。这也是多进程，各自用各自的身体（资源）。\n多核 单核、多核是针对CPU来说的。\n继续举栗子说明：\n普通人。单核。\n哪吒。多核。\n如有不对之处，还望大侠指正！",
+  "keywords": [
+    "多线程"
+  ],
+  "articleBody": " 从其它平台迁移而来\n前言 线程、进程的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。\n碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。\n鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！\nCPU 其实，CPU是个很笨的家伙，笨到只会做最简单的事，而且一次还只能做一件最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！\nCPU仅会做的那几件事呢，就叫做CPU指令。\n虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？快！准！\n时间片 虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行排列组合来完成。所以啊，CPU一点儿也不怕麻烦。\n由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是操作系统（更准确的说是分时操作系统），也叫OS。\nOS规定CPU做一件事只能用一小段时间（这一小段时间就叫时间片），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。\n由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。\n进程\u0026线程 不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个进程，一个小任务就是一个线程。\n把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。\n单线程\u0026多线程 一个大任务只有一个小任务，那这个大任务就叫做单线程，否则就叫多线程。\n举个栗子：\n小明在唱歌，而且在唱歌是其它的事都不做。这就是单线程。\n小明一边唱歌，一边跳舞。这就是多线程。\n小明一边唱歌，一边吃饭。这也是多线程，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是线程同步。\n多进程 直接举栗子：\n小明自己放风筝。这就是单进程。\n小明和小红都在放自己的风筝。这是一种多进程，只不过两个进程是独立的。\n小明和小红一起放大蜈蚣风筝。这是另一种多进程，进程之间需要配合，也存在类似多线程的麻烦。这方面的问题没有详细了解过，就不多扯了。\n多线程\u0026多进程 再次举栗子：\n小明一边唱歌，一边跳舞。这是多线程，用的都是小明的身体（资源）。\n小明唱歌，小红跳舞。这是多进程，各自用各自的身体（资源）。\n小明和小红合唱。这也是多进程，各自用各自的身体（资源）。\n多核 单核、多核是针对CPU来说的。\n继续举栗子说明：\n普通人。单核。\n哪吒。多核。\n如有不对之处，还望大侠指正！\n",
+  "wordCount" : "39",
+  "inLanguage": "zh",
+  "datePublished": "2018-04-13T22:53:06+08:00",
+  "dateModified": "2018-04-13T22:53:06+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/misc/">🧺杂项</a></div>
+    <h1 class="post-title entry-hint-parent">
+      多线程、多进程、多核
+    </h1>
+    <div class="post-meta"><span title='2018-04-13 22:53:06 +0800 CST'>2018-04-13 22:53:06</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                    <li>
+                        <a href="#cpu" aria-label="CPU">CPU</a></li>
+                    <li>
+                        <a href="#%e6%97%b6%e9%97%b4%e7%89%87" aria-label="时间片">时间片</a></li>
+                    <li>
+                        <a href="#%e8%bf%9b%e7%a8%8b%e7%ba%bf%e7%a8%8b" aria-label="进程&amp;amp;线程">进程&amp;线程</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%8d%95%e7%ba%bf%e7%a8%8b%e5%a4%9a%e7%ba%bf%e7%a8%8b" aria-label="单线程&amp;amp;多线程">单线程&amp;多线程</a></li>
+                    <li>
+                        <a href="#%e5%a4%9a%e8%bf%9b%e7%a8%8b" aria-label="多进程">多进程</a></li>
+                    <li>
+                        <a href="#%e5%a4%9a%e7%ba%bf%e7%a8%8b%e5%a4%9a%e8%bf%9b%e7%a8%8b" aria-label="多线程&amp;amp;多进程">多线程&amp;多进程</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e5%a4%9a%e6%a0%b8" aria-label="多核">多核</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p><code>线程</code>、<code>进程</code>的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。</p>
+<p>碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。</p>
+<p>鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！</p>
+<h1 id="cpu">CPU<a hidden class="anchor" aria-hidden="true" href="#cpu">#</a></h1>
+<p>其实，<code>CPU</code>是个很笨的家伙，笨到只会做<strong>最简单</strong>的事，而且一次还<strong>只能做一件</strong>最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！</p>
+<p>CPU仅会做的那几件事呢，就叫做<code>CPU指令</code>。</p>
+<p>虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？<strong>快</strong>！<strong>准</strong>！</p>
+<h1 id="时间片">时间片<a hidden class="anchor" aria-hidden="true" href="#时间片">#</a></h1>
+<p>虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行<strong>排列组合</strong>来完成。所以啊，CPU一点儿也不怕麻烦。</p>
+<p>由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是<strong>操作系统（更准确的说是分时操作系统）</strong>，也叫<strong>OS</strong>。</p>
+<p>OS规定CPU做一件事只能用一小段时间（这一小段时间就叫<a href="https://baike.baidu.com/item/%E6%97%B6%E9%97%B4%E7%89%87"><strong>时间片</strong></a>），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。</p>
+<p>由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。</p>
+<h1 id="进程线程">进程&amp;线程<a hidden class="anchor" aria-hidden="true" href="#进程线程">#</a></h1>
+<p>不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个<a href="https://baike.baidu.com/item/%E8%BF%9B%E7%A8%8B/382503"><strong>进程</strong></a>，一个小任务就是一个<a href="https://baike.baidu.com/item/%E7%BA%BF%E7%A8%8B/103101"><strong>线程</strong></a>。</p>
+<p>把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。</p>
+<h2 id="单线程多线程">单线程&amp;多线程<a hidden class="anchor" aria-hidden="true" href="#单线程多线程">#</a></h2>
+<p>一个大任务只有一个小任务，那这个大任务就叫做<a href="https://baike.baidu.com/item/%E5%8D%95%E7%BA%BF%E7%A8%8B"><strong>单线程</strong></a>，否则就叫<a href="https://baike.baidu.com/item/%E5%A4%9A%E7%BA%BF%E7%A8%8B"><strong>多线程</strong></a>。</p>
+<p>举个栗子：</p>
+<ul>
+<li>
+<p>小明在唱歌，而且在唱歌是其它的事都不做。这就是<strong>单线程</strong>。</p>
+</li>
+<li>
+<p>小明一边唱歌，一边跳舞。这就是<strong>多线程</strong>。</p>
+</li>
+<li>
+<p>小明一边唱歌，一边吃饭。这也是<strong>多线程</strong>，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是<a href="https://baike.baidu.com/item/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5"><strong>线程同步</strong></a>。</p>
+</li>
+</ul>
+<h2 id="多进程">多进程<a hidden class="anchor" aria-hidden="true" href="#多进程">#</a></h2>
+<p>直接举栗子：</p>
+<ul>
+<li>
+<p>小明自己放风筝。这就是<strong>单进程</strong>。</p>
+</li>
+<li>
+<p>小明和小红都在放自己的风筝。这是一种<strong>多进程</strong>，只不过两个进程是独立的。</p>
+</li>
+<li>
+<p>小明和小红一起放大蜈蚣风筝。这是另一种<strong>多进程</strong>，进程之间需要配合，也存在类似<code>多线程</code>的麻烦。这方面的问题没有详细了解过，就不多扯了。</p>
+</li>
+</ul>
+<h2 id="多线程多进程">多线程&amp;多进程<a hidden class="anchor" aria-hidden="true" href="#多线程多进程">#</a></h2>
+<p>再次举栗子：</p>
+<ul>
+<li>
+<p>小明一边唱歌，一边跳舞。这是<strong>多线程</strong>，用的都是小明的身体（资源）。</p>
+</li>
+<li>
+<p>小明唱歌，小红跳舞。这是<strong>多进程</strong>，各自用各自的身体（资源）。</p>
+</li>
+<li>
+<p>小明和小红合唱。这也是<strong>多进程</strong>，各自用各自的身体（资源）。</p>
+</li>
+</ul>
+<h1 id="多核">多核<a hidden class="anchor" aria-hidden="true" href="#多核">#</a></h1>
+<p>单核、多核是针对CPU来说的。</p>
+<p>继续举栗子说明：</p>
+<ul>
+<li>
+<p>普通人。<strong>单核</strong>。</p>
+</li>
+<li>
+<p>哪吒。<strong>多核</strong>。</p>
+</li>
+</ul>
+<p><strong>如有不对之处，还望大侠指正！</strong></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/pascal/delphi_version/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Delphi版本号对照表</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/misc/file_type/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>简单确定文件格式</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

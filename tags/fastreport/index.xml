@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>FastReport on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/fastreport/</link>
+    <description>Recent content in FastReport on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 31 Aug 2022 23:40:11 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/fastreport/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>*.frf报表中字段计算的坑</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/fastreport_frf_calc/</link>
+      <pubDate>Wed, 31 Aug 2022 23:40:11 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/fastreport_frf_calc/</guid>
+      <description>从其它平台迁移而来
+老坑 *.frf是FastReport 2.x的报表模板，现维护的老项目中有使用到该报表。
+问题描述 报表通过数据集DS和报表变量V1、V2、V3等获取数据，并在模板中进行展示。
+单独展示数据集中的某个字段：[DS.&amp;quot;D1&amp;quot;]
+展示数据集中的某两个字段的运算结果：[[DS.&amp;quot;D1&amp;quot;]+[DS.&amp;quot;D2&amp;quot;]]
+单独展示某个变量：[V1]
+展示数据集中的某个字段与变量的运算结果：[[DS.&amp;quot;D1&amp;quot;]+[V2]]
+以上都是没有问题的，但当需要展示两个变量的运算结果时就不行了，[V1]+[V2]实际展示的是两个变量的字符串连接，因为报表变量本来就是字符串。查看模板其它写法，发现有使用尖括号&amp;lt;&amp;gt;的，尝试后也不行，[V1]+&amp;lt;V2&amp;gt;实际展示的只有V2的值。
+由于报表变量本身就是字符串，想着通过数据类型转换来解决，但非常遗憾，报表没有提供把字符串转为数值的函数。
+实在不行就只能考虑在代码中计算完之后再赋值给报表变量了，但这样就牺牲了报表的灵活性了，乃是没有办法的最后的办法了。
+最后灵光一现，既然数据集字段与变量可以运算，那加个0是不是也可以运算？一试果然可行！
+结果 展示某两个变量的运算结果：[0+[V1]+[V2]-[V3]] 问题解决了，不过总感觉是个偏方，不晓得正统的解决方案是什么。
+不过话说回来，FastReport 2.x已经很古老了，除了老项目维护基本不可能会用到，因为现在连FastReport 3+用得都很少了，毕竟现在已经是什么乱七八糟的牛鬼蛇神都有的元宇宙时代了，能解决问题就好。</description>
+    </item>
+  </channel>
+</rss>

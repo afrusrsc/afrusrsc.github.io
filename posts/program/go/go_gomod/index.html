@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>使用gomod | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="从其它平台迁移而来
+初学Go时，用的都是GOPATH模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。
+还好有GO MOD模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。
+准备 golang v1.11&#43; 据说要使用GO MOD模式，必须要使用v1.11以上的版本（这里是直接用最新的v1.15.3）。
+IDE 好用的果然还是JB家的Goland，不过吾等P民囊中羞涩，还是果断VS Code&#43;插件。
+代理 由于众所周知的原因，我们需要准备好代理，代理的使用略。
+GO MOD 打开命令行
+在GOPATH之外任意新建一个空测试目录，并cd进去
+执行命令go mod init XXX（XXX为项目名），会生成一个go.mod文件，内容如下：
+1 2 3 module gmtest go 1.15 以使用GoFrame为例， 修改go.mod加上gf 1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/go latest latest表示使用最新版本。
+编写Go代码 1 2 3 4 5 6 7 8 9 10 11 package main import ( &#34;fmt&#34; &#34;github.com/gogf/gf&#34; ) func main() { fmt.Println(&#34;Hello GF&#34;, gf.VERSION) } 执行go run main.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_gomod/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_gomod/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="使用gomod" />
+<meta property="og:description" content="从其它平台迁移而来
+初学Go时，用的都是GOPATH模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。
+还好有GO MOD模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。
+准备 golang v1.11&#43; 据说要使用GO MOD模式，必须要使用v1.11以上的版本（这里是直接用最新的v1.15.3）。
+IDE 好用的果然还是JB家的Goland，不过吾等P民囊中羞涩，还是果断VS Code&#43;插件。
+代理 由于众所周知的原因，我们需要准备好代理，代理的使用略。
+GO MOD 打开命令行
+在GOPATH之外任意新建一个空测试目录，并cd进去
+执行命令go mod init XXX（XXX为项目名），会生成一个go.mod文件，内容如下：
+1 2 3 module gmtest go 1.15 以使用GoFrame为例， 修改go.mod加上gf 1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/go latest latest表示使用最新版本。
+编写Go代码 1 2 3 4 5 6 7 8 9 10 11 package main import ( &#34;fmt&#34; &#34;github.com/gogf/gf&#34; ) func main() { fmt.Println(&#34;Hello GF&#34;, gf.VERSION) } 执行go run main." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_gomod/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-10-26T23:08:47+08:00" />
+<meta property="article:modified_time" content="2020-10-26T23:08:47+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用gomod"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+初学Go时，用的都是GOPATH模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。
+还好有GO MOD模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。
+准备 golang v1.11&#43; 据说要使用GO MOD模式，必须要使用v1.11以上的版本（这里是直接用最新的v1.15.3）。
+IDE 好用的果然还是JB家的Goland，不过吾等P民囊中羞涩，还是果断VS Code&#43;插件。
+代理 由于众所周知的原因，我们需要准备好代理，代理的使用略。
+GO MOD 打开命令行
+在GOPATH之外任意新建一个空测试目录，并cd进去
+执行命令go mod init XXX（XXX为项目名），会生成一个go.mod文件，内容如下：
+1 2 3 module gmtest go 1.15 以使用GoFrame为例， 修改go.mod加上gf 1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/go latest latest表示使用最新版本。
+编写Go代码 1 2 3 4 5 6 7 8 9 10 11 package main import ( &#34;fmt&#34; &#34;github.com/gogf/gf&#34; ) func main() { fmt.Println(&#34;Hello GF&#34;, gf.VERSION) } 执行go run main."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "使用gomod",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_gomod/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用gomod",
+  "name": "使用gomod",
+  "description": "从其它平台迁移而来\n初学Go时，用的都是GOPATH模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。\n还好有GO MOD模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。\n准备 golang v1.11+ 据说要使用GO MOD模式，必须要使用v1.11以上的版本（这里是直接用最新的v1.15.3）。\nIDE 好用的果然还是JB家的Goland，不过吾等P民囊中羞涩，还是果断VS Code+插件。\n代理 由于众所周知的原因，我们需要准备好代理，代理的使用略。\nGO MOD 打开命令行\n在GOPATH之外任意新建一个空测试目录，并cd进去\n执行命令go mod init XXX（XXX为项目名），会生成一个go.mod文件，内容如下：\n1 2 3 module gmtest go 1.15 以使用GoFrame为例， 修改go.mod加上gf 1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/go latest latest表示使用最新版本。\n编写Go代码 1 2 3 4 5 6 7 8 9 10 11 package main import ( \u0026#34;fmt\u0026#34; \u0026#34;github.com/gogf/gf\u0026#34; ) func main() { fmt.Println(\u0026#34;Hello GF\u0026#34;, gf.VERSION) } 执行go run main.",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": " 从其它平台迁移而来\n初学Go时，用的都是GOPATH模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。\n还好有GO MOD模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。\n准备 golang v1.11+ 据说要使用GO MOD模式，必须要使用v1.11以上的版本（这里是直接用最新的v1.15.3）。\nIDE 好用的果然还是JB家的Goland，不过吾等P民囊中羞涩，还是果断VS Code+插件。\n代理 由于众所周知的原因，我们需要准备好代理，代理的使用略。\nGO MOD 打开命令行\n在GOPATH之外任意新建一个空测试目录，并cd进去\n执行命令go mod init XXX（XXX为项目名），会生成一个go.mod文件，内容如下：\n1 2 3 module gmtest go 1.15 以使用GoFrame为例， 修改go.mod加上gf 1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/go latest latest表示使用最新版本。\n编写Go代码 1 2 3 4 5 6 7 8 9 10 11 package main import ( \"fmt\" \"github.com/gogf/gf\" ) func main() { fmt.Println(\"Hello GF\", gf.VERSION) } 执行go run main.go编译运行（注意使用代理），会生成go.sum文件： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU= github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28/go.mod h1:BVjHeAH+rl9rs6f+QIpeRl0tfu10SXn1pUSa5PVGJng= github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38= github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38= github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ= github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg= github.com/gogf/gf v1.14.0 h1:cO7yqWQB8PVCQ8ynTARd/LDQvJdzA6ZkUSr7GPslmFI= github.com/gogf/gf v1.14.0/go.mod h1:7b21qQKDyIwJO4PkBCxVci5C62tm89MANGV2wJgAf50= github.com/gomodule/redigo v2.0.0+incompatible/go.mod h1:B4C85qUVwatsJoIUNIfCRsp7qO0iAmpGFZ4EELWSbC4= github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg= github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE= github.com/gqcn/structs v1.1.1/go.mod h1:/aBhTBSsKQ2Ec9pbnYdGphtdWXHFn4KrCL0fXM/Adok= github.com/grokify/html-strip-tags-go v0.0.0-20190921062105-daaa06bf1aaf/go.mod h1:2Su6romC5/1VXOQMaWL2yb618ARB8iVo6/DR99A6d78= github.com/json-iterator/go v1.1.10/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4= github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI= github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q= github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0= github.com/olekukonko/tablewriter v0.0.1/go.mod h1:vsDQFd/mU46D+Z4whnwzcISnGGzXWMclvtLoiIKAKIo= github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4= github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME= github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI= golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w= golang.org/x/net v0.0.0-20200602114024-627f9648deb9/go.mod h1:qpuaurCH72eLCgpAm/N6yyVIVM9cpaDIP3A8BGJEC5A= golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY= golang.org/x/sys v0.0.0-20191005200804-aed5e4c7ecf9/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs= golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs= golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ= golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk= golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ= gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0= gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM= 同时go.mod文件也会被修改：\n1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/gf v1.14.0 以后维护好该项目的go.mod文件即可 ",
+  "wordCount" : "211",
+  "inLanguage": "zh",
+  "datePublished": "2020-10-26T23:08:47+08:00",
+  "dateModified": "2020-10-26T23:08:47+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_gomod/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      使用gomod
+    </h1>
+    <div class="post-meta"><span title='2020-10-26 23:08:47 +0800 CST'>2020-10-26 23:08:47</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%87%86%e5%a4%87" aria-label="准备">准备</a><ul>
+                            
+                    <li>
+                        <a href="#golang-v111" aria-label="golang v1.11&#43;">golang v1.11+</a></li>
+                    <li>
+                        <a href="#ide" aria-label="IDE">IDE</a></li>
+                    <li>
+                        <a href="#%e4%bb%a3%e7%90%86" aria-label="代理">代理</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#go-mod" aria-label="GO MOD">GO MOD</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>初学<code>Go</code>时，用的都是<code>GOPATH</code>模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。</p>
+<p>还好有<code>GO MOD</code>模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。</p>
+<h1 id="准备">准备<a hidden class="anchor" aria-hidden="true" href="#准备">#</a></h1>
+<h2 id="golang-v111">golang v1.11+<a hidden class="anchor" aria-hidden="true" href="#golang-v111">#</a></h2>
+<p>据说要使用<code>GO MOD</code>模式，必须要使用<code>v1.11</code>以上的版本（这里是直接用最新的<code>v1.15.3</code>）。</p>
+<h2 id="ide">IDE<a hidden class="anchor" aria-hidden="true" href="#ide">#</a></h2>
+<p>好用的果然还是<code>JB</code>家的<code>Goland</code>，不过吾等P民囊中羞涩，还是果断<code>VS Code</code>+<code>插件</code>。</p>
+<h2 id="代理">代理<a hidden class="anchor" aria-hidden="true" href="#代理">#</a></h2>
+<p>由于众所周知的原因，我们需要准备好代理，代理的使用略。</p>
+<h1 id="go-mod">GO MOD<a hidden class="anchor" aria-hidden="true" href="#go-mod">#</a></h1>
+<ol start="0">
+<li>
+<p>打开命令行</p>
+</li>
+<li>
+<p>在<code>GOPATH</code>之外任意新建一个空测试目录，并<code>cd</code>进去</p>
+</li>
+<li>
+<p>执行命令<code>go mod init XXX</code>（<code>XXX</code>为项目名），会生成一个<code>go.mod</code>文件，内容如下：</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">module gmtest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">go 1.15
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>以使用<code>GoFrame</code>为例， 修改<code>go.mod</code>加上<code>gf</code></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">module gmtest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">go 1.15
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">require github.com/gogf/go latest
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>latest</code>表示使用最新版本。</p>
+<ol start="4">
+<li>编写<code>Go</code>代码</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;github.com/gogf/gf&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Hello GF&#34;</span><span class="p">,</span> <span class="nx">gf</span><span class="p">.</span><span class="nx">VERSION</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="5">
+<li>执行<code>go run main.go</code>编译运行（注意使用代理），会生成<code>go.sum</code>文件：</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">BurntSushi</span><span class="o">/</span><span class="n">toml</span> <span class="n">v0</span><span class="o">.</span><span class="mf">3.1</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">clbanning</span><span class="o">/</span><span class="n">mxj</span> <span class="n">v1</span><span class="o">.</span><span class="mf">8.5</span><span class="o">-</span><span class="mf">0.20200714211355</span><span class="o">-</span><span class="n">ff02cfb8ea28</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">BVjHeAH</span><span class="o">+</span><span class="n">rl9rs6f</span><span class="o">+</span><span class="n">QIpeRl0tfu10SXn1pUSa5PVGJng</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">davecgh</span><span class="o">/</span><span class="n">go</span><span class="o">-</span><span class="n">spew</span> <span class="n">v1</span><span class="o">.</span><span class="mf">1.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">J7Y8YcW2NihsgmVo</span><span class="o">/</span><span class="n">mv3lAwl</span><span class="o">/</span><span class="n">skON4iLHjSsI</span><span class="o">+</span><span class="n">c5H38</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">davecgh</span><span class="o">/</span><span class="n">go</span><span class="o">-</span><span class="n">spew</span> <span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">J7Y8YcW2NihsgmVo</span><span class="o">/</span><span class="n">mv3lAwl</span><span class="o">/</span><span class="n">skON4iLHjSsI</span><span class="o">+</span><span class="n">c5H38</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">fsnotify</span><span class="o">/</span><span class="n">fsnotify</span> <span class="n">v1</span><span class="o">.</span><span class="mf">4.9</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">znqG4EE</span><span class="o">+</span><span class="mi">3</span><span class="n">YCdAaPaxE2ZRY</span><span class="o">/</span><span class="mi">06</span><span class="n">pZUdp0tY4IgpuI1SZQ</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">go</span><span class="o">-</span><span class="n">sql</span><span class="o">-</span><span class="n">driver</span><span class="o">/</span><span class="n">mysql</span> <span class="n">v1</span><span class="o">.</span><span class="mf">5.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">gogf</span><span class="o">/</span><span class="n">gf</span> <span class="n">v1</span><span class="o">.</span><span class="mf">14.0</span> <span class="n">h1</span><span class="p">:</span><span class="n">cO7yqWQB8PVCQ8ynTARd</span><span class="o">/</span><span class="n">LDQvJdzA6ZkUSr7GPslmFI</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">gogf</span><span class="o">/</span><span class="n">gf</span> <span class="n">v1</span><span class="o">.</span><span class="mf">14.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="mi">7</span><span class="n">b21qQKDyIwJO4PkBCxVci5C62tm89MANGV2wJgAf50</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">gomodule</span><span class="o">/</span><span class="n">redigo</span> <span class="n">v2</span><span class="o">.</span><span class="mf">0.0</span><span class="o">+</span><span class="n">incompatible</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">B4C85qUVwatsJoIUNIfCRsp7qO0iAmpGFZ4EELWSbC4</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">google</span><span class="o">/</span><span class="n">gofuzz</span> <span class="n">v1</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">dBl0BpW6vV</span><span class="o">/+</span><span class="n">mYPU4Po3pmUjxk6FQPldtuIdl</span><span class="o">/</span><span class="n">M65Eg</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">gorilla</span><span class="o">/</span><span class="n">websocket</span> <span class="n">v1</span><span class="o">.</span><span class="mf">4.1</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">YR8l580nyteQvAITg2hZ9XVh4b55</span><span class="o">+</span><span class="n">EU</span><span class="o">/</span><span class="n">adAjf1fMHhE</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">gqcn</span><span class="o">/</span><span class="n">structs</span> <span class="n">v1</span><span class="o">.</span><span class="mf">1.1</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="o">/</span><span class="n">aBhTBSsKQ2Ec9pbnYdGphtdWXHFn4KrCL0fXM</span><span class="o">/</span><span class="n">Adok</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">grokify</span><span class="o">/</span><span class="n">html</span><span class="o">-</span><span class="n">strip</span><span class="o">-</span><span class="n">tags</span><span class="o">-</span><span class="n">go</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20190921062105</span><span class="o">-</span><span class="n">daaa06bf1aaf</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="mi">2</span><span class="n">Su6romC5</span><span class="o">/</span><span class="mi">1</span><span class="n">VXOQMaWL2yb618ARB8iVo6</span><span class="o">/</span><span class="n">DR99A6d78</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">json</span><span class="o">-</span><span class="n">iterator</span><span class="o">/</span><span class="n">go</span> <span class="n">v1</span><span class="o">.</span><span class="mf">1.10</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">KdQUCv79m</span><span class="o">/</span><span class="mi">52</span><span class="n">Kvf8AW2vK1V8akMuk1QjK</span><span class="o">/</span><span class="n">uOdHXbAo4</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">mattn</span><span class="o">/</span><span class="n">go</span><span class="o">-</span><span class="n">runewidth</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.9</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">H031xJmbD</span><span class="o">/</span><span class="n">WCDINGzjvQ9THkh0rPKHF</span><span class="o">+</span><span class="n">m2gUSrubnMI</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">modern</span><span class="o">-</span><span class="n">go</span><span class="o">/</span><span class="n">concurrent</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20180228061459</span><span class="o">-</span><span class="n">e0a39a4cb421</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="mi">6</span><span class="n">dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">modern</span><span class="o">-</span><span class="n">go</span><span class="o">/</span><span class="n">reflect2</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20180701023420</span><span class="o">-</span><span class="mi">4</span><span class="n">b7aa43c6742</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">olekukonko</span><span class="o">/</span><span class="n">tablewriter</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">vsDQFd</span><span class="o">/</span><span class="n">mU46D</span><span class="o">+</span><span class="n">Z4whnwzcISnGGzXWMclvtLoiIKAKIo</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">pmezard</span><span class="o">/</span><span class="n">go</span><span class="o">-</span><span class="n">difflib</span> <span class="n">v1</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ</span><span class="o">/</span><span class="mi">4</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">stretchr</span><span class="o">/</span><span class="n">objx</span> <span class="n">v0</span><span class="o">.</span><span class="mf">1.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">HFkY916IF</span><span class="o">+</span><span class="n">rwdDfMAkV7OtwuqBVzrE8GR6GFx</span><span class="o">+</span><span class="n">wExME</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">stretchr</span><span class="o">/</span><span class="n">testify</span> <span class="n">v1</span><span class="o">.</span><span class="mf">3.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn</span><span class="o">+</span><span class="mi">9</span><span class="n">EI</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">crypto</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20190308221718</span><span class="o">-</span><span class="n">c2843e01d9a2</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">djNgcEr1</span><span class="o">/</span><span class="n">C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0</span><span class="o">+</span><span class="n">w</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">net</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20200602114024</span><span class="o">-</span><span class="mi">627</span><span class="n">f9648deb9</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">qpuaurCH72eLCgpAm</span><span class="o">/</span><span class="n">N6yyVIVM9cpaDIP3A8BGJEC5A</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">sys</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20190215142949</span><span class="o">-</span><span class="n">d0b11bdaac8a</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">STP8DvDyc</span><span class="o">/</span><span class="n">dI5b8T5hshtkjS</span><span class="o">+</span><span class="n">E42TnysNCUPdjciGhY</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">sys</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20191005200804</span><span class="o">-</span><span class="n">aed5e4c7ecf9</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">sys</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20200323222414</span><span class="o">-</span><span class="mi">85</span><span class="n">ca7c5b95cd</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">text</span> <span class="n">v0</span><span class="o">.</span><span class="mf">3.0</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">NqM8EUOU14njkJ3fqMW</span><span class="o">+</span><span class="n">pc6Ldnwhi</span><span class="o">/</span><span class="n">IjpwHt7yyuwOQ</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">text</span> <span class="n">v0</span><span class="o">.</span><span class="mf">3.2</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">bEr9sfX3Q8Zfm5fL9x</span><span class="o">+</span><span class="mi">3</span><span class="n">itogRgK3</span><span class="o">+</span><span class="n">ptLWKqgva</span><span class="o">+</span><span class="mi">5</span><span class="n">dAk</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">tools</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20180917221912</span><span class="o">-</span><span class="mi">90</span><span class="n">fa682c2a6e</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">n7NCudcB</span><span class="o">/</span><span class="n">nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">gopkg</span><span class="o">.</span><span class="ow">in</span><span class="o">/</span><span class="n">check</span><span class="o">.</span><span class="n">v1</span> <span class="n">v0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20161208181325</span><span class="o">-</span><span class="mi">20</span><span class="n">d25e280405</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">Co6ibVJAznAaIkqp8huTwlJQCZ016jof</span><span class="o">/</span><span class="n">cbN4VW5Yz0</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="n">gopkg</span><span class="o">.</span><span class="ow">in</span><span class="o">/</span><span class="n">yaml</span><span class="o">.</span><span class="n">v3</span> <span class="n">v3</span><span class="o">.</span><span class="mf">0.0</span><span class="o">-</span><span class="mi">20200313102051</span><span class="o">-</span><span class="mi">9</span><span class="n">f266ea9e77c</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">mod</span> <span class="n">h1</span><span class="p">:</span><span class="n">K4uyk7z7BCEPqu6E</span><span class="o">+</span><span class="n">C64Yfv1cQ7kz7rIZviUmN</span><span class="o">+</span><span class="n">EgEM</span><span class="o">=</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时<code>go.mod</code>文件也会被修改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">module gmtest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">go 1.15
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">require github.com/gogf/gf v1.14.0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="6">
+<li>以后维护好该项目的<code>go.mod</code>文件即可</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/pascal/rtc_server_lesson1/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>自学RTC——ServerLesson1</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdconnection_pool/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>FireDAC的数据连接池</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

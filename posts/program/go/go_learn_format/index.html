@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go 格式化 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="格式化动词 常规 格式化动词 含义 %v 默认格式 %T 数据的类型 %% %本身 使用%v时不同类型默认对应的格式化动词如下：
+数据类型 格式化动词 说明 bool %t int int8 等 %d uint uint8 等 %d %#v时对应%#x float32 complex64 等 %g string %s chan %p pointer %p 布尔型 格式化动词 含义 示例 结果 %t true或false 1&gt;2 false 整型 格式化动词 含义 示例 结果 %b 二进制 90 1011010 %c 对应的 Unicode 字符 90 Z %d 十进制 90 90 %o 八进制 90 132 %O 带0o前缀的八进制 90 0o132 %q 用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义 90 &lsquo;Z&rsquo; %x 小写的十六进制 90 5a %X 大写的十六进制 90 5A %U Unicode 格式：U&#43;1234；与U&#43;%04X相同 90 U&#43;005A 浮点型和复数型 格式化动词 含义 示例 结果 %b 十进制无小数的科学计数法表示浮点数，指数部分是2的幂次方 3.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_learn_format/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_learn_format/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go 格式化" />
+<meta property="og:description" content="格式化动词 常规 格式化动词 含义 %v 默认格式 %T 数据的类型 %% %本身 使用%v时不同类型默认对应的格式化动词如下：
+数据类型 格式化动词 说明 bool %t int int8 等 %d uint uint8 等 %d %#v时对应%#x float32 complex64 等 %g string %s chan %p pointer %p 布尔型 格式化动词 含义 示例 结果 %t true或false 1&gt;2 false 整型 格式化动词 含义 示例 结果 %b 二进制 90 1011010 %c 对应的 Unicode 字符 90 Z %d 十进制 90 90 %o 八进制 90 132 %O 带0o前缀的八进制 90 0o132 %q 用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义 90 &lsquo;Z&rsquo; %x 小写的十六进制 90 5a %X 大写的十六进制 90 5A %U Unicode 格式：U&#43;1234；与U&#43;%04X相同 90 U&#43;005A 浮点型和复数型 格式化动词 含义 示例 结果 %b 十进制无小数的科学计数法表示浮点数，指数部分是2的幂次方 3." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_learn_format/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-15T21:34:07+08:00" />
+<meta property="article:modified_time" content="2024-10-15T21:34:07+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 格式化"/>
+<meta name="twitter:description" content="格式化动词 常规 格式化动词 含义 %v 默认格式 %T 数据的类型 %% %本身 使用%v时不同类型默认对应的格式化动词如下：
+数据类型 格式化动词 说明 bool %t int int8 等 %d uint uint8 等 %d %#v时对应%#x float32 complex64 等 %g string %s chan %p pointer %p 布尔型 格式化动词 含义 示例 结果 %t true或false 1&gt;2 false 整型 格式化动词 含义 示例 结果 %b 二进制 90 1011010 %c 对应的 Unicode 字符 90 Z %d 十进制 90 90 %o 八进制 90 132 %O 带0o前缀的八进制 90 0o132 %q 用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义 90 &lsquo;Z&rsquo; %x 小写的十六进制 90 5a %X 大写的十六进制 90 5A %U Unicode 格式：U&#43;1234；与U&#43;%04X相同 90 U&#43;005A 浮点型和复数型 格式化动词 含义 示例 结果 %b 十进制无小数的科学计数法表示浮点数，指数部分是2的幂次方 3."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go 格式化",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_learn_format/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go 格式化",
+  "name": "Go 格式化",
+  "description": "格式化动词 常规 格式化动词 含义 %v 默认格式 %T 数据的类型 %% %本身 使用%v时不同类型默认对应的格式化动词如下：\n数据类型 格式化动词 说明 bool %t int int8 等 %d uint uint8 等 %d %#v时对应%#x float32 complex64 等 %g string %s chan %p pointer %p 布尔型 格式化动词 含义 示例 结果 %t true或false 1\u0026gt;2 false 整型 格式化动词 含义 示例 结果 %b 二进制 90 1011010 %c 对应的 Unicode 字符 90 Z %d 十进制 90 90 %o 八进制 90 132 %O 带0o前缀的八进制 90 0o132 %q 用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义 90 \u0026lsquo;Z\u0026rsquo; %x 小写的十六进制 90 5a %X 大写的十六进制 90 5A %U Unicode 格式：U+1234；与U+%04X相同 90 U+005A 浮点型和复数型 格式化动词 含义 示例 结果 %b 十进制无小数的科学计数法表示浮点数，指数部分是2的幂次方 3.",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "格式化动词 常规 格式化动词 含义 %v 默认格式 %T 数据的类型 %% %本身 使用%v时不同类型默认对应的格式化动词如下：\n数据类型 格式化动词 说明 bool %t int int8 等 %d uint uint8 等 %d %#v时对应%#x float32 complex64 等 %g string %s chan %p pointer %p 布尔型 格式化动词 含义 示例 结果 %t true或false 1\u003e2 false 整型 格式化动词 含义 示例 结果 %b 二进制 90 1011010 %c 对应的 Unicode 字符 90 Z %d 十进制 90 90 %o 八进制 90 132 %O 带0o前缀的八进制 90 0o132 %q 用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义 90 ‘Z’ %x 小写的十六进制 90 5a %X 大写的十六进制 90 5A %U Unicode 格式：U+1234；与U+%04X相同 90 U+005A 浮点型和复数型 格式化动词 含义 示例 结果 %b 十进制无小数的科学计数法表示浮点数，指数部分是2的幂次方 3.14 7070651414971679p-51 %e 小写e科学记数法 3.14 3.140000e+00 %E 大写E科学记数法 3.14 3.140000E+00 %f 常规的小数 3.14 3.140000 %F 同%f 3.14 3.140000 %g 大指数时同%e，否则同%f %G 大指数时同%E，否则同%F %x 小写的十六进制 3.14 0x1.91eb851eb851fp+01 %X 大写的十六进制 3.14 0X1.91EB851EB851FP+01 字符串和字节切片 格式化动词 含义 示例 结果 %s 原样 abc\t中国（中间是 tab） abc\t中国 %q 加双引号，并且特殊字符会进行转义 abc\t中国（中间是 tab） “abc\\t中国” %x 小写的十六进制，带前缀0x abc\t中国（中间是 tab） 61626309e4b8ade59bbd %X 大写的十六进制，带前缀0X abc\t中国（中间是 tab） 61626309E4b8EDE59BBD 切片 格式化动词 含义 %p 首元素地址，用加前缀0x的小写十六进制数表示 指针 格式化动词 含义 示例 结果 %p 加前缀0x的小写十六进制 %b、%d、%o、%x和%X也可用于指针。\n其它标志 + 格式化动词 含义 %+d %+f等 对于数值型，总是打印符号+/- %+v 对于结构体将显示对应字段名 - 默认是左对齐，加上-后则右对齐。\n# 格式化动词 含义 %#b 加前缀0b %#o 加前缀0o %#x 加前缀0x %#X 加前缀0X %#p 去掉前缀0x %#q 如果字符串可以用反引号括起来，则打印原始（用反引号括起来的）字符串 %#e %#E %#f %#F 总是打印小数点 %#g %#G 总是打印小数点，且不删除尾部的0 %#U 如果字符是可打印的，会以U+0078 'x'的形式输出。 %#v 对于复合类型，会显示其完整的创建表达式。对于浮点数中的无穷大（Inf）和非数字（NaN），会以+Inf、-Inf和NaN的形式输出 空格 格式化动词 含义 % d % f 等 对于数值类型，如果是正数，在前面留一个空格代替正号，实现与负数在符号上的对齐 % x % X 在打印字符串或切片时，会在字节之间添加空格 w.p宽度和精度 w和p分别为宽度和精度的具体数值。\n格式化动词 含义 %wd 仅指定宽度，实际宽度超出时按实际宽度显示，不足时左边用空格补齐 %.pd 仅指定精度，实际宽度超出时按实际宽度显示，不足时左边用0补齐 %w.pd 同时指定宽度和精度，先用%.pd格式化，再用%wd格式化 %wf 仅指定宽度，精度默认，实际宽度（含小数点及小数部分）超出时按实际宽度显示，不足时左边用空格补齐 %w.f 指定宽度，精度为0，实际宽度（不含小数点及小数部分）超出时按实际宽度显示，不足时左边用空格补齐 %.pf 仅指定精度，小数部分超出时截断，不足时右边用0补齐 %w.pf 同时指定宽度和精度，先格式化精度，再格式化宽度，宽度不足时左边用空格补齐 * *可对w.p中的w或/和p进行占位，解决/简化运行时对数据进行不同宽度、精度的格式化。\n1 2 3 fmt.Printf(\"%*.*f\\n\", 8, 2, f) //与以下等效 fmt.Printf(\"%8.2f\\n\", f) 0前缀 0需要在指定了w.p且w\u003e0时使用才有效。\n格式化动词 含义 %0w.pd 实际宽度超出时按实际宽度显示，不足时左边用0补齐 %0w.pf 先格式化精度，再格式化宽度，宽度不足时左边用0补齐 [n]索引 默认情况下，一个格式化动词对应一个操作数，且顺序固定。\n若使用[n]索引，则可不必拘泥于操作数的顺序，且在同一条格式化语句中可以多次对同一个值进行格式化。示例如下：\n1 2 fmt.Printf(\"%[2]d,%[1]d\\n\", a, b) //显示为 b,a fmt.Printf(\"%[1]T,%[1]d\\n\", a) //显示为 a的类型,a的值 特别注意 1：n是从1开始！\n特别注意 2：[n]会影响后续索引！\n1 fmt.Printf(\"%d %d %#[1]x %#x\", 16, 17) //输出 16 17 0x10 0x11 ",
+  "wordCount" : "291",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-15T21:34:07+08:00",
+  "dateModified": "2024-10-15T21:34:07+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_learn_format/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go 格式化
+    </h1>
+    <div class="post-meta"><span title='2024-10-15 21:34:07 +0800 CST'>2024-10-15 21:34:07</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e6%a0%bc%e5%bc%8f%e5%8c%96%e5%8a%a8%e8%af%8d" aria-label="格式化动词">格式化动词</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%b8%b8%e8%a7%84" aria-label="常规">常规</a></li>
+                    <li>
+                        <a href="#%e5%b8%83%e5%b0%94%e5%9e%8b" aria-label="布尔型">布尔型</a></li>
+                    <li>
+                        <a href="#%e6%95%b4%e5%9e%8b" aria-label="整型">整型</a></li>
+                    <li>
+                        <a href="#%e6%b5%ae%e7%82%b9%e5%9e%8b%e5%92%8c%e5%a4%8d%e6%95%b0%e5%9e%8b" aria-label="浮点型和复数型">浮点型和复数型</a></li>
+                    <li>
+                        <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2%e5%92%8c%e5%ad%97%e8%8a%82%e5%88%87%e7%89%87" aria-label="字符串和字节切片">字符串和字节切片</a></li>
+                    <li>
+                        <a href="#%e5%88%87%e7%89%87" aria-label="切片">切片</a></li>
+                    <li>
+                        <a href="#%e6%8c%87%e9%92%88" aria-label="指针">指针</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e5%85%b6%e5%ae%83%e6%a0%87%e5%bf%97" aria-label="其它标志">其它标志</a><ul>
+                            
+                    <li>
+                        <a href="#heading" aria-label="&#43;"><code>+</code></a></li>
+                    <li>
+                        <a href="#-" aria-label="-"><code>-</code></a></li>
+                    <li>
+                        <a href="#heading-1" aria-label="#"><code>#</code></a></li>
+                    <li>
+                        <a href="#-%e7%a9%ba%e6%a0%bc" aria-label=" 空格"><code> </code>空格</a></li>
+                    <li>
+                        <a href="#wp%e5%ae%bd%e5%ba%a6%e5%92%8c%e7%b2%be%e5%ba%a6" aria-label="w.p宽度和精度"><code>w.p</code>宽度和精度</a><ul>
+                            
+                    <li>
+                        <a href="#heading-2" aria-label="*"><code>*</code></a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#0%e5%89%8d%e7%bc%80" aria-label="0前缀"><code>0</code>前缀</a></li>
+                    <li>
+                        <a href="#n%e7%b4%a2%e5%bc%95" aria-label="[n]索引"><code>[n]</code>索引</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="格式化动词">格式化动词<a hidden class="anchor" aria-hidden="true" href="#格式化动词">#</a></h1>
+<h2 id="常规">常规<a hidden class="anchor" aria-hidden="true" href="#常规">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%v</code></td>
+<td>默认格式</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>数据的类型</td>
+</tr>
+<tr>
+<td><code>%%</code></td>
+<td><code>%</code>本身</td>
+</tr>
+</tbody>
+</table>
+<p>使用<code>%v</code>时不同类型默认对应的格式化动词如下：</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>格式化动词</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bool</td>
+<td>%t</td>
+<td></td>
+</tr>
+<tr>
+<td>int int8 等</td>
+<td>%d</td>
+<td></td>
+</tr>
+<tr>
+<td>uint uint8 等</td>
+<td>%d</td>
+<td><code>%#v</code>时对应<code>%#x</code></td>
+</tr>
+<tr>
+<td>float32 complex64 等</td>
+<td>%g</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>%s</td>
+<td></td>
+</tr>
+<tr>
+<td>chan</td>
+<td>%p</td>
+<td></td>
+</tr>
+<tr>
+<td>pointer</td>
+<td>%p</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="布尔型">布尔型<a hidden class="anchor" aria-hidden="true" href="#布尔型">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%t</code></td>
+<td><code>true</code>或<code>false</code></td>
+<td>1&gt;2</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<h2 id="整型">整型<a hidden class="anchor" aria-hidden="true" href="#整型">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%b</code></td>
+<td>二进制</td>
+<td>90</td>
+<td>1011010</td>
+</tr>
+<tr>
+<td><code>%c</code></td>
+<td>对应的 Unicode 字符</td>
+<td>90</td>
+<td>Z</td>
+</tr>
+<tr>
+<td><code>%d</code></td>
+<td>十进制</td>
+<td>90</td>
+<td>90</td>
+</tr>
+<tr>
+<td><code>%o</code></td>
+<td>八进制</td>
+<td>90</td>
+<td>132</td>
+</tr>
+<tr>
+<td><code>%O</code></td>
+<td>带<code>0o</code>前缀的八进制</td>
+<td>90</td>
+<td>0o132</td>
+</tr>
+<tr>
+<td><code>%q</code></td>
+<td>用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义</td>
+<td>90</td>
+<td>&lsquo;Z&rsquo;</td>
+</tr>
+<tr>
+<td><code>%x</code></td>
+<td>小写的十六进制</td>
+<td>90</td>
+<td>5a</td>
+</tr>
+<tr>
+<td><code>%X</code></td>
+<td>大写的十六进制</td>
+<td>90</td>
+<td>5A</td>
+</tr>
+<tr>
+<td><code>%U</code></td>
+<td>Unicode 格式：<code>U+1234</code>；与<code>U+%04X</code>相同</td>
+<td>90</td>
+<td>U+005A</td>
+</tr>
+</tbody>
+</table>
+<h2 id="浮点型和复数型">浮点型和复数型<a hidden class="anchor" aria-hidden="true" href="#浮点型和复数型">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%b</code></td>
+<td>十进制无小数的科学计数法表示浮点数，指数部分是<code>2</code>的幂次方</td>
+<td>3.14</td>
+<td>7070651414971679p-51</td>
+</tr>
+<tr>
+<td><code>%e</code></td>
+<td>小写<code>e</code>科学记数法</td>
+<td>3.14</td>
+<td>3.140000e+00</td>
+</tr>
+<tr>
+<td><code>%E</code></td>
+<td>大写<code>E</code>科学记数法</td>
+<td>3.14</td>
+<td>3.140000E+00</td>
+</tr>
+<tr>
+<td><code>%f</code></td>
+<td>常规的小数</td>
+<td>3.14</td>
+<td>3.140000</td>
+</tr>
+<tr>
+<td><code>%F</code></td>
+<td>同<code>%f</code></td>
+<td>3.14</td>
+<td>3.140000</td>
+</tr>
+<tr>
+<td><code>%g</code></td>
+<td>大指数时同<code>%e</code>，否则同<code>%f</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>%G</code></td>
+<td>大指数时同<code>%E</code>，否则同<code>%F</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>%x</code></td>
+<td>小写的十六进制</td>
+<td>3.14</td>
+<td>0x1.91eb851eb851fp+01</td>
+</tr>
+<tr>
+<td><code>%X</code></td>
+<td>大写的十六进制</td>
+<td>3.14</td>
+<td>0X1.91EB851EB851FP+01</td>
+</tr>
+</tbody>
+</table>
+<h2 id="字符串和字节切片">字符串和字节切片<a hidden class="anchor" aria-hidden="true" href="#字符串和字节切片">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>%s</td>
+<td>原样</td>
+<td>abc	中国（中间是 tab）</td>
+<td>abc	中国</td>
+</tr>
+<tr>
+<td>%q</td>
+<td>加双引号，并且特殊字符会进行转义</td>
+<td>abc	中国（中间是 tab）</td>
+<td>&ldquo;abc\t中国&rdquo;</td>
+</tr>
+<tr>
+<td>%x</td>
+<td>小写的十六进制，带前缀<code>0x</code></td>
+<td>abc	中国（中间是 tab）</td>
+<td>61626309e4b8ade59bbd</td>
+</tr>
+<tr>
+<td>%X</td>
+<td>大写的十六进制，带前缀<code>0X</code></td>
+<td>abc	中国（中间是 tab）</td>
+<td>61626309E4b8EDE59BBD</td>
+</tr>
+</tbody>
+</table>
+<h2 id="切片">切片<a hidden class="anchor" aria-hidden="true" href="#切片">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%p</code></td>
+<td>首元素地址，用加前缀<code>0x</code>的小写十六进制数表示</td>
+</tr>
+</tbody>
+</table>
+<h2 id="指针">指针<a hidden class="anchor" aria-hidden="true" href="#指针">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%p</code></td>
+<td>加前缀<code>0x</code>的小写十六进制</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>%b</code>、<code>%d</code>、<code>%o</code>、<code>%x</code>和<code>%X</code>也可用于指针。</p>
+<h1 id="其它标志">其它标志<a hidden class="anchor" aria-hidden="true" href="#其它标志">#</a></h1>
+<h2 id="heading"><code>+</code><a hidden class="anchor" aria-hidden="true" href="#heading">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%+d</code> <code>%+f</code>等</td>
+<td>对于数值型，总是打印符号<code>+</code>/<code>-</code></td>
+</tr>
+<tr>
+<td><code>%+v</code></td>
+<td>对于结构体将显示对应字段名</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-"><code>-</code><a hidden class="anchor" aria-hidden="true" href="#-">#</a></h2>
+<p>默认是<code>左对齐</code>，加上<code>-</code>后则<code>右对齐</code>。</p>
+<h2 id="heading-1"><code>#</code><a hidden class="anchor" aria-hidden="true" href="#heading-1">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%#b</code></td>
+<td>加前缀<code>0b</code></td>
+</tr>
+<tr>
+<td><code>%#o</code></td>
+<td>加前缀<code>0o</code></td>
+</tr>
+<tr>
+<td><code>%#x</code></td>
+<td>加前缀<code>0x</code></td>
+</tr>
+<tr>
+<td><code>%#X</code></td>
+<td>加前缀<code>0X</code></td>
+</tr>
+<tr>
+<td><code>%#p</code></td>
+<td>去掉前缀<code>0x</code></td>
+</tr>
+<tr>
+<td><code>%#q</code></td>
+<td>如果字符串可以用反引号括起来，则打印原始（用反引号括起来的）字符串</td>
+</tr>
+<tr>
+<td><code>%#e</code> <code>%#E</code> <code>%#f</code> <code>%#F</code></td>
+<td>总是打印小数点</td>
+</tr>
+<tr>
+<td><code>%#g</code> <code>%#G</code></td>
+<td>总是打印小数点，且不删除尾部的<code>0</code></td>
+</tr>
+<tr>
+<td><code>%#U</code></td>
+<td>如果字符是可打印的，会以<code>U+0078 'x'</code>的形式输出。</td>
+</tr>
+<tr>
+<td><code>%#v</code></td>
+<td>对于复合类型，会显示其完整的创建表达式。对于浮点数中的无穷大（Inf）和非数字（NaN），会以<code>+Inf</code>、<code>-Inf</code>和<code>NaN</code>的形式输出</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-空格"><code> </code>空格<a hidden class="anchor" aria-hidden="true" href="#-空格">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>% d</code> <code>% f</code> 等</td>
+<td>对于数值类型，如果是正数，在前面留一个空格代替正号，实现与负数在符号上的对齐</td>
+</tr>
+<tr>
+<td><code>% x</code> <code>% X</code></td>
+<td>在打印字符串或切片时，会在字节之间添加空格</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wp宽度和精度"><code>w.p</code>宽度和精度<a hidden class="anchor" aria-hidden="true" href="#wp宽度和精度">#</a></h2>
+<p><code>w</code>和<code>p</code>分别为宽度和精度的具体数值。</p>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%wd</code></td>
+<td>仅指定宽度，实际宽度超出时按实际宽度显示，不足时左边用<code>空格</code>补齐</td>
+</tr>
+<tr>
+<td><code>%.pd</code></td>
+<td>仅指定精度，实际宽度超出时按实际宽度显示，不足时左边用<code>0</code>补齐</td>
+</tr>
+<tr>
+<td><code>%w.pd</code></td>
+<td>同时指定宽度和精度，先用<code>%.pd</code>格式化，再用<code>%wd</code>格式化</td>
+</tr>
+<tr>
+<td><code>%wf</code></td>
+<td>仅指定宽度，精度默认，实际宽度（含小数点及小数部分）超出时按实际宽度显示，不足时左边用<code>空格</code>补齐</td>
+</tr>
+<tr>
+<td><code>%w.f</code></td>
+<td>指定宽度，精度为<code>0</code>，实际宽度（不含小数点及小数部分）超出时按实际宽度显示，不足时左边用<code>空格</code>补齐</td>
+</tr>
+<tr>
+<td><code>%.pf</code></td>
+<td>仅指定精度，小数部分超出时截断，不足时右边用<code>0</code>补齐</td>
+</tr>
+<tr>
+<td><code>%w.pf</code></td>
+<td>同时指定宽度和精度，先格式化精度，再格式化宽度，宽度不足时左边用<code>空格</code>补齐</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-2"><code>*</code><a hidden class="anchor" aria-hidden="true" href="#heading-2">#</a></h3>
+<p><code>*</code>可对<code>w.p</code>中的<code>w</code>或/和<code>p</code>进行占位，解决/简化运行时对数据进行不同宽度、精度的格式化。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%*.*f\n&#34;</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//与以下等效
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%8.2f\n&#34;</span><span class="p">,</span> <span class="nx">f</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0前缀"><code>0</code>前缀<a hidden class="anchor" aria-hidden="true" href="#0前缀">#</a></h2>
+<p><code>0</code>需要在指定了<code>w.p</code>且<code>w&gt;0</code>时使用才有效。</p>
+<table>
+<thead>
+<tr>
+<th>格式化动词</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%0w.pd</code></td>
+<td>实际宽度超出时按实际宽度显示，不足时左边用<code>0</code>补齐</td>
+</tr>
+<tr>
+<td><code>%0w.pf</code></td>
+<td>先格式化精度，再格式化宽度，宽度不足时左边用<code>0</code>补齐</td>
+</tr>
+</tbody>
+</table>
+<h2 id="n索引"><code>[n]</code>索引<a hidden class="anchor" aria-hidden="true" href="#n索引">#</a></h2>
+<p>默认情况下，一个<code>格式化动词</code>对应一个<code>操作数</code>，且顺序固定。</p>
+<p>若使用<code>[n]</code>索引，则可不必拘泥于<code>操作数</code>的顺序，且在同一条格式化语句中可以多次对同一个值进行格式化。示例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%[2]d,%[1]d\n&#34;</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="c1">//显示为 b,a
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%[1]T,%[1]d\n&#34;</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span>    <span class="c1">//显示为 a的类型,a的值
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>特别注意 1：<code>n</code>是从<code>1</code>开始！</strong></p>
+<p><strong>特别注意 2：<code>[n]</code>会影响后续索引！</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%d %d %#[1]x %#x&#34;</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">)</span> <span class="c1">//输出 16 17 0x10 0x11
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_learn_fmt/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go fmt包</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_nanosecond/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Lazarus获取纳秒级时间</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

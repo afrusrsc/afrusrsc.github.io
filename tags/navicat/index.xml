@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Navicat on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/navicat/</link>
+    <description>Recent content in Navicat on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 25 May 2022 21:11:03 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/navicat/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Navicat连接Oracle数据库的坑</title>
+      <link>https://afrusrsc.github.io/posts/db/navicat_oracle/</link>
+      <pubDate>Wed, 25 May 2022 21:11:03 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/db/navicat_oracle/</guid>
+      <description>从其它平台迁移而来
+坑 首次使用Oracle数据库，习惯性的用Navicat连起来，嗯？？？怎么报错连不上？
+数据库安装有问题？SQL Plus能连上啊！
+检查配置，没问题！
+重启，还是不行！
+重装Navicat，然并卵！
+解决 出现解决不了的问题，那就果断面向搜索引擎，看了好多文章，也试了个遍，甚至都开始更换dll了，最后发现其实还真和dll有关系。
+这是默认的配置，可以看到，OCI用的是Navicat自带的oci.dll，换成Oracle安装路径的oci.dll，重启Navicat，完美！</description>
+    </item>
+  </channel>
+</rss>

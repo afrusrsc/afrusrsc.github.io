@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>EhLib on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/ehlib/</link>
+    <description>Recent content in EhLib on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 24 Mar 2021 16:26:13 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/ehlib/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>踩坑记：DBGridEh中取Footer的Sum值</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/ehlib_dbgrideh_footer_sum/</link>
+      <pubDate>Wed, 24 Mar 2021 16:26:13 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/ehlib_dbgrideh_footer_sum/</guid>
+      <description>从其它平台迁移而来
+DBGridEh算是Delphi中比较好用的第三方数据感知组件了，但其中有些小坑是真的有点小无语的。
+场景 客户需要的有这样一组数据，大部分列是要求和的，用DBGridEh的Footer是轻松加愉快的；但是个别列是和每一行的计算方法一致的，用求和反倒是大错特错的，所以要求针对这些个别列按照给定的算法进行计算后显示在Footer中。
+坑 Footer有个ValueType和Value属性，汇总类型是通过ValueType设置的，习惯性的以为汇总值是通过Value来读写的。
+然而，事实并非如此！
+对于求和列，DBGridEh1.Columns[i].Footer.Value的值一直是&#39;&#39;空串，要想取得求和列的汇总值，正确的打开方式是DBGridEh1.GetFooterValue(0,DBGridEh1.Columns[i])！这简直是反人类啊有木有！
+后记 这是第二次踩这个坑了，记录下，给自己长点记性！事不过三！！
+另外，公司使用的版本比较老，新版本可能没有这些问题了，不太清楚，暂时没空去求证。</description>
+    </item>
+    <item>
+      <title>DBGridEh显示、编辑标记字段</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/ehlib_dbgrideh_field_dict/</link>
+      <pubDate>Fri, 25 Jan 2019 11:37:40 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/ehlib_dbgrideh_field_dict/</guid>
+      <description>从其它平台迁移而来
+在用Delphi开发数据库应用过程中，经常需要用到DBBrid来显示或编辑数据库表，但相对于IDE自带的DBBrid，DBGridEh显然要更好用一些（cxDBGrid也同样好使，这里只对DBGridEh进行说明）。
+在数据库表结构设计时，通常会习惯使用整型字段来存储如男、女、已修改、已删除、已作废等具有标记性的信息，好处是占存储空间小且可扩展性强，缺点是显示方式不友好，但是，使用DBGridEh的一些设置可以弥补这个缺陷。
+假设数据库里的表T_Demo里有一个表示性别的字段Sex，其用0表示男，1表示女，2表示未知，用DBGridEh显示时仍为0、1、2，十分不友好。这时只要做一点美化即可。
+在DBGridEh的对应列的KeyList属性里分别加入0、1、2三个数字，每个数字一行，用代码实现的话就是： 1 2 3 4 5 //这里假设第一列就是性别，以下代码相同 DBGridEh.Columns[0].KeyList.Clear; DBGridEh.Columns[0].KeyList.Append(&amp;#39;0&amp;#39;); DBGridEh.Columns[0].KeyList.Append(&amp;#39;1&amp;#39;); DBGridEh.Columns[0].KeyList.Append(&amp;#39;2&amp;#39;); 在DBGridEh的对应列的PickList属性里分别加入男、女、未知三行，用代码实现是： 1 2 3 4 DBGridEh.Columns[0].PickList.Clear; DBGridEh.Columns[0].PickList.Append(&amp;#39;男&amp;#39;); DBGridEh.Columns[0].PickList.Append(&amp;#39;女&amp;#39;); DBGridEh.Columns[0].PickList.Append(&amp;#39;未知&amp;#39;); 这样，原先显示为0、1、2的性别就变成了男、女、未知。也可以加上图片来进一步美化。
+放置一个TImagList控件，并命名为ilSex，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。
+在DBGridEh的ImagList属性里关联ilSex，并且设置ShowImageAndText属性为True，用代码是：
+1 2 DBGridEh.ImagList := ilSex; DBGridEh.ShowImageAndText := True; 这样，性别这一列就有图片有文字，比0、1、2要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。</description>
+    </item>
+  </channel>
+</rss>

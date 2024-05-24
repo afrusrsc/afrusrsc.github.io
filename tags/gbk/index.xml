@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>GBK on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/gbk/</link>
+    <description>Recent content in GBK on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Thu, 30 Nov 2017 10:46:25 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/gbk/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GBK编码</title>
+      <link>https://afrusrsc.github.io/posts/program/misc/gbk/</link>
+      <pubDate>Thu, 30 Nov 2017 10:46:25 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/misc/gbk/</guid>
+      <description>从其它平台迁移而来
+在软件开发过程中，尤其是涉及到数据库的项目，通常都会遇到字符编码的问题。
+其中，中文字符集编码常用的有GB2312和GBK，以及万国码UTF8，另外还有GB18030。
+ASCII码每个字符占一个字节；GB2312是GBK的子集，两个字符集都是每个字符占两个字节；GB18030是GBK的取代版本，每个字符占一个、两个或四个字节；UFT8是万国码，每个字符占一个、两个或三个字节。
+下图是GBK字符编码表。
+图是265*256的矩阵，表示两个字节可以表示的所有字符。水平方向表示高字节，从左至右为0000~FF00；垂直方向表示低字节，从上到下为0000~00FF。
+左侧0区：0000~007F，ASCII码区。
+右下色块区：8140~FEFE（需剔除a区即817F~FE7F），GBK编码区。
+具体说明 GBK编码分三部分。
+一、汉字区 2区：B0A1~F7FE，GBK/2，GB2312汉字区，GB2312汉字6763个。
+GB13000.1扩充汉字区
+3区：8140~A0FE，GBK/3，GB13000.1中的CJK汉字6080个。
+4区：AA40~FEA0，GBK/4，CJK汉字和增补的汉字8160个。
+二、图形符号区 1区：A1A1~A9FE，GBK/1，GB2312非汉字符号区。除GB2312的符号外，还有10个小写罗马数字和GB12345增补的符号。计符号717个。
+5区：A840~A9A0，GBK/5，GB13000.1扩充非汉字区。包含BIG-5非汉字符号、结构符和汉字〇。计符号166个。
+三、用户自定义区 A区：AAA1~AFFE，码位564个。
+B区：F8A1~FEFE，码位658个。
+C区：A140~A7A0，码位672个。</description>
+    </item>
+  </channel>
+</rss>

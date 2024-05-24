@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>多线程 | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="多线程" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="多线程"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/tags/">🔖标签</a></div>
+  <h1>
+    多线程
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Delphi安全结束线程
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+在开发过程中，不可避免的要用到多线程，而线程的同步、释放等又可能引入新的问题，不过网上已有许多资料，这里重点说下我使用的方法。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 type TMyThread = class(TThread) protected procedure Execute; override; public constructor Create(...); destructor Destroy; override; //使用 reintroduce 关键字可以明确通知编译器屏蔽父类的同名方法而使用自己的方法。 procedure Free; reintroduce; end; constructor TMyThread.Create(...); begin { 在这里创建相关对象，可以省去先挂起线程再恢复的操作 } inherited Create; end; destructor TMyThread....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-04-28 19:13:48 +0800 CST'>2019-04-28 19:13:48</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Delphi安全结束线程" href="https://afrusrsc.github.io/posts/program/pascal/delphi_thread/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">多线程、多进程、多核
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+前言 线程、进程的概念实际上已经纠结N久了，不过好在多少有些了解了，但总感觉还不是那么通透。
+碰巧晚饭时与室友争论了一个问题，与线程的问题很类同，为了能通俗易懂的给室友讲明白，着实消耗了不少脑细胞。所幸最终他表示明白了（至于是真是假便不清楚了，不过至少我自己感觉通透了许多）。
+鉴于抱着一颗开源共享的心，便稍加整理，拿来浪一下啦！
+CPU 其实，CPU是个很笨的家伙，笨到只会做最简单的事，而且一次还只能做一件最简单的事，而它能做的所有的事掰着指头数来数去也就那么几件。多了、复杂了，抱歉，不会！
+CPU仅会做的那几件事呢，就叫做CPU指令。
+虽然CPU这家伙很笨，但还是有优点的，而且这优点还很让人喜欢。什么优点呢？快！准！
+时间片 虽然CPU只会那么几个指令，但是已经够了，因为那些复杂的事都可以用这些指令进行排列组合来完成。所以啊，CPU一点儿也不怕麻烦。
+由于CPU干活又快又准，所以很多事都可以让他来做。但是CPU这小子实在是太傻愣傻愣了，为了防止这傻小子闷着头只顾做手头上的事，把其它事都抛到了脑后，就有个头脑还算灵光的家伙跑来指挥CPU，这个家伙就是操作系统（更准确的说是分时操作系统），也叫OS。
+OS规定CPU做一件事只能用一小段时间（这一小段时间就叫时间片），而且时间到了必须放下手头的事，去做下一件事，不管手头上的事有没有做完。事实上OS把每一件事的进度都记录了下来，下次轮到这件事时就让CPU接着原来的进度继续干下去。
+由于CPU干活实在是太快太快了，所以感觉就像同时在做所有安排给他的事。
+进程&amp;线程 不管是进程还是线程，其实都是任务。任务也分大小的，一个大任务可以包含若干小任务，而且一个大任务至少要有一个小任务。一个大任务就是一个进程，一个小任务就是一个线程。
+把这些任务交给OS，OS就根据情况做规划，给每个任务分配合理的时间片，然后安排CPU来完成。
+单线程&amp;多线程 一个大任务只有一个小任务，那这个大任务就叫做单线程，否则就叫多线程。
+举个栗子：
+小明在唱歌，而且在唱歌是其它的事都不做。这就是单线程。
+小明一边唱歌，一边跳舞。这就是多线程。
+小明一边唱歌，一边吃饭。这也是多线程，只不过这两个小任务都用到了嘴巴，所以执行起来就会麻烦很多，解决麻烦的办法就是线程同步。
+多进程 直接举栗子：
+小明自己放风筝。这就是单进程。
+小明和小红都在放自己的风筝。这是一种多进程，只不过两个进程是独立的。
+小明和小红一起放大蜈蚣风筝。这是另一种多进程，进程之间需要配合，也存在类似多线程的麻烦。这方面的问题没有详细了解过，就不多扯了。
+多线程&amp;多进程 再次举栗子：
+小明一边唱歌，一边跳舞。这是多线程，用的都是小明的身体（资源）。
+小明唱歌，小红跳舞。这是多进程，各自用各自的身体（资源）。
+小明和小红合唱。这也是多进程，各自用各自的身体（资源）。
+多核 单核、多核是针对CPU来说的。
+继续举栗子说明：
+普通人。单核。
+哪吒。多核。
+如有不对之处，还望大侠指正！</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-04-13 22:53:06 +0800 CST'>2018-04-13 22:53:06</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 多线程、多进程、多核" href="https://afrusrsc.github.io/posts/program/misc/processes_threads_kernels/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>⚒️pascal | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="⚒️pascal - 慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/posts/program/pascal/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="⚒️pascal" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="⚒️pascal"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }
+  ]
+}
+</script>
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+  <h1>
+    ⚒️pascal
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">FireDAC的数据连接池
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+之前就想搞个数据连接池，结果太麻烦就放弃了，不想却在TFDConnection中看到了Pooled属性，就一路挖了下来，还真就是那么回事！
+TFDManager 之前只知道，放上TFDManager控件后，什么都不用做，就可以在别的单元引用该单元后直接连接到TFDConnection控件了；现在，数据连接池还是要通过TFDManager来实现。
+设置数据连接池参数 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 //指定动态库 FDPhysMySQLDriverLink.VendorLib := &#39;libmysql.dll&#39;; //设置连接参数 with FDManager.ConnectionDefs.AddConnectionDef do begin Name := &#39;MySQL_Conn&#39;; Params.DriverID := &#39;MySQL&#39;; Params.Add(&#39;CharacterSet=csUtf8mb4&#39;); Params.Add(&#39;Server=127.0.0.1&#39;); Params.Add(&#39;Port=3306&#39;); Params.Database := &#39;test&#39;; Params.UserName := &#39;root&#39;; Params.Password := &#39;123456&#39;; Params.PoolMaximumItems := 10; Params.Pooled := True; end; 以上是以MySQL为例，其它数据库参照即可。
+打开连接池 1 FDManager.Open; 获取连接 1 2 FDConnection.ConnectionDefName := &#39;MySQL_Conn&#39;; FDConnection.Connected := True; 归还连接 FDConnection直接放到窗体上，或动态创建，写上如下代码即可，无需在设计器里设置任何东西。...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-08-11 21:59:09 +0800 CST'>2020-08-11 21:59:09</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to FireDAC的数据连接池" href="https://afrusrsc.github.io/posts/program/pascal/firedac_fdconnection_pool/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从.h头文件到.pas单元
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+由于长期使用Delphi开发，又与硬件打交道比较多，不可避免地要与标准C动态库进行对接，而往往厂家提供的SDK又偏偏没有Delphi的，无奈也就只好自己改写.h头文件了。写得多了，也就有了一点点心得，在这里就分享出来，也好与大家互相交流、学习。
+知识点 标准C动态库使用的都是单字节字符。
+Delphi 2007以前默认使用的是单字节字符，即Ansi编码，也就是说Char = AnsiChar、PChar = PAnsiChar、string = AnsiString；Delphi 2009以后使用的是双字节字符，即Unicode编码，也就是说Char = WideChar、PChar = PWideChar、string = WideString。为了保证改写后的.pas文件适用于Dephi的各个版本，应避免使用Char、PChar、string这种类型不明确的数据类型（通常情况下使用AnsiChar、PAnsiChar、AnsiString即可，但特殊情况要特殊处理）。
+@string[1]才是字符串首地址。
+Delphi中可以把AnsiString当作缓冲区来使用，某些情况下比array of Byte要方便得多。
+对字符串变量第一次使用SetLengh时会重新分配内存，第二次使用时，若设定的长度比第一次小，则只会进行截断而并不改变已写入的内容，该特性在使用API返回字符串时非常好用。
+Delphi中的record是进行过字节对齐的，执行效率高，但占用空间比看到的会略大；packed record是未进行过字节对齐的，执行效率略低，但占用空间与看到的保持一致。也就是说，Delphi中packed record才是与C中的struct等同。
+在Delphi中packed record配合case可以实现C中的union，具体是否等同还要看实际定义的字节是否一致（需要对每种数据类型占用的空间十分熟悉）。
+标准C动态库的API函数或回调函数，在Delphi中均要使用stdcall;来修饰，以确保传参顺序一致。
+数据类型对应关系 C/C&#43;&#43; 类型 Delphi 基本类型 Delphi Window 单元类型 说明 char ShortInt / Int8 8位有符号整型 char* PShortInt unsigned char / BYTE Byte / UInt8 UCHAR 8位无符号整型，字节型 unsigned char* PByte LPBYTE / PUCHAR short SmallInt / Int16 SHORT 16位有符号整型 short* PSmallInt PSHORT unsigned short Word / UInt16 WORD 16位无符号整型 unsigned short* PWord PUSHORT int / long Integer / Longint / Int32 LONG 32位有符号整型 int* / long* PInteger / PLongInt PLONG unsigned / unsigned int / unsigned long Cardinal / LongWord / UInt32 DWORD / UINT / ULONG / ULONG32 32位无符号整型 unsigned int* / unsigned long* PCardinal / PLongWord / PUint32 PDWORD / PUINT / PULONG long long / __int64 Int64 LONG64 / LONGLONG 64位有符号整型 long long* / __int64* PInt64 PLONG64 unsigned long long / unsigned __int64 UInt64 ULONG64 / ULONGLONG / DWORD64 64位无符号整型 unsigned long long* / unsigned __int64* PUInt64 PULONG64 / PULONGLONG / PDWORD64 float Single / Float32 32位单精度浮点型 float* PSingle double Double / Float64 64位双精度浮点型 double* PDouble long double Extended 10字节浮点型 char AnsiChar 单字节字符 char* PAnsiChar LPSTR / LPCSTR char** PPAnsiChar wchar_t / WCHAR WideChar WCHAR 双字节字符 wchar_t* PWideChar PWChar / LPWSTR / LPCWSTR wchar_t** PPWideChar 任意1字节类型 Boolean / ByteBool 1字节布尔型 任意1字节类型指针 PBoolean / PByteBool 任意2字节类型 WordBool 2字节布尔型 任意2字节类型指针 PWordBool BOOL LongBool BOOL 4字节布尔型 BOOL* PLongBool PBOOL void* Pointer PVOID / LPVOID / LPCVOID 无类型指针 void** PPointer PPVOID 升华 有了以上知识，把....</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-05-04 23:42:53 +0800 CST'>2020-05-04 23:42:53</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 从.h头文件到.pas单元" href="https://afrusrsc.github.io/posts/program/pascal/h2pas/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Delphi开发守则
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+前言 接触编程已十年有余，使用Delphi谋生也已五年有余，不敢说阅码无数，实实在在看过的代码也是有几箩筐的，但见过的写得好的、写得漂亮的、写得优美的代码，少之又少。
+由于pascal语言简单易学的优点，以及DelphiIDE快速开发的方便，致使随便来个阿猫阿狗搞几下就能搞出来个马马虎虎的东西，于是众多程序猿便借势野蛮生长，个个都长得很有个性，产出的代码也自然是个性十足。事实上，其它语言的这种现象也不少。
+我无意发起圣战，毕竟每只猿都有自己的追求，而我，不过是长成了一只有点洁癖的猿。以下是我的洁癖，也是我的追求，算是总结，也算是对自己的警醒。
+正文 排版 良好的排版能使代码看起来清晰愉悦，统一的排版能使团队合作愉快，也更能显出版本控制优势。
+简单来说，cnPack提供的排版功能就不错。我喜欢在默认的基础上做如下调整：
+关键字小写。因为小写比大写更易阅读。
+begin 位于下一行。因为能突出代码块的起始位置。
+当超过90列时自动换行于80列。因为我的屏幕有点小，而且我个人也比较懒，再加上一点点历史原因。
+字符串拼接等不希望cnPack自动排版的地方，可在末尾加//单行注释进行妨碍。写过长SQL语句的都知道我在说什么。
+注释 注释很重要，但注释也可以很美妙。比如：interface区主要使用xml风格的注释，implementation区主要使用默认风格的注释，具体如下：
+函数、过程、类方法、类属性、结构体方法的声明使用xml风格的注释，注释在上，声明在下。当你把鼠标放上去的时候你就知道我是对的。
+枚举成员、类字段、结构体字段使用//单行注释，注释在右，且同一代码块尽量缩进对齐。无他，我有洁癖。
+xml风格的注释，我喜欢的格式如下，至于怎么设置，我想这不是问题。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 {func} /// &lt;summary&gt;|&lt;/summary&gt; /// &lt;param name=&#34;n1&#34;&gt;&lt;/param&gt; /// &lt;param name=&#34;n2&#34;&gt;&lt;/param&gt; /// &lt;returns&gt;&lt;/returns&gt; {param} /// &lt;param name=&#34;|&#34;&gt;&lt;/param&gt; {remarks} /// &lt;remarks&gt;|&lt;/remarks&gt; {returns} /// &lt;returns&gt;|&lt;/returns&gt; {seealso} /// &lt;seealso&gt;|&lt;/seealso&gt; {summary} /// &lt;summary&gt;|&lt;/summary&gt; {value} /// &lt;value&gt;|&lt;/value&gt; 命名 什么拼音首字母，什么1 2 3 4 5，我是极其痛恨的！...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-03-12 22:39:03 +0800 CST'>2020-03-12 22:39:03</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Delphi开发守则" href="https://afrusrsc.github.io/posts/program/pascal/delphi_rules/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Delphi中的延时
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+开发过程中经常会需要使用到延时功能，Delphi中有不少实现延时的方法，网上已有不少文章做过说明和分析，但本着实践出真知的态度，还是亲自动手研究一番心里比较踏实。
+常用的延时方法 Sleep Sleep(n)，延时n毫秒，延时过程中程序不响应，一般延时较小时使用。
+在主线程中使用，延时较大（100&#43;）的话会起程序假死，一般在子线程中使用较多。
+无论在主线程还是子线程中，延时较长的话（如 2000 ms），一般不一次性Sleep(2000)，而是分多次循环Sleep。有时为了能在延时过程中响应外部消息，还会加上Application.ProcessMessages;，如：
+1 2 3 4 5 6 //延时 2000 ms for i := 0 to 19 do begin Sleep(100); Application.ProcessMessages; end; Timer Timer为定时器，用于周期性地执行某个处理。也可用来实现延时，延时过程中不会引起程序假死，
+GetTickCount GetTickCount返回从操作系统启动到当前所经过的毫秒数，一般用于计算代码段的用时。配合循环使用也可达到延时的功能。
+1 2 3 4 n := GetTickCount; repeat Application.ProcessMessages; //若延时过程中需要响应消息可加上此句 until GetTickCount &gt;= n &#43; ms; //ms为延时的毫秒数 注意：使用以上代码进行延时的过程中，CPU使用率会异常地高（事实上，不加限制一直跑的循环都会导致CPU使用率过高）。
+小结 以上是对Sleep、Timer和GetTickCount用于延时的简单说明，个人经验：通常较小延时的场景用Sleep，较大延时的场景用Timer，评估代码段耗时的场景用GetTickCount。至于为什么这样用，以前是不清楚的，但通过对三者的精度分析，目前已知晓来龙去脉。
+延时精度分析 上文已经提到，一般用GetTickCount来分析代码段耗时，但由于本次GetTickCount在被测行列，故另寻他法。
+本次测试假定系统时间是足够精确的，因此使用Now分别在延时前后获取系统当前时间来进行耗时评估。
+为使测试更具代表性，每个测试点测试100次，取算术平均值。
+在1ms~100ms内，测试点步长为1ms，在100ms~1000ms内，测试点步长为10ms。
+为尽可能减小干扰，测试过程中未使用Application.ProcessMessages;，也未使用并行。
+测试结果 XE10编译，Win10下运行，经过近5个小时的测试，结果终于出炉了。
+延时(ms) Sleep GetTickCount Timer 1 1.70 15.58 15.64 2 2....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-12-13 23:40:41 +0800 CST'>2019-12-13 23:40:41</span>&nbsp;·&nbsp;8 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Delphi中的延时" href="https://afrusrsc.github.io/posts/program/pascal/delphi_delay/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">再探Delphi字符串
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+闲来无事，又开始扒拉起Delphi的源码，这次发现一个比较有意思的函数StringCodePage，作用是返回传入字符串的CodePage。至于什么是CodePage，暂且认为是字符编码吧。
+先测试一把：
+1 2 3 4 5 6 7 8 9 10 11 12 13 var s1: AnsiString; s2: WideString; s3: UTF8String; cp1, cp2, cp3: Word; begin s1 := &#39;123abc中国&#39;; s2 := &#39;123abc中国&#39;; s3 := &#39;123abc中国&#39;; cp1 := StringCodePage(s1); //936 - GBK(简体中文) cp2 := StringCodePage(s2); //1200 - UCS-2LE Unicode 小端序 cp3 := StringCodePage(s3); //65001 - UTF-8 Unicode end; 来看下是怎么实现的：
+1 2 3 4 5 6 7 function StringCodePage(const S: UnicodeString): Word; overload; begin if S &lt;&gt; &#39;&#39; then Result := PWord(PByte(S) - 12)^ // StrRec....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-10-06 04:43:45 +0800 CST'>2019-10-06 04:43:45</span>&nbsp;·&nbsp;4 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 再探Delphi字符串" href="https://afrusrsc.github.io/posts/program/pascal/delphi_string02/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">关于TField.DataSize的坑
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+在从数据库中查询数据时，有时需要事先取得字段内容的大小，再根据情况进行处理。
+对于ADO之类返回TField类型的，可以使用DataSize属性，但是！！！这里有很深的坑！！！。
+首先看如下代码：
+1 2 3 4 if ADOQuery.FieldByName(&#39;Test&#39;).DataSize &gt; 3 then {处理1} else {处理2}; 按预想，当Test字段里的数据超过3B时，应该执行处理1的代码，但事实上无论该内容长短，都是执行处理2的代码，WHY?
+扒一下Delphi的源码就明白了。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 function TField....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-07-11 20:03:00 +0800 CST'>2019-07-11 20:03:00</span>&nbsp;·&nbsp;3 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 关于TField.DataSize的坑" href="https://afrusrsc.github.io/posts/program/pascal/delphi_field_datasize/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Delphi安全结束线程
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+在开发过程中，不可避免的要用到多线程，而线程的同步、释放等又可能引入新的问题，不过网上已有许多资料，这里重点说下我使用的方法。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 type TMyThread = class(TThread) protected procedure Execute; override; public constructor Create(...); destructor Destroy; override; //使用 reintroduce 关键字可以明确通知编译器屏蔽父类的同名方法而使用自己的方法。 procedure Free; reintroduce; end; constructor TMyThread.Create(...); begin { 在这里创建相关对象，可以省去先挂起线程再恢复的操作 } inherited Create; end; destructor TMyThread....</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-04-28 19:13:48 +0800 CST'>2019-04-28 19:13:48</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Delphi安全结束线程" href="https://afrusrsc.github.io/posts/program/pascal/delphi_thread/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">关于窗口置屏的那个坑
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+在开发多屏应用程序的时候，经常需要把某个窗口置到某个屏上的某个位置。以下是一个Delphi写的置屏方法：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 procedure ShowInMonitor(Sender: TObject; AIndex: Integer; ALeft: Integer = 0; ATop: Integer = 0); var lM: TMonitor; begin if Sender is TControl then begin if AIndex &gt; Screen.MonitorCount - 1 then begin AIndex := 0; end; lM := Screen.Monitors[AIndex]; (Sender as TControl).Left := lM.Left &#43; ALeft; (Sender as TControl).Top := lM.Top &#43; ATop; end; end; Sender是需要置屏的窗口；AIndex是置屏的目标屏号，从0开始；ALeft是水平偏移量，ATop是垂直偏移量，默认均为0，即在目标屏的左上角。...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-03-01 16:16:46 +0800 CST'>2019-03-01 16:16:46</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 关于窗口置屏的那个坑" href="https://afrusrsc.github.io/posts/program/pascal/delphi_screen_monitor/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">DBGridEh显示、编辑标记字段
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+在用Delphi开发数据库应用过程中，经常需要用到DBBrid来显示或编辑数据库表，但相对于IDE自带的DBBrid，DBGridEh显然要更好用一些（cxDBGrid也同样好使，这里只对DBGridEh进行说明）。
+在数据库表结构设计时，通常会习惯使用整型字段来存储如男、女、已修改、已删除、已作废等具有标记性的信息，好处是占存储空间小且可扩展性强，缺点是显示方式不友好，但是，使用DBGridEh的一些设置可以弥补这个缺陷。
+假设数据库里的表T_Demo里有一个表示性别的字段Sex，其用0表示男，1表示女，2表示未知，用DBGridEh显示时仍为0、1、2，十分不友好。这时只要做一点美化即可。
+在DBGridEh的对应列的KeyList属性里分别加入0、1、2三个数字，每个数字一行，用代码实现的话就是： 1 2 3 4 5 //这里假设第一列就是性别，以下代码相同 DBGridEh.Columns[0].KeyList.Clear; DBGridEh.Columns[0].KeyList.Append(&#39;0&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;1&#39;); DBGridEh.Columns[0].KeyList.Append(&#39;2&#39;); 在DBGridEh的对应列的PickList属性里分别加入男、女、未知三行，用代码实现是： 1 2 3 4 DBGridEh.Columns[0].PickList.Clear; DBGridEh.Columns[0].PickList.Append(&#39;男&#39;); DBGridEh.Columns[0].PickList.Append(&#39;女&#39;); DBGridEh.Columns[0].PickList.Append(&#39;未知&#39;); 这样，原先显示为0、1、2的性别就变成了男、女、未知。也可以加上图片来进一步美化。
+放置一个TImagList控件，并命名为ilSex，然后分别添加三个图片，比如像卫生间的男、女图片和问号，注意添加后图片对应的索引，否则会张冠李戴。
+在DBGridEh的ImagList属性里关联ilSex，并且设置ShowImageAndText属性为True，用代码是：
+1 2 DBGridEh.ImagList := ilSex; DBGridEh.ShowImageAndText := True; 这样，性别这一列就有图片有文字，比0、1、2要友好很多，而且在编辑的时候也可以直接下拉进行选择来实现性别的录入。</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-01-25 11:37:40 +0800 CST'>2019-01-25 11:37:40</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to DBGridEh显示、编辑标记字段" href="https://afrusrsc.github.io/posts/program/pascal/ehlib_dbgrideh_field_dict/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">生成指定范围和个数的不重复的随机整数
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从其它平台迁移而来
+生成指定范围内的随机数，有相应的随机函数（如RandomRange(x, y)可生成x &lt;= d &lt; y的随机整数），或者在基本的随机函数上稍加修改也可生成；生成 n 个随机数，只需调用 n 次随机函数即可；生成 n 个不重复的随机数，就会有一点点小麻烦。
+常规思路 一般来说，要生成n个不重复的随机数，只需判断每次生成的随机数有没有和这前生成的随机数重复即可，若重复即抛弃，不重复则记录。
+但是，这样要进行很多额外的判断，而且当生成的量变大时，这样的判断次数也几乎是呈指数级的增加（具体复杂度没有进行详细分析）。
+另一种思路 如果每生成一个随机整数，就在一个整数序列上对应的位置做一个标记，那么只需要判断标记的个数有没有达到n即可，然后把有标记的整数取出就是 n 个不重复的随机整数。（其实该思路是借鉴了某个排序算法的思路，具体算法名称不记得了）
+首先来考虑生成 n 个[0, m)的不重复的随机数方法，n &lt; m。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 var i: Integer; tmpMark: array of Integer; begin SetLength(tmpMark, m); repeat Randomize; i := RandomRange(0, m); //[0,m)半开半闭区间 tmpMark[i] := 1; until SumInt(tmpMark) = n; for i := 0 to m - 1 do if tmpMark[i] = 1 then i; //i即为随机出的不重复的整数 end; 本例中借助长度为m的数组tmpMark来进行标记，同时使用delphi自带的SumInt（在Math单元）函数来计算标记的个数，有标记的tmpMark下标即为随机出的整数。...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-01-14 10:48:06 +0800 CST'>2019-01-14 10:48:06</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to 生成指定范围和个数的不重复的随机整数" href="https://afrusrsc.github.io/posts/program/pascal/random_int/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="https://afrusrsc.github.io/posts/program/pascal/page/4/">
+      «&nbsp;上一页&nbsp;4/7
+    </a>
+    <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/page/6/">下一页&nbsp;6/7&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

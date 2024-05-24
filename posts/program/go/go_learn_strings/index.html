@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go strings包 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="Builder 方法 说明 String 返回最终构造的字符串 Len 返回缓冲区（字节切片）的长度 Cap 返回缓冲区（字节切片）的容量 Reset 重置Builder Grow 显式扩容 Write 向Builder追加字节切片 WriteByte 向Builder追加字节 WriteRune 向Builder追加Unicode码点 WriteString 向Builder追加字符串 包函数 函数名 含义 说明 Clone 返回字符串的副本 Compare 比较两个字符串的大小，返回-1、0、1 Contains 判断一个字符串是否包含另一个字符串 类似于pascal的Pos()&gt;0 ContainsAny 判断一个字符串是否包含另一个字符串中的任意一个字符 ContainsRune 判断一个字符串是否包含一个Unicode码点 ContainsFunc 判断一个字符串是否包含满足特定条件的字符 Count 统计一个字符串中某个子字符串出现的次数 Cut 将一个字符串按照指定的分隔符进行切割 只进行一次切割 CutPrefix 判断一个字符串是否以指定的前缀开始，是则进行切割 CutSuffix 判断一个字符串是否以指定的后缀结束，是则进行切割 EqualFold 判断两个字符串是否相等，忽略大小写 类似于pascal的SameText() Fields 用连续的空白字符对字符串进行分割 FieldsFunc 用指定的函数对字符串进行分割 HasPrefix 判断一个字符串是否以指定的前缀开始 HasSuffix 判断一个字符串是否以指定的后缀结束 Index 返回一个字符串中某个子字符串第一次出现的位置（从0开始，未找到返回-1） 类似于pascal的Pos() IndexAny 返回一个字符串中任意一个字符第一次出现的位置（从0开始，未找到返回-1） IndexByte 返回一个字符串中某个字节第一次出现的位置（从0开始，未找到返回-1） IndexRune 返回一个字符串中某个Unicode码点第一次出现的位置（从0开始，未找到返回-1） IndexFunc 返回一个字符串中满足特定条件的字符第一次出现的位置（从0开始，未找到返回-1） LastIndex 返回一个字符串中某个子字符串最后一次出现的位置（从0开始，未找到返回-1） LastIndexAny 返回一个字符串中任意一个字符最后一次出现的位置（从0开始，未找到返回-1） LastIndexByte 返回一个字符串中某个字节最后一次出现的位置（从0开始，未找到返回-1） LastIndexFunc 返回一个字符串中满足特定条件的字符最后一次出现的位置（从0开始，未找到返回-1） Join 将一个字符串切片用指定的字符串连接成一个新字符串 Map 将一个字符串中的每个字符都映射成另一个字符 Repeat 将一个字符串重复指定的次数 Replace 将一个字符串中的某个子字符串替换成另一个字符串 ReplaceAll 将一个字符串中的所有子字符串替换成另一个字符串 Split 用指定的字符对字符串进行分割 SplitN 用指定的字符对字符串进行分割，最多分割n次 SplitAfter 用指定的字符对字符串进行分割，保留分隔符 SplitAfterN 用指定的字符对字符串进行分割，保留分隔符，最多分割n次 ToLower 将一个字符串中的所有字符都转换成小写 ToUpper 将一个字符串中的所有字符都转换成大写 ToTitle 将其中所有的Unicode字母转换为它们对应的Unicode标题大小写 ToLowerSpecial 将字符串中的字符按照特定规则转换为小写形式 ToUpperSpecial 将字符串中的字符按照特定规则转换为大写形式 ToTitleSpecial 将字符串中的字符按照特定规则转换为标题形式 ToValidUTF8 将一个字符串中的无效UTF-8字符替换成Unicode替换字符 Trim 去除字符串两端的指定字符 连续的指定字符都会被去除 TrimLeft 去除字符串左边的指定字符 连续的指定字符都会被去除 TrimRight 去除字符串右边的指定字符 连续的指定字符都会被去除 TrimFunc 去除字符串两端满足特定条件的字符 连续的满足条件的字符都会被去除 TrimLeftFunc 去除字符串左边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimRightFunc 去除字符串右边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimSpace 去除字符串两端的空白字符 连续的空白都会被去除 TrimPrefix 去除字符串前缀 TrimSuffix 去除字符串后缀 ">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_learn_strings/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_learn_strings/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go strings包" />
+<meta property="og:description" content="Builder 方法 说明 String 返回最终构造的字符串 Len 返回缓冲区（字节切片）的长度 Cap 返回缓冲区（字节切片）的容量 Reset 重置Builder Grow 显式扩容 Write 向Builder追加字节切片 WriteByte 向Builder追加字节 WriteRune 向Builder追加Unicode码点 WriteString 向Builder追加字符串 包函数 函数名 含义 说明 Clone 返回字符串的副本 Compare 比较两个字符串的大小，返回-1、0、1 Contains 判断一个字符串是否包含另一个字符串 类似于pascal的Pos()&gt;0 ContainsAny 判断一个字符串是否包含另一个字符串中的任意一个字符 ContainsRune 判断一个字符串是否包含一个Unicode码点 ContainsFunc 判断一个字符串是否包含满足特定条件的字符 Count 统计一个字符串中某个子字符串出现的次数 Cut 将一个字符串按照指定的分隔符进行切割 只进行一次切割 CutPrefix 判断一个字符串是否以指定的前缀开始，是则进行切割 CutSuffix 判断一个字符串是否以指定的后缀结束，是则进行切割 EqualFold 判断两个字符串是否相等，忽略大小写 类似于pascal的SameText() Fields 用连续的空白字符对字符串进行分割 FieldsFunc 用指定的函数对字符串进行分割 HasPrefix 判断一个字符串是否以指定的前缀开始 HasSuffix 判断一个字符串是否以指定的后缀结束 Index 返回一个字符串中某个子字符串第一次出现的位置（从0开始，未找到返回-1） 类似于pascal的Pos() IndexAny 返回一个字符串中任意一个字符第一次出现的位置（从0开始，未找到返回-1） IndexByte 返回一个字符串中某个字节第一次出现的位置（从0开始，未找到返回-1） IndexRune 返回一个字符串中某个Unicode码点第一次出现的位置（从0开始，未找到返回-1） IndexFunc 返回一个字符串中满足特定条件的字符第一次出现的位置（从0开始，未找到返回-1） LastIndex 返回一个字符串中某个子字符串最后一次出现的位置（从0开始，未找到返回-1） LastIndexAny 返回一个字符串中任意一个字符最后一次出现的位置（从0开始，未找到返回-1） LastIndexByte 返回一个字符串中某个字节最后一次出现的位置（从0开始，未找到返回-1） LastIndexFunc 返回一个字符串中满足特定条件的字符最后一次出现的位置（从0开始，未找到返回-1） Join 将一个字符串切片用指定的字符串连接成一个新字符串 Map 将一个字符串中的每个字符都映射成另一个字符 Repeat 将一个字符串重复指定的次数 Replace 将一个字符串中的某个子字符串替换成另一个字符串 ReplaceAll 将一个字符串中的所有子字符串替换成另一个字符串 Split 用指定的字符对字符串进行分割 SplitN 用指定的字符对字符串进行分割，最多分割n次 SplitAfter 用指定的字符对字符串进行分割，保留分隔符 SplitAfterN 用指定的字符对字符串进行分割，保留分隔符，最多分割n次 ToLower 将一个字符串中的所有字符都转换成小写 ToUpper 将一个字符串中的所有字符都转换成大写 ToTitle 将其中所有的Unicode字母转换为它们对应的Unicode标题大小写 ToLowerSpecial 将字符串中的字符按照特定规则转换为小写形式 ToUpperSpecial 将字符串中的字符按照特定规则转换为大写形式 ToTitleSpecial 将字符串中的字符按照特定规则转换为标题形式 ToValidUTF8 将一个字符串中的无效UTF-8字符替换成Unicode替换字符 Trim 去除字符串两端的指定字符 连续的指定字符都会被去除 TrimLeft 去除字符串左边的指定字符 连续的指定字符都会被去除 TrimRight 去除字符串右边的指定字符 连续的指定字符都会被去除 TrimFunc 去除字符串两端满足特定条件的字符 连续的满足条件的字符都会被去除 TrimLeftFunc 去除字符串左边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimRightFunc 去除字符串右边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimSpace 去除字符串两端的空白字符 连续的空白都会被去除 TrimPrefix 去除字符串前缀 TrimSuffix 去除字符串后缀 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_learn_strings/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-20T13:36:24+08:00" />
+<meta property="article:modified_time" content="2024-10-20T13:36:24+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go strings包"/>
+<meta name="twitter:description" content="Builder 方法 说明 String 返回最终构造的字符串 Len 返回缓冲区（字节切片）的长度 Cap 返回缓冲区（字节切片）的容量 Reset 重置Builder Grow 显式扩容 Write 向Builder追加字节切片 WriteByte 向Builder追加字节 WriteRune 向Builder追加Unicode码点 WriteString 向Builder追加字符串 包函数 函数名 含义 说明 Clone 返回字符串的副本 Compare 比较两个字符串的大小，返回-1、0、1 Contains 判断一个字符串是否包含另一个字符串 类似于pascal的Pos()&gt;0 ContainsAny 判断一个字符串是否包含另一个字符串中的任意一个字符 ContainsRune 判断一个字符串是否包含一个Unicode码点 ContainsFunc 判断一个字符串是否包含满足特定条件的字符 Count 统计一个字符串中某个子字符串出现的次数 Cut 将一个字符串按照指定的分隔符进行切割 只进行一次切割 CutPrefix 判断一个字符串是否以指定的前缀开始，是则进行切割 CutSuffix 判断一个字符串是否以指定的后缀结束，是则进行切割 EqualFold 判断两个字符串是否相等，忽略大小写 类似于pascal的SameText() Fields 用连续的空白字符对字符串进行分割 FieldsFunc 用指定的函数对字符串进行分割 HasPrefix 判断一个字符串是否以指定的前缀开始 HasSuffix 判断一个字符串是否以指定的后缀结束 Index 返回一个字符串中某个子字符串第一次出现的位置（从0开始，未找到返回-1） 类似于pascal的Pos() IndexAny 返回一个字符串中任意一个字符第一次出现的位置（从0开始，未找到返回-1） IndexByte 返回一个字符串中某个字节第一次出现的位置（从0开始，未找到返回-1） IndexRune 返回一个字符串中某个Unicode码点第一次出现的位置（从0开始，未找到返回-1） IndexFunc 返回一个字符串中满足特定条件的字符第一次出现的位置（从0开始，未找到返回-1） LastIndex 返回一个字符串中某个子字符串最后一次出现的位置（从0开始，未找到返回-1） LastIndexAny 返回一个字符串中任意一个字符最后一次出现的位置（从0开始，未找到返回-1） LastIndexByte 返回一个字符串中某个字节最后一次出现的位置（从0开始，未找到返回-1） LastIndexFunc 返回一个字符串中满足特定条件的字符最后一次出现的位置（从0开始，未找到返回-1） Join 将一个字符串切片用指定的字符串连接成一个新字符串 Map 将一个字符串中的每个字符都映射成另一个字符 Repeat 将一个字符串重复指定的次数 Replace 将一个字符串中的某个子字符串替换成另一个字符串 ReplaceAll 将一个字符串中的所有子字符串替换成另一个字符串 Split 用指定的字符对字符串进行分割 SplitN 用指定的字符对字符串进行分割，最多分割n次 SplitAfter 用指定的字符对字符串进行分割，保留分隔符 SplitAfterN 用指定的字符对字符串进行分割，保留分隔符，最多分割n次 ToLower 将一个字符串中的所有字符都转换成小写 ToUpper 将一个字符串中的所有字符都转换成大写 ToTitle 将其中所有的Unicode字母转换为它们对应的Unicode标题大小写 ToLowerSpecial 将字符串中的字符按照特定规则转换为小写形式 ToUpperSpecial 将字符串中的字符按照特定规则转换为大写形式 ToTitleSpecial 将字符串中的字符按照特定规则转换为标题形式 ToValidUTF8 将一个字符串中的无效UTF-8字符替换成Unicode替换字符 Trim 去除字符串两端的指定字符 连续的指定字符都会被去除 TrimLeft 去除字符串左边的指定字符 连续的指定字符都会被去除 TrimRight 去除字符串右边的指定字符 连续的指定字符都会被去除 TrimFunc 去除字符串两端满足特定条件的字符 连续的满足条件的字符都会被去除 TrimLeftFunc 去除字符串左边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimRightFunc 去除字符串右边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimSpace 去除字符串两端的空白字符 连续的空白都会被去除 TrimPrefix 去除字符串前缀 TrimSuffix 去除字符串后缀 "/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go strings包",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_learn_strings/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go strings包",
+  "name": "Go strings包",
+  "description": "Builder 方法 说明 String 返回最终构造的字符串 Len 返回缓冲区（字节切片）的长度 Cap 返回缓冲区（字节切片）的容量 Reset 重置Builder Grow 显式扩容 Write 向Builder追加字节切片 WriteByte 向Builder追加字节 WriteRune 向Builder追加Unicode码点 WriteString 向Builder追加字符串 包函数 函数名 含义 说明 Clone 返回字符串的副本 Compare 比较两个字符串的大小，返回-1、0、1 Contains 判断一个字符串是否包含另一个字符串 类似于pascal的Pos()\u0026gt;0 ContainsAny 判断一个字符串是否包含另一个字符串中的任意一个字符 ContainsRune 判断一个字符串是否包含一个Unicode码点 ContainsFunc 判断一个字符串是否包含满足特定条件的字符 Count 统计一个字符串中某个子字符串出现的次数 Cut 将一个字符串按照指定的分隔符进行切割 只进行一次切割 CutPrefix 判断一个字符串是否以指定的前缀开始，是则进行切割 CutSuffix 判断一个字符串是否以指定的后缀结束，是则进行切割 EqualFold 判断两个字符串是否相等，忽略大小写 类似于pascal的SameText() Fields 用连续的空白字符对字符串进行分割 FieldsFunc 用指定的函数对字符串进行分割 HasPrefix 判断一个字符串是否以指定的前缀开始 HasSuffix 判断一个字符串是否以指定的后缀结束 Index 返回一个字符串中某个子字符串第一次出现的位置（从0开始，未找到返回-1） 类似于pascal的Pos() IndexAny 返回一个字符串中任意一个字符第一次出现的位置（从0开始，未找到返回-1） IndexByte 返回一个字符串中某个字节第一次出现的位置（从0开始，未找到返回-1） IndexRune 返回一个字符串中某个Unicode码点第一次出现的位置（从0开始，未找到返回-1） IndexFunc 返回一个字符串中满足特定条件的字符第一次出现的位置（从0开始，未找到返回-1） LastIndex 返回一个字符串中某个子字符串最后一次出现的位置（从0开始，未找到返回-1） LastIndexAny 返回一个字符串中任意一个字符最后一次出现的位置（从0开始，未找到返回-1） LastIndexByte 返回一个字符串中某个字节最后一次出现的位置（从0开始，未找到返回-1） LastIndexFunc 返回一个字符串中满足特定条件的字符最后一次出现的位置（从0开始，未找到返回-1） Join 将一个字符串切片用指定的字符串连接成一个新字符串 Map 将一个字符串中的每个字符都映射成另一个字符 Repeat 将一个字符串重复指定的次数 Replace 将一个字符串中的某个子字符串替换成另一个字符串 ReplaceAll 将一个字符串中的所有子字符串替换成另一个字符串 Split 用指定的字符对字符串进行分割 SplitN 用指定的字符对字符串进行分割，最多分割n次 SplitAfter 用指定的字符对字符串进行分割，保留分隔符 SplitAfterN 用指定的字符对字符串进行分割，保留分隔符，最多分割n次 ToLower 将一个字符串中的所有字符都转换成小写 ToUpper 将一个字符串中的所有字符都转换成大写 ToTitle 将其中所有的Unicode字母转换为它们对应的Unicode标题大小写 ToLowerSpecial 将字符串中的字符按照特定规则转换为小写形式 ToUpperSpecial 将字符串中的字符按照特定规则转换为大写形式 ToTitleSpecial 将字符串中的字符按照特定规则转换为标题形式 ToValidUTF8 将一个字符串中的无效UTF-8字符替换成Unicode替换字符 Trim 去除字符串两端的指定字符 连续的指定字符都会被去除 TrimLeft 去除字符串左边的指定字符 连续的指定字符都会被去除 TrimRight 去除字符串右边的指定字符 连续的指定字符都会被去除 TrimFunc 去除字符串两端满足特定条件的字符 连续的满足条件的字符都会被去除 TrimLeftFunc 去除字符串左边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimRightFunc 去除字符串右边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimSpace 去除字符串两端的空白字符 连续的空白都会被去除 TrimPrefix 去除字符串前缀 TrimSuffix 去除字符串后缀 ",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "Builder 方法 说明 String 返回最终构造的字符串 Len 返回缓冲区（字节切片）的长度 Cap 返回缓冲区（字节切片）的容量 Reset 重置Builder Grow 显式扩容 Write 向Builder追加字节切片 WriteByte 向Builder追加字节 WriteRune 向Builder追加Unicode码点 WriteString 向Builder追加字符串 包函数 函数名 含义 说明 Clone 返回字符串的副本 Compare 比较两个字符串的大小，返回-1、0、1 Contains 判断一个字符串是否包含另一个字符串 类似于pascal的Pos()\u003e0 ContainsAny 判断一个字符串是否包含另一个字符串中的任意一个字符 ContainsRune 判断一个字符串是否包含一个Unicode码点 ContainsFunc 判断一个字符串是否包含满足特定条件的字符 Count 统计一个字符串中某个子字符串出现的次数 Cut 将一个字符串按照指定的分隔符进行切割 只进行一次切割 CutPrefix 判断一个字符串是否以指定的前缀开始，是则进行切割 CutSuffix 判断一个字符串是否以指定的后缀结束，是则进行切割 EqualFold 判断两个字符串是否相等，忽略大小写 类似于pascal的SameText() Fields 用连续的空白字符对字符串进行分割 FieldsFunc 用指定的函数对字符串进行分割 HasPrefix 判断一个字符串是否以指定的前缀开始 HasSuffix 判断一个字符串是否以指定的后缀结束 Index 返回一个字符串中某个子字符串第一次出现的位置（从0开始，未找到返回-1） 类似于pascal的Pos() IndexAny 返回一个字符串中任意一个字符第一次出现的位置（从0开始，未找到返回-1） IndexByte 返回一个字符串中某个字节第一次出现的位置（从0开始，未找到返回-1） IndexRune 返回一个字符串中某个Unicode码点第一次出现的位置（从0开始，未找到返回-1） IndexFunc 返回一个字符串中满足特定条件的字符第一次出现的位置（从0开始，未找到返回-1） LastIndex 返回一个字符串中某个子字符串最后一次出现的位置（从0开始，未找到返回-1） LastIndexAny 返回一个字符串中任意一个字符最后一次出现的位置（从0开始，未找到返回-1） LastIndexByte 返回一个字符串中某个字节最后一次出现的位置（从0开始，未找到返回-1） LastIndexFunc 返回一个字符串中满足特定条件的字符最后一次出现的位置（从0开始，未找到返回-1） Join 将一个字符串切片用指定的字符串连接成一个新字符串 Map 将一个字符串中的每个字符都映射成另一个字符 Repeat 将一个字符串重复指定的次数 Replace 将一个字符串中的某个子字符串替换成另一个字符串 ReplaceAll 将一个字符串中的所有子字符串替换成另一个字符串 Split 用指定的字符对字符串进行分割 SplitN 用指定的字符对字符串进行分割，最多分割n次 SplitAfter 用指定的字符对字符串进行分割，保留分隔符 SplitAfterN 用指定的字符对字符串进行分割，保留分隔符，最多分割n次 ToLower 将一个字符串中的所有字符都转换成小写 ToUpper 将一个字符串中的所有字符都转换成大写 ToTitle 将其中所有的Unicode字母转换为它们对应的Unicode标题大小写 ToLowerSpecial 将字符串中的字符按照特定规则转换为小写形式 ToUpperSpecial 将字符串中的字符按照特定规则转换为大写形式 ToTitleSpecial 将字符串中的字符按照特定规则转换为标题形式 ToValidUTF8 将一个字符串中的无效UTF-8字符替换成Unicode替换字符 Trim 去除字符串两端的指定字符 连续的指定字符都会被去除 TrimLeft 去除字符串左边的指定字符 连续的指定字符都会被去除 TrimRight 去除字符串右边的指定字符 连续的指定字符都会被去除 TrimFunc 去除字符串两端满足特定条件的字符 连续的满足条件的字符都会被去除 TrimLeftFunc 去除字符串左边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimRightFunc 去除字符串右边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimSpace 去除字符串两端的空白字符 连续的空白都会被去除 TrimPrefix 去除字符串前缀 TrimSuffix 去除字符串后缀 ",
+  "wordCount" : "134",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-20T13:36:24+08:00",
+  "dateModified": "2024-10-20T13:36:24+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_learn_strings/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go strings包
+    </h1>
+    <div class="post-meta"><span title='2024-10-20 13:36:24 +0800 CST'>2024-10-20 13:36:24</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#builder" aria-label="Builder">Builder</a></li>
+                    <li>
+                        <a href="#%e5%8c%85%e5%87%bd%e6%95%b0" aria-label="包函数">包函数</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="builder">Builder<a hidden class="anchor" aria-hidden="true" href="#builder">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>String</td>
+<td>返回最终构造的字符串</td>
+</tr>
+<tr>
+<td>Len</td>
+<td>返回缓冲区（字节切片）的长度</td>
+</tr>
+<tr>
+<td>Cap</td>
+<td>返回缓冲区（字节切片）的容量</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>重置<code>Builder</code></td>
+</tr>
+<tr>
+<td>Grow</td>
+<td>显式扩容</td>
+</tr>
+<tr>
+<td>Write</td>
+<td>向<code>Builder</code>追加字节切片</td>
+</tr>
+<tr>
+<td>WriteByte</td>
+<td>向<code>Builder</code>追加字节</td>
+</tr>
+<tr>
+<td>WriteRune</td>
+<td>向<code>Builder</code>追加<code>Unicode</code>码点</td>
+</tr>
+<tr>
+<td>WriteString</td>
+<td>向<code>Builder</code>追加字符串</td>
+</tr>
+</tbody>
+</table>
+<h1 id="包函数">包函数<a hidden class="anchor" aria-hidden="true" href="#包函数">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clone</td>
+<td>返回字符串的副本</td>
+<td></td>
+</tr>
+<tr>
+<td>Compare</td>
+<td>比较两个字符串的大小，返回-1、0、1</td>
+<td></td>
+</tr>
+<tr>
+<td>Contains</td>
+<td>判断一个字符串是否包含另一个字符串</td>
+<td>类似于<code>pascal</code>的<code>Pos()&gt;0</code></td>
+</tr>
+<tr>
+<td>ContainsAny</td>
+<td>判断一个字符串是否包含另一个字符串中的任意一个字符</td>
+<td></td>
+</tr>
+<tr>
+<td>ContainsRune</td>
+<td>判断一个字符串是否包含一个<code>Unicode</code>码点</td>
+<td></td>
+</tr>
+<tr>
+<td>ContainsFunc</td>
+<td>判断一个字符串是否包含满足特定条件的字符</td>
+<td></td>
+</tr>
+<tr>
+<td>Count</td>
+<td>统计一个字符串中某个子字符串出现的次数</td>
+<td></td>
+</tr>
+<tr>
+<td>Cut</td>
+<td>将一个字符串按照指定的分隔符进行切割</td>
+<td>只进行一次切割</td>
+</tr>
+<tr>
+<td>CutPrefix</td>
+<td>判断一个字符串是否以指定的前缀开始，是则进行切割</td>
+<td></td>
+</tr>
+<tr>
+<td>CutSuffix</td>
+<td>判断一个字符串是否以指定的后缀结束，是则进行切割</td>
+<td></td>
+</tr>
+<tr>
+<td>EqualFold</td>
+<td>判断两个字符串是否相等，忽略大小写</td>
+<td>类似于<code>pascal</code>的<code>SameText()</code></td>
+</tr>
+<tr>
+<td>Fields</td>
+<td>用连续的空白字符对字符串进行分割</td>
+<td></td>
+</tr>
+<tr>
+<td>FieldsFunc</td>
+<td>用指定的函数对字符串进行分割</td>
+<td></td>
+</tr>
+<tr>
+<td>HasPrefix</td>
+<td>判断一个字符串是否以指定的前缀开始</td>
+<td></td>
+</tr>
+<tr>
+<td>HasSuffix</td>
+<td>判断一个字符串是否以指定的后缀结束</td>
+<td></td>
+</tr>
+<tr>
+<td>Index</td>
+<td>返回一个字符串中某个子字符串第一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td>类似于<code>pascal</code>的<code>Pos()</code></td>
+</tr>
+<tr>
+<td>IndexAny</td>
+<td>返回一个字符串中任意一个字符第一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>IndexByte</td>
+<td>返回一个字符串中某个字节第一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>IndexRune</td>
+<td>返回一个字符串中某个<code>Unicode</code>码点第一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>IndexFunc</td>
+<td>返回一个字符串中满足特定条件的字符第一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>LastIndex</td>
+<td>返回一个字符串中某个子字符串最后一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>LastIndexAny</td>
+<td>返回一个字符串中任意一个字符最后一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>LastIndexByte</td>
+<td>返回一个字符串中某个字节最后一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>LastIndexFunc</td>
+<td>返回一个字符串中满足特定条件的字符最后一次出现的位置（从<code>0</code>开始，未找到返回<code>-1</code>）</td>
+<td></td>
+</tr>
+<tr>
+<td>Join</td>
+<td>将一个字符串切片用指定的字符串连接成一个新字符串</td>
+<td></td>
+</tr>
+<tr>
+<td>Map</td>
+<td>将一个字符串中的每个字符都映射成另一个字符</td>
+<td></td>
+</tr>
+<tr>
+<td>Repeat</td>
+<td>将一个字符串重复指定的次数</td>
+<td></td>
+</tr>
+<tr>
+<td>Replace</td>
+<td>将一个字符串中的某个子字符串替换成另一个字符串</td>
+<td></td>
+</tr>
+<tr>
+<td>ReplaceAll</td>
+<td>将一个字符串中的所有子字符串替换成另一个字符串</td>
+<td></td>
+</tr>
+<tr>
+<td>Split</td>
+<td>用指定的字符对字符串进行分割</td>
+<td></td>
+</tr>
+<tr>
+<td>SplitN</td>
+<td>用指定的字符对字符串进行分割，最多分割<code>n</code>次</td>
+<td></td>
+</tr>
+<tr>
+<td>SplitAfter</td>
+<td>用指定的字符对字符串进行分割，保留分隔符</td>
+<td></td>
+</tr>
+<tr>
+<td>SplitAfterN</td>
+<td>用指定的字符对字符串进行分割，保留分隔符，最多分割<code>n</code>次</td>
+<td></td>
+</tr>
+<tr>
+<td>ToLower</td>
+<td>将一个字符串中的所有字符都转换成小写</td>
+<td></td>
+</tr>
+<tr>
+<td>ToUpper</td>
+<td>将一个字符串中的所有字符都转换成大写</td>
+<td></td>
+</tr>
+<tr>
+<td>ToTitle</td>
+<td>将其中所有的<code>Unicode</code>字母转换为它们对应的<code>Unicode</code>标题大小写</td>
+<td></td>
+</tr>
+<tr>
+<td>ToLowerSpecial</td>
+<td>将字符串中的字符按照特定规则转换为小写形式</td>
+<td></td>
+</tr>
+<tr>
+<td>ToUpperSpecial</td>
+<td>将字符串中的字符按照特定规则转换为大写形式</td>
+<td></td>
+</tr>
+<tr>
+<td>ToTitleSpecial</td>
+<td>将字符串中的字符按照特定规则转换为标题形式</td>
+<td></td>
+</tr>
+<tr>
+<td>ToValidUTF8</td>
+<td>将一个字符串中的无效<code>UTF-8</code>字符替换成<code>Unicode</code>替换字符</td>
+<td></td>
+</tr>
+<tr>
+<td>Trim</td>
+<td>去除字符串两端的指定字符</td>
+<td>连续的指定字符都会被去除</td>
+</tr>
+<tr>
+<td>TrimLeft</td>
+<td>去除字符串左边的指定字符</td>
+<td>连续的指定字符都会被去除</td>
+</tr>
+<tr>
+<td>TrimRight</td>
+<td>去除字符串右边的指定字符</td>
+<td>连续的指定字符都会被去除</td>
+</tr>
+<tr>
+<td>TrimFunc</td>
+<td>去除字符串两端满足特定条件的字符</td>
+<td>连续的满足条件的字符都会被去除</td>
+</tr>
+<tr>
+<td>TrimLeftFunc</td>
+<td>去除字符串左边满足特定条件的字符</td>
+<td>连续的满足条件的字符都会被去除</td>
+</tr>
+<tr>
+<td>TrimRightFunc</td>
+<td>去除字符串右边满足特定条件的字符</td>
+<td>连续的满足条件的字符都会被去除</td>
+</tr>
+<tr>
+<td>TrimSpace</td>
+<td>去除字符串两端的空白字符</td>
+<td>连续的空白都会被去除</td>
+</tr>
+<tr>
+<td>TrimPrefix</td>
+<td>去除字符串前缀</td>
+<td></td>
+</tr>
+<tr>
+<td>TrimSuffix</td>
+<td>去除字符串后缀</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_learn_time/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go time包</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_learn_builtin/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go builtin包</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

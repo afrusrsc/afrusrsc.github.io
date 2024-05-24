@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>⚔️golang on 慢步道人</title>
+    <link>https://afrusrsc.github.io/posts/program/go/</link>
+    <description>Recent content in ⚔️golang on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Mon, 26 May 2025 10:27:45 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/posts/program/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go多版本共存</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_multi_version/</link>
+      <pubDate>Mon, 26 May 2025 10:27:45 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_multi_version/</guid>
+      <description>场景 工作需要，一般使用的是相对较低的go版本，且较长时间内不会轻易变更；自己尝鲜或参与某个开源项目，又会使用另外的go版本。在不同项目间切换工作，通常需要切换到对应的go版本（虽然go目前是向下兼容的，高版本可以正确编译低版本，但开发人员即便熟知不同版本间的差异，也不能百分百保证不使用到高版本的特性）。
+解决方案 网上也有很多方案，尝试后摸索出了比较符合自己风格和习惯的方案。
+创建一个存放go不同版本的目录，用于将不同版本下载到该目录统一管理，并以版本号命名 1 mkdir $HOME/gosdk 编写下载脚本download_go.sh 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 #!/bin/bash if test &amp;#34;${1}&amp;#34; == &amp;#34;&amp;#34;; then echo &amp;#39;请传入正确的版本号，如：&amp;#39;${0}&amp;#39; 1.21.1&amp;#39; else # 统一管理目录 gosdk=$HOME/gosdk # 下载 gopkg=go${1}.linux-amd64.tar.gz if ! test -e ${gopkg}; then wget -c https://dl.google.com/go/${gopkg} fi # 删除可能冲突的文件 rm -rf ${gosdk}/go rm -rf ${gosdk}/go${1} # 解压 tar -C ${gosdk}/ -xzf ${gopkg} # 重命名 mv ${gosdk}/go ${gosdk}/go${1} # 删除安装包 rm ${gopkg} # 配置环境变量 go env -w GOPROXY=https://goproxy.</description>
+    </item>
+    <item>
+      <title>Go命令行加进度条</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_progressbar/</link>
+      <pubDate>Fri, 21 Mar 2025 21:38:23 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_progressbar/</guid>
+      <description>背景 文件去重功能做好了，但当文件比较多或文件比较大的时候，耗时也会比较久，想加个进度条来直观显示处理进度。
+简单尝试了下github.com/schollz/progressbar这个库，完全能满足目前的需求。
+使用 安装 1 go get -u github.com/schollz/progressbar/v3 # 注意带版本v3 一般使用 1 2 3 4 5 6 bar := progressbar.Default(n, &amp;#34;描述&amp;#34;) defer bar.Close() i := 0; i &amp;lt; n; i++ { bar.Add(1) // 工作代码 } n为总数，当n&amp;gt;0时，显示的是常规的进度条；当n=-1时，显示一个计数的进度。
+还有其它比较细的控制及其它场景的使用，等有空了再细细研究下。</description>
+    </item>
+    <item>
+      <title>用Go写一个文件去重工具</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_duplicate_cleaner/</link>
+      <pubDate>Thu, 20 Mar 2025 16:19:57 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_duplicate_cleaner/</guid>
+      <description>背景 想自己做这个功能，主要是因为Duplicate Cleaner这个商业软件只有几天的试用时间，而且文件去重这个逻辑也非常简单。
+graph TD a[获取文件清单及大小] --&gt; b[按大小分组] --&gt; c[排除只有一个文件的组] --&gt; d[计算文件Hash值] --&gt; e[按Hash值分组] --&gt; f[排除只有一个文件的组] --&gt; g[选择需要删除的文件] --&gt; h[删除] 问题 计算文件Hash值，使用了hash.Hash接口，自然也用到了goroutine来缩短耗时，但是在测试的时候发现功能不太好用，时好时坏，准确说是有时能获取到重复列表，有时不能。
+一点点排查，并且把代码段发给DeepSeek，最终确定是因为hash.Hash不是并发安全的。
+修复方法很简单，只要在goroutine内实例化即可。修改之后达到了预期。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 func calcHashs(files []*FileInfo, hashName string) { g := sync.WaitGroup{} for _, file := range files { g.Add(1) go func(f *FileInfo) { defer g.Done() h := newHash(hashName) hashValue, err := calcHash(f.</description>
+    </item>
+    <item>
+      <title>Gin功能列表</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_gin_funclist/</link>
+      <pubDate>Sun, 23 Feb 2025 19:48:17 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_gin_funclist/</guid>
+      <description>gin版本v1.10.0
+包函数 方法 含义 说明 BasicAuth 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 底层调用BasicAuthForRealm BasicAuthForProxy 创建一个HTTP代理基本认证（Basic HTTP Proxy - Authorization）的中间件 BasicAuthForRealm 创建一个HTTP基本认证（Basic HTTP Authorization）的中间件 Bind 创建一个用于将请求中的数据绑定到指定的接口对象上的中间件 CreateTestContext 创建一个干净的Engine实例和一个与之关联的上下文对象用于测试 CreateTestContextOnly 在已有的Engine实例基础上创建一个独立的上下文用于测试 CustomRecovery 根据自定义的处理函数创建一个恢复中间件 底层调用CustomRecoveryWithWriter CustomRecoveryWithWriter 创建一个自定义的恢复中间件 Default 返回一个默认的Engine实例 默认含Logger和Recovery两个中间件 Dir 返回一个http.FileSystem接口的实现，该实现可被http.FileServer使用 DisableBindValidation 关闭默认的验证器 DisableConsoleColor 禁用控制台的颜色输出 EnableJsonDecoderDisallowUnknownFields 开启JSON解码器的DisallowUnknownFields功能 即遇到未知字段时就报错 EnableJsonDecoderUseNumber 开启JSON解码器的UseNumber功能 即将数字解码为json.Number类型，而不是float64，以在需要时精确地转换为整数或浮点数，从而避免精度丢失的问题 ErrorLogger 创建一个能够处理任意类型的错误的中间件 底层调用ErrorLoggerT ErrorLoggerT 创建一个能够处理指定类型的错误的中间件 ForceConsoleColor 强制在控制台输出带有颜色的内容 IsDebugging 判断当前框架是否处于调试模式 Logger 使用默认配置来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithConfig 根据传入的配置来创建一个日志中间件 LoggerWithFormatter 根据指定的格式来创建一个日志中间件 底层调用LoggerWithConfig LoggerWithWriter 根据指定的输出目标创建一个日志中间件 底层调用LoggerWithConfig Mode 返回当前Gin框架的运行模式 有debug、release和test三种模式 New 返回一个全新的、没有任何中间件的Engine实例 Recovery 使用默认配置创建一个恢复中间件 底层调用RecoveryWithWriter RecoveryWithWriter 根据指定输出目标创建一个恢复中间件 底层调用CustomRecoveryWithWriter SetMode 设置gin框架的运行模式 WrapF 将标准的http.</description>
+    </item>
+    <item>
+      <title>Go path包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_path/</link>
+      <pubDate>Sun, 03 Nov 2024 22:12:48 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_path/</guid>
+      <description>path包 path包仅适用于处理由正斜杠/分隔的路径，例如URL。
+不能处理带有盘符或反斜杠\的Windows路径。
+包函数 方法 含义 说明 Base 返回路径的最后一个元素 会先移除路径末尾的斜杠，空路径返回.，纯斜杠返回/ Clean 返回与输入路径等效的最短路径名 Dir 返回路径的目录部分 Ext 返回路径中以.分隔的文件扩展名 无.则返回空字符串 IsAbs 判断路径是否为绝对路径 只有以/开头的才是绝对路径 Join 将路径元素连接成路径 Match 判断路径是否匹配模式 Split 将路径拆分为目录和文件 filepath包 处理方式与目标操作系统定义的文件路径相兼容。 包函数 方法 含义 说明 Abs 返回绝对路径 Base 返回路径的最后一个元素 会先移除路径末尾的斜杠，空路径返回.，纯斜杠返回/ Clean 返回与输入路径等效的最短路径名 Dir 返回路径的目录部分 EvalSymlinks 返回路径中的符号链接所指向的真实路径 Ext 返回路径中以.分隔的文件扩展名 无.则返回空字符串 FromSlash 将路径中/的斜杠替换为特定操作系统的分隔符字符 linux中的\不会被替换 ToSlash 将路径中特定操作系统的分隔符字符替换为/ linux中的\不会被替换 Glob 返回与模式匹配的所有路径 IsAbs 判断路径是否为绝对路径 只有以/开头的才是绝对路径 IsLocal 判断路径是否为本地路径，即是否在当前路径下 仅词法分析，不考虑文件系统 Join 将路径元素连接成路径 Localize 将一个以/分隔的路径转换为一个操作系统路径 Match 判断路径是否匹配模式 Rel 返回从basepath到targpath的相对路径 Split 将路径拆分为目录和文件 SplitList 将一个包含多个以特定操作系统路径分隔符（如:或;）分隔的路径字符串拆分成单个的路径元素 分隔符取决于当前操作系统 VolumeName 返回路径的卷名 适用于Windows平台 Walk 遍历路径下的所有目录和文件并对其调用fn WalkDir 遍历路径下的所有目录和文件并对其调用fn 比Walk更优更高效 </description>
+    </item>
+    <item>
+      <title>Go sync包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_sync/</link>
+      <pubDate>Wed, 30 Oct 2024 22:45:48 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_sync/</guid>
+      <description>Mutex 无需显式初始化，直接声明变量即可使用。
+互斥锁，同一时刻只能有一个协程持有锁，不分读写。
+方法 含义 说明 Lock 加锁 Unlock 解锁 未加锁时调用会导致panic TryLock 尝试加锁 立即返回，成功返回true，失败返回false RWMutex 无需显式初始化，直接声明变量即可使用。
+读写锁，同一时刻可以有多个协程持有读锁，但是只能有一个协程持有写锁。
+有写锁时，其他协程无法获取读锁和写锁。
+有读锁时，其他协程可以获取读锁，但是无法获取写锁。
+方法 含义 说明 RLock 加读锁 RUnlock 解读锁 未加读锁时调用会导致panic TryRLock 尝试加读锁 立即返回，成功返回true，失败返回false Lock 加写锁 Unlock 解写锁 未加写锁时调用会导致panic TryLock 尝试加写锁 立即返回，成功返回true，失败返回false Map 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Store 存储键值对 Load 加载键对应的值 Delete 删除键对应的值 Clear 清除所有键值对 Swap 交换指定键对应的旧值和新值，并返回旧值和操作之前键是否存在 LoadAndDelete 加载键对应的值并删除键值对 LoadOrStore 加载键对应的值，如果键不存在则存储键值对 CompareAndDelete 比较键对应的值是否等于指定值，如果相等则删除键值对 CompareAndSwap 比较键对应的值是否等于指定值，如果相等则替换键对应的值 Range 遍历键值对 传入函数返回false时停止遍历 WaitGroup 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Add 添加计数器 启动协程前调用，传入协程数量 Done 减少计数器 协程执行完毕后调用 Wait 等待计数器变为0 主协程调用，等待所有协程执行完毕 Once 无需显式初始化，直接声明变量即可使用。 方法 含义 说明 Do 执行函数 传入函数，只会执行一次 Pool 需显式初始化，为New指定创建对象的函数。</description>
+    </item>
+    <item>
+      <title>Go flag包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_flag/</link>
+      <pubDate>Sun, 27 Oct 2024 11:03:21 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_flag/</guid>
+      <description>简介 flag用于实现命令行标志的解析。
+一般流程 定义命令行标志
+解析命令行标志
+获取解析标志外的命令行参数
+使用解析后的标志和参数
+支持的标志格式 -flag：短标志
+--flag：长标志
+-flag=value：短标志和值
+-flag value：短标志和值，仅限非布尔标志
+解析规则 标志解析会在遇到第一个非标志参数（-被视为非标志参数）或者终止符--之后停止。
+1 0 t f T F true false TRUE FALSE True False均可被解析为布尔值。
+标志解析的返回值均为对应类型的指针。
+包函数 方法 含义 说明 NewFlagSet 创建一个新的标志集 通常用于创建子命令的标志集 Lookup 查找标志集中的标志 Set 设置标志集中的标志的值 NArg 返回实际传入的命令行参数的数量 调用Parse之后生效，不包含命令行标志 Arg 返回第i个命令行参数 从0开始 NFlag 返回实际传入的命令行标志的数量 调用Parse之后生效 Parsed 返回标志是否已被解析 Parse 解析命令行标志 Bool 定义一个布尔型标志 BoolVar 定义一个布尔型标志并绑定到指定变量 Int 定义一个整数标志 IntVar 定义一个整数标志并绑定到指定变量 Int64 定义一个64位整数标志 Int64Var 定义一个64位整数标志并绑定到指定变量 Uint 定义一个无符号整数标志 UintVar 定义一个无符号整数标志并绑定到指定变量 Uint64 定义一个64位无符号整数标志 Uint64Var 定义一个64位无符号整数标志并绑定到指定变量 Float64 定义一个64位浮点数标志 Float64Var 定义一个64位浮点数标志并绑定到指定变量 Duration 定义一个时间间隔标志 DurationVar 定义一个时间间隔标志并绑定到指定变量 String 定义一个字符串标志 StringVar 定义一个字符串标志并绑定到指定变量 Var 定义一个自定义类型标志并绑定到对应变量 自定义类型需要实现flag.</description>
+    </item>
+    <item>
+      <title>Go log包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_log/</link>
+      <pubDate>Sat, 26 Oct 2024 19:43:48 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_log/</guid>
+      <description>Logger 方法 含义 说明 Fatal Fatalf Fatalln 记录一条严重错误后执行os.Exit(1) Panic Panicf Panicln 记录一条严重错误后引发panic Print Printf Println 记录一条普通信息 Flags 返回当前Logger的输出标志 SetFlags 设置当前Logger的输出标志 Prefix 返回当前Logger的前缀 SetPrefix 设置当前Logger的前缀 Writer 返回当前Logger的输出目标 SetOutput 设置当前Logger的输出目标 Output 直接输出日志 更接近底层，可指定调用等级 包函数 方法 含义 说明 Default 返回默认的Logger New 创建一个新的Logger Fatal Fatalf Fatalln 记录一条严重错误后执行os.Exit(1) 使用默认的Logger Panic Panicf Panicln 记录一条严重错误后引发panic 使用默认的Logger Print Printf Println 记录一条普通信息 使用默认的Logger Flags 返回默认Logger的输出标志 SetFlags 设置默认Logger的输出标志 Prefix 返回默认Logger的前缀 SetPrefix 设置默认Logger的前缀 Writer 返回默认Logger的输出目标 SetOutput 设置默认Logger的输出目标 Output 使用默认的Logger直接输出日志 </description>
+    </item>
+    <item>
+      <title>Go bufio包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_bufio/</link>
+      <pubDate>Fri, 25 Oct 2024 21:23:15 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_bufio/</guid>
+      <description>Reader 方法 含义 说明 Buffered 返回从当前缓冲区内可以读取的字节数量 Discard 跳过接下来的n字节 Peek 查看接下来的n字节 不移动读指针 Read 从bufio.Reader中读取内容到字节切片 ReadByte 从bufio.Reader中读取一个字节 ReadBytes 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 ReadLine 从bufio.Reader中读取一行数据 不包含换行符，建议使用Reader.ReadBytes(&#39;\n&#39;)、Reader.ReadString(&#39;\n&#39;)或者Scanner ReadRune 从bufio.Reader中读取一个rune ReadSlice 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符，建议使用Reader.ReadBytes或ReadString ReadString 从bufio.Reader中读取数据，直到遇到指定的分隔符delim 包含分隔符 Reset 重置bufio.Reader Size 返回底层缓冲区的大小 UnreadByte 回退最后读取的一个字节 UnreadRune 回退最后读取的一个rune WriteTo 将数据从bufio.Reader写入到io.Writer Writer 方法 含义 说明 Available 返回当前缓冲区中可以写入的字节数量 AvailableBuffer 返回一个空的缓冲区，容量是Available返回的值 Buffered 返回当前缓冲区中已经写入的字节数量 Flush 将缓冲区中的数据写入到io.Writer ReadFrom 从io.Reader读取数据到bufio.Writer Reset 重置bufio.Writer Size 返回底层缓冲区的大小 Write 将数据写入bufio.Writer WriteByte 将一个字节写入bufio.Writer WriteRune 将一个rune写入bufio.Writer WriteString 将一个字符串写入bufio.Writer Scanner 方法 含义 说明 Buffer 设置在扫描时要使用的初始缓冲区，及在扫描过程中可能分配的最大缓冲区大小 Bytes 返回由最近一次调用Scanner.</description>
+    </item>
+    <item>
+      <title>Go io/fs包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_io_fs/</link>
+      <pubDate>Thu, 24 Oct 2024 22:02:04 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_io_fs/</guid>
+      <description>包函数 方法 含义 说明 FileInfoToDirEntry 将fs.FileInfo转换为fs.DirEntry FormatDirEntry 将fs.DirEntry格式化为字符串 FormatFileInfo 将fs.FileInfo格式化为字符串 Glob 获取指定模式的文件列表 ReadDir 读取指定目录中的内容，返回DirEntry切片 ReadFile 读取指定文件的内容，返回字节切片 Stat 获取文件信息，返回FileInfo Sub 获取指定目录的子目录 ValidPath 验证路径是否合法 WalkDir 遍历目录 </description>
+    </item>
+    <item>
+      <title>Go io包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_io/</link>
+      <pubDate>Thu, 24 Oct 2024 20:05:22 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_io/</guid>
+      <description>OffsetWriter OffsetWriter是io.Writer的一个实现，它可以将写入的数据偏移指定的字节数后写入到另一个io.Writer中。
+方法 含义 说明 Write 将数据写入io.Writer WriteAt 将数据写入io.Writer，从指定位置开始 Seek 设置指针位置 SectionReader SectionReader是io.Reader的一个实现，它可以从另一个io.Reader中读取指定范围的数据。
+方法 含义 说明 Outer 获取底层的ReaderAt、偏移量和长度 Read 从io.Reader读取内容到字节切片 读取后指针位置会移动 ReadAt 从io.Reader读取内容到字节切片，从指定位置开始 读取后指针位置不会移动 Seek 设置指针位置 Size 返回区间的大小 PipeReader PipeReader是io.Reader的一个实现，它可以从另一个io.Reader中读取数据。
+方法 含义 说明 Read 从管道读取内容到字节切片 Close 关闭PipeReader CloseWithError 关闭PipeReader并返回错误 PipeWriter PipeWriter是io.Writer的一个实现，它可以将数据写入到另一个io.Reader中。
+方法 含义 说明 Write 将数据写入io.Writer Close 关闭PipeWriter CloseWithError 关闭PipeWriter并返回错误 包函数 方法 含义 说明 Copy 将数据从io.Reader复制到io.Writer CopyBuffer 将数据从io.Reader复制到io.Writer，使用指定的缓冲区 CopyN 将数据从io.Reader复制到io.Writer，最多复制n个字节 LimitReader 从io.Reader创建一个限制的读取范围的io.Reader MultiReader 将多个io.Reader组合成一个io.Reader 先后读取，类似内容拼接 MultiWriter 将多个io.Writer组合成一个io.Writer 同时写入 NewOffsetWriter 从io.Writer创建一个带有偏移量的io.Writer NewSectionReader 从io.</description>
+    </item>
+    <item>
+      <title>Go os包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_os/</link>
+      <pubDate>Wed, 23 Oct 2024 23:49:39 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_os/</guid>
+      <description>File 方法 含义 说明 Close 关闭文件 Chdir 改变当前工作目录 *File必须为目录 Chmod 修改文件权限 Chown 修改文件所有者和组 Fd 返回文件描述符 Name 返回文件名 Read 从文件读取内容到字节切片 读取后指针位置会移动 ReadAt 从文件读取内容到字节切片，从指定位置开始 读取后指针位置不会移动 ReadDir 获取目录下的列表，返回DirEntry切片 *File必须为目录 Readdir 获取目录下的列表，返回FileInfo切片 *File必须为目录 Readdirnames 获取指定目录下的文件名 *File必须为目录 ReadFrom 从io.Reader读取内容到文件 读取后指针位置会移动，本质上是写文件 Seek 设置指针位置 SetDeadline 设置文件I/O超时时间 只有部分文件类型支持 SetReadDeadline 设置文件读取超时时间 只有部分文件类型支持 SetWriteDeadline 设置文件写入超时时间 只有部分文件类型支持 Stat 获取文件信息，返回FileInfo Sync 将文件内容同步到磁盘 SyscallConn 获取与文件操作相关的系统调用连接 Truncate 截断文件 Write 将字节切片中的数据写入文件 写入后指针位置会移动 WriteAt 将字节切片中的数据写入文件，从指定位置开始 写入后指针位置不会移动 WriteString 将字符串写入文件 写入后指针位置会移动 WriteTo 将数据写入io.Writer 写入后指针位置会移动，本质上是读文件 FileInfo 方法 含义 说明 IsDir 返回文件是否是目录 ModTime 返回文件的修改时间 Name 返回文件名 Size 返回文件的大小 Sys 返回文件的系统信息 FileMode 方法 含义 说明 IsDir 返回文件是否是目录 IsRegular 返回文件是否是普通文件 Perm 返回文件的权限 String 返回文件的字符串表示形式 Type 返回文件的类型 Process 方法 含义 说明 Kill 杀掉进程 Release 释放与Process对象相关的资源 Signal 向进程发送信号 Wait 等待进程退出 ProcessState 用于获取已结束进程状态信息。</description>
+    </item>
+    <item>
+      <title>Go time包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_time/</link>
+      <pubDate>Tue, 22 Oct 2024 22:23:20 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_time/</guid>
+      <description>Time 方法 说明 Add 在该时间上加个时间得到新时间 AddDate 在该时间上加个日期得到新时间 After 判断该时间是否在另一个时间之后 AppendFormat 将该时间格式化为字符串并追加到字节切片中 Before 判断该时间是否在另一个时间之前 Clock 返回当前时间的时、分、秒 Compare 和另一个时间比较大小，返回-1、0、1 Date 返回该时间的年、月、日 Day 返回该时间的日 Equal 判断该时间是否和另一个时间相等 Format 将该时间格式化为字符串 GoString 返回该时间的字符串表示形式 GobDecode 从字节切片中解码该时间 GobEncode 将该时间编码为字节切片 Hour 返回该时间的小时 ISOWeek 返回该时间所在的ISO周 In 返回该时间在指定时区对应的时间 IsDST 判断该时间是否在夏令时 IsZero 判断一个时间值是否为零值 Local 返回该时间在本地时区对应的时间 Location 返回该时间所在的时区 MarshalBinary 将该时间序列化为二进制格式 MarshalJSON 将该时间序列化为JSON格式 MarshalText 将该时间序列化为文本格式 Minute 返回该时间的分钟 Month 返回该时间的月份 Nanosecond 返回该时间的纳秒 Round 将该时间舍入到指定的时间单位 Second 返回该时间的秒 String 返回该时间的字符串表示形式 Sub 在该时间上减去另一个时间得到新时间 Time 返回该时间的时间戳 Truncate 将该时间截断到指定的时间单位 UTC 返回该时间在UTC时区对应的时间 Unix 返回该时间的Unix时间戳，单位：秒 UnixMicro 返回该时间的Unix时间戳，单位：微秒 UnixMilli 返回该时间的Unix时间戳，单位：毫秒 UnixNano 返回该时间的Unix时间戳，单位：纳秒 UnmarshalBinary 从二进制格式反序列化该时间 UnmarshalJSON 从JSON格式反序列化该时间 UnmarshalText 从文本格式反序列化该时间 Weekday 返回该时间所在的星期几 Year 返回该时间的年份 YearDay 返回该时间所在的年中的第几天 Zone 返回该时间所在的时区名称和偏移量（单位：秒） ZoneBounds 返回该时间所在的时区的夏令时开始和结束时间 包函数 函数名 含义 说明 Now 返回当前时间 Date 构造指定的时间 FixedZone 构造一个指定偏移时的时区 LoadLocation 加载时区信息 LoadLocationFromTZData 从TZData文件加载时区信息 Parse 解析时间字符串 ParseDuration 解析时间间隔字符串 ParseInLocation 在指定时区解析时间字符串 Since 计算指定时间与现在的间隔 等同于time.</description>
+    </item>
+    <item>
+      <title>Go strings包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_strings/</link>
+      <pubDate>Sun, 20 Oct 2024 13:36:24 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_strings/</guid>
+      <description>Builder 方法 说明 String 返回最终构造的字符串 Len 返回缓冲区（字节切片）的长度 Cap 返回缓冲区（字节切片）的容量 Reset 重置Builder Grow 显式扩容 Write 向Builder追加字节切片 WriteByte 向Builder追加字节 WriteRune 向Builder追加Unicode码点 WriteString 向Builder追加字符串 包函数 函数名 含义 说明 Clone 返回字符串的副本 Compare 比较两个字符串的大小，返回-1、0、1 Contains 判断一个字符串是否包含另一个字符串 类似于pascal的Pos()&amp;gt;0 ContainsAny 判断一个字符串是否包含另一个字符串中的任意一个字符 ContainsRune 判断一个字符串是否包含一个Unicode码点 ContainsFunc 判断一个字符串是否包含满足特定条件的字符 Count 统计一个字符串中某个子字符串出现的次数 Cut 将一个字符串按照指定的分隔符进行切割 只进行一次切割 CutPrefix 判断一个字符串是否以指定的前缀开始，是则进行切割 CutSuffix 判断一个字符串是否以指定的后缀结束，是则进行切割 EqualFold 判断两个字符串是否相等，忽略大小写 类似于pascal的SameText() Fields 用连续的空白字符对字符串进行分割 FieldsFunc 用指定的函数对字符串进行分割 HasPrefix 判断一个字符串是否以指定的前缀开始 HasSuffix 判断一个字符串是否以指定的后缀结束 Index 返回一个字符串中某个子字符串第一次出现的位置（从0开始，未找到返回-1） 类似于pascal的Pos() IndexAny 返回一个字符串中任意一个字符第一次出现的位置（从0开始，未找到返回-1） IndexByte 返回一个字符串中某个字节第一次出现的位置（从0开始，未找到返回-1） IndexRune 返回一个字符串中某个Unicode码点第一次出现的位置（从0开始，未找到返回-1） IndexFunc 返回一个字符串中满足特定条件的字符第一次出现的位置（从0开始，未找到返回-1） LastIndex 返回一个字符串中某个子字符串最后一次出现的位置（从0开始，未找到返回-1） LastIndexAny 返回一个字符串中任意一个字符最后一次出现的位置（从0开始，未找到返回-1） LastIndexByte 返回一个字符串中某个字节最后一次出现的位置（从0开始，未找到返回-1） LastIndexFunc 返回一个字符串中满足特定条件的字符最后一次出现的位置（从0开始，未找到返回-1） Join 将一个字符串切片用指定的字符串连接成一个新字符串 Map 将一个字符串中的每个字符都映射成另一个字符 Repeat 将一个字符串重复指定的次数 Replace 将一个字符串中的某个子字符串替换成另一个字符串 ReplaceAll 将一个字符串中的所有子字符串替换成另一个字符串 Split 用指定的字符对字符串进行分割 SplitN 用指定的字符对字符串进行分割，最多分割n次 SplitAfter 用指定的字符对字符串进行分割，保留分隔符 SplitAfterN 用指定的字符对字符串进行分割，保留分隔符，最多分割n次 ToLower 将一个字符串中的所有字符都转换成小写 ToUpper 将一个字符串中的所有字符都转换成大写 ToTitle 将其中所有的Unicode字母转换为它们对应的Unicode标题大小写 ToLowerSpecial 将字符串中的字符按照特定规则转换为小写形式 ToUpperSpecial 将字符串中的字符按照特定规则转换为大写形式 ToTitleSpecial 将字符串中的字符按照特定规则转换为标题形式 ToValidUTF8 将一个字符串中的无效UTF-8字符替换成Unicode替换字符 Trim 去除字符串两端的指定字符 连续的指定字符都会被去除 TrimLeft 去除字符串左边的指定字符 连续的指定字符都会被去除 TrimRight 去除字符串右边的指定字符 连续的指定字符都会被去除 TrimFunc 去除字符串两端满足特定条件的字符 连续的满足条件的字符都会被去除 TrimLeftFunc 去除字符串左边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimRightFunc 去除字符串右边满足特定条件的字符 连续的满足条件的字符都会被去除 TrimSpace 去除字符串两端的空白字符 连续的空白都会被去除 TrimPrefix 去除字符串前缀 TrimSuffix 去除字符串后缀 </description>
+    </item>
+    <item>
+      <title>Go builtin包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_builtin/</link>
+      <pubDate>Fri, 18 Oct 2024 13:35:53 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_builtin/</guid>
+      <description>说明 预声明标识符是指在代码中可以直接使用的标识符，但它们并没有在任何包中声明。这些标识符通常是由Go语言的标准库或编译器提供的，它们在代码中可以直接使用，而不需要导入任何包。
+builtin包的作用是为这些预声明标识符提供文档说明，以便开发人员了解它们的用途和用法。通过查看builtin包的文档，开发人员可以了解到哪些预声明标识符是可用的，以及它们的作用和使用方法。
+内置函数 函数名 含义 说明 append 将元素追加到切片末尾 容量足够时，不会重新分配内存；容量不足时，会重新分配内存 copy 将切片中的元素复制到另一个切片中，返回复制的元素数量 delete 从映射中删除指定的键值对 len 返回切片、映射、通道或字符串的长度 cap 返回切片、映射或通道的容量 make 为切片、映射或通道分配内存，并返回该类型的零值 max 返回一组可比较类型中的最大值 如果是浮点型且参数中有NaN，则返回NaN min 返回一组可比较类型中的最小值 如果是浮点型且参数中有NaN，则返回NaN new 为指定类型的新值分配内存，并返回指向该类型的零值的指针 complex 创建一个复数 real 返回复数的实部 imag 返回复数的虚部 clear 清除切片、映射中的所有元素 close 关闭通道 只能由发送方调用 panic 停止当前协程的正常执行，引发一个运行时错误，导致程序回溯调用栈 recover 从panic中恢复，并返回panic的值 只能在defer语句中使用 print println 对传入的参数进行格式化，然后将格式化后的结果输出到标准错误 用于引导程序和调试，未来其可能会被修改或移除，不应该在生产环境中使用 </description>
+    </item>
+    <item>
+      <title>Go strconv包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_strconv/</link>
+      <pubDate>Thu, 17 Oct 2024 13:14:07 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_strconv/</guid>
+      <description>Go是强数据类型语言，且不支持隐式类型转换，strconv包是用于字符串和基本数据类型之间转换的。
+其它类型转字符串 函数名 含义 说明 FormatBool 布尔型转字符串 FormatInt FormatUint 整形转字符串 需指定进制 FormatFloat 浮点型转字符串 需指定格式、精度、位宽（32/64） FormatComplex 复数型转字符串 需指定格式、精度、位宽（64/128） Itoa 整形转字符串 固定十进制 字符串转其它类型 函数名 含义 说明 ParseBool 字符串转布尔型 1 t T true TRUE True为真，0 f F false FALSE False为假 ParseInt ParseUint 字符串转整形 需指定字符串的进制及转换后的位宽 ParseFloat 字符串转浮点型 需指定转换后的位宽 ParseComplex 字符串转复数 需指定转换后的位宽 Atoi 字符串转整形 固定十进制 其它 函数名 含义 说明 CanBackquote 判断一个字符串是否可以不被修改地放在反引号中 不能包含换行符，除了制表符之外，不能包含其他控制字符 IsGraphic 判断一个Unicode字符是否是图形字符 IsPrint的超集 IsPrint 判断一个Unicode字符是否是可打印字符 IsGraphic的子集 Quote 返回一个用双引号包裹的Go语言字符串字面量 控制字符和由IsPrint定义的不可打印字符会进行转义 QuoteToASCII 返回一个用双引号包裹的Go语言字符串字面量 非ASCII字符以及由IsPrint定义的不可打印字符会进行转义 QuoteToGraphic 返回一个用双引号包裹的Go语言字符串字面量 由IsGraphic定义的非图形字符会进行转义 QuoteRune 返回一个单引号包裹的Go字符字面量 控制字符和由IsPrint定义的不可打印字符会进行转义 QuoteRuneToASCII 返回一个单引号包裹的Go字符字面量 非ASCII字符以及由IsPrint定义的不可打印字符会进行转义 QuoteRuneToGraphic 返回一个单引号包裹的Go字符字面量 由IsGraphic定义的非图形字符会进行转义 AppendBool 布尔型转字符串，结果追加到指定的字节切片，并返回新的字节切片 AppendInt AppendUint 整型转字符串，结果追加到指定的字节切片，并返回新的字节切片 需指定进制 AppendFloat 浮点型转字符串，结果追加到指定的字节切片，并返回新的字节切片 需指定格式、精度、位宽（32/64） AppendQuote Quote处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteToASCII QuoteToASCII处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteToGraphic QuoteToGraphic处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteRune QuoteRune处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteRuneToASCII QuoteRuneToASCII处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteRuneToGraphic QuoteRuneToGraphic处理后的结果追加到指定的字节切片，并返回新的字节切片 </description>
+    </item>
+    <item>
+      <title>Go fmt包</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_fmt/</link>
+      <pubDate>Wed, 16 Oct 2024 20:51:40 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_fmt/</guid>
+      <description>fmt包提供了格式化输入、输出的功能。
+格式化输出 函数名 说明 Print 以默认格式进行格式化，格式化结果输出到os.Stdout Printf 以指定格式进行格式化，格式化结果输出到os.Stdout Println 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到os.Stdout Fprint 以默认格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintf 以指定格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到指定的io.Writer接口 Sprint 以默认格式进行格式化，格式化结果以字符串形式返回 Sprintf 以指定格式进行格式化，格式化结果以字符串形式返回 Sprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果以字符串形式返回 具体格式化规则详见Go 格式化。
+格式化输入 函数名 说明 Scan 按默认格式从os.Stdin进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Scanf 按指定格式从os.Stdin进行扫描，扫描结果存入对应的变量 Scanln 按默认格式从os.Stdin进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Fscan 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Fscanf 按指定格式从指定的io.Reader接口进行扫描，扫描结果存入对应的变量 Fscanln 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Sscan 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Sscanf 按指定格式从指定的字符串中进行扫描，扫描结果存入对应的变量 Sscanln 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 注意：变量前必须要带上&amp;amp;才能成功接收扫描到的数据!
+其它 函数名 说明 Append 以默认格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendf 以指定格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendln 以默认格式进行格式化，并在末尾添加换行符，格式化结果追加到指定的字节切片，并返回新的字节切片 Errorf 以指定格式进行格式化，格式化结果转为error接口并返回 </description>
+    </item>
+    <item>
+      <title>Go 格式化</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_learn_format/</link>
+      <pubDate>Tue, 15 Oct 2024 21:34:07 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_learn_format/</guid>
+      <description>格式化动词 常规 格式化动词 含义 %v 默认格式 %T 数据的类型 %% %本身 使用%v时不同类型默认对应的格式化动词如下：
+数据类型 格式化动词 说明 bool %t int int8 等 %d uint uint8 等 %d %#v时对应%#x float32 complex64 等 %g string %s chan %p pointer %p 布尔型 格式化动词 含义 示例 结果 %t true或false 1&amp;gt;2 false 整型 格式化动词 含义 示例 结果 %b 二进制 90 1011010 %c 对应的 Unicode 字符 90 Z %d 十进制 90 90 %o 八进制 90 132 %O 带0o前缀的八进制 90 0o132 %q 用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义 90 &amp;lsquo;Z&amp;rsquo; %x 小写的十六进制 90 5a %X 大写的十六进制 90 5A %U Unicode 格式：U+1234；与U+%04X相同 90 U+005A 浮点型和复数型 格式化动词 含义 示例 结果 %b 十进制无小数的科学计数法表示浮点数，指数部分是2的幂次方 3.</description>
+    </item>
+    <item>
+      <title>Go的时间格式化</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_format_datetime/</link>
+      <pubDate>Wed, 27 Jul 2022 21:33:56 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_format_datetime/</guid>
+      <description>从其它平台迁移而来
+就个人而言，对Go的整体评价还是相当不错的，直到遇到了时间格式化。有人说，这是大佬们的浪漫。
+直接说对应关系吧：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 //年 2006 &amp;lt;=&amp;gt; yyyy 06 &amp;lt;=&amp;gt; yy //月 01 &amp;lt;=&amp;gt; MM 1 &amp;lt;=&amp;gt; M //日 02 &amp;lt;=&amp;gt; dd 2 &amp;lt;=&amp;gt; d //时 15 &amp;lt;=&amp;gt; hh 3 &amp;lt;=&amp;gt; h //分 04 &amp;lt;=&amp;gt; mm 4 &amp;lt;=&amp;gt; m //秒 05 &amp;lt;=&amp;gt; ss 5 &amp;lt;=&amp;gt; s go 1.20+在time包中又增加了time.DateTime、time.DateOnly、time.TimeOnly三个常量，分别对应2006-01-02 15:04:05、2006-01-02、15:04:05，再也不用专门去记对应关系了。</description>
+    </item>
+    <item>
+      <title>使用gomod</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_gomod/</link>
+      <pubDate>Mon, 26 Oct 2020 23:08:47 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_gomod/</guid>
+      <description>从其它平台迁移而来
+初学Go时，用的都是GOPATH模式，要么代码得写在一个固定的路径下，要么得改系统变量，从始至终只有一个项目也就忍了，可明显这是不可能的，多个项目，想想就要抓狂。
+还好有GO MOD模式，虽然也看网上的帖子了，不过一直没尝试。终于，还是要亲自尝试下才有长进。
+准备 golang v1.11+ 据说要使用GO MOD模式，必须要使用v1.11以上的版本（这里是直接用最新的v1.15.3）。
+IDE 好用的果然还是JB家的Goland，不过吾等P民囊中羞涩，还是果断VS Code+插件。
+代理 由于众所周知的原因，我们需要准备好代理，代理的使用略。
+GO MOD 打开命令行
+在GOPATH之外任意新建一个空测试目录，并cd进去
+执行命令go mod init XXX（XXX为项目名），会生成一个go.mod文件，内容如下：
+1 2 3 module gmtest go 1.15 以使用GoFrame为例， 修改go.mod加上gf 1 2 3 4 5 module gmtest go 1.15 require github.com/gogf/go latest latest表示使用最新版本。
+编写Go代码 1 2 3 4 5 6 7 8 9 10 11 package main import ( &amp;#34;fmt&amp;#34; &amp;#34;github.com/gogf/gf&amp;#34; ) func main() { fmt.Println(&amp;#34;Hello GF&amp;#34;, gf.VERSION) } 执行go run main.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——接口</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_interface/</link>
+      <pubDate>Thu, 30 Jan 2020 12:52:16 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_interface/</guid>
+      <description>从其它平台迁移而来
+由于没有太多编写接口的经验，此处仅简单说明语法。后期对接口有更多认知和经验后再进行详细记录。
+Delphi Delphi的接口是侵入式接口，并且是单继承的，但类可以同时实现多个接口，类声明时需要显示声明实现了哪些接口。
+声明 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 type //直接声明 IMyInterface1 = interface function Func1: Integer; //函数 procedure Proc1(Value: Integer); //过程 property MI: Integer read Func1 write Proc1; //属性 end; //从已有接口继承 IMyInterface2 = interface(IMyInterface1) procedure Proc2; end; //含有 GUID 的接口可以公开给其它进程调用 IMyInterface3 = interface [&amp;#39;{3E51374A-D0E8-4C84-AA30-9634409E45DD}&amp;#39;] procedure Proc3; end; Delphi已经提供了基接口IInterface，自己声明的接口最好从IInterface继承。
+实现 1 2 3 4 5 6 7 8 9 10 11 type //含接口的类的声明 TMyClass = class(基类, 接口) public procedure Proc; //接口方法 end; //接口实现 procedure TMyClass.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——方法</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_method/</link>
+      <pubDate>Mon, 02 Dec 2019 22:56:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_method/</guid>
+      <description>从其它平台迁移而来
+结构体的方法 Delphi Delphi结构体的方法与类的方法几乎是一致的，主要区别是内存的管理方式和可见性不同。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 //定义 type TMyStruct = record No: Integer; Name: string; function ToString: string; end; //实现 function TMyStruct.ToString: string; begin Result := Format(&amp;#39;No:%d, Name:%s&amp;#39;, [Self.No, Self.Name]); end; //调用 var ms: TMyStruct; s: string; begin s := ms.ToString; end; Go 方法其实就是加了接收器的函数，语法如下：
+1 2 3 func (接收器变量 接收器类型) 方法名(参数列表) (返回参数) { 函数体 } Go结构体的方法无需声明，直接实现即可。</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——异常处理</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_except/</link>
+      <pubDate>Sun, 01 Dec 2019 22:35:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_except/</guid>
+      <description>从其它平台迁移而来
+Delphi try&amp;hellip;finally&amp;hellip;end 1 2 3 4 5 6 //创建、打开、加锁等 try //具体处理 finally //释放、关闭、解锁等 end; raise 1 raise Exception.Create(&amp;#39;异常信息&amp;#39;); //手动抛出异常 try&amp;hellip;except&amp;hellip;end 1 2 3 4 5 6 7 8 9 try //可能产生异常的语句块 except //异常的相关处理 on E: Exception do begin //对应类型的异常的处理 end; end; Go defer 加defer的语句会延迟到函数调用结束返回时才执行，相当于finally...end区。存在多个defer语句时，最先出现的总是最后才执行。
+1 2 3 4 5 func F(){ //打开、加锁等 defer //关闭、解锁等 //具体处理 } panic 1 panic(异常信息) recover 1 2 3 4 5 6 7 func FF(){ defer func(){ e := recover() //异常处理 }() //可能产生异常的语句块，或调用 panic() 抛出异常 } 虽然panic/recover组合可以模拟try.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——函数的可变参数</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_func_args/</link>
+      <pubDate>Wed, 27 Nov 2019 22:24:05 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_func_args/</guid>
+      <description>从其它平台迁移而来
+Delphi 事实上，Delphi并没有什么可以直接为函数传递可变参数（数量可变、类型可变）的语法，但是并不是说不可能实现，最常用的Format()函数就是最好的例子。
+虽然不能直接传递可变参数，但是通过一种叫做可变类型的开放数组即可实现为函数传递数量不定、类型不一的可变参数。
+可变类型 可变类型不是变体类型，而是一个记录类型TVarRec，在System单元中的定义如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 TVarRec = record { do not pack this record; it is compiler-generated } case Integer of 0: (case Byte of vtInteger: (VInteger: Integer); vtBoolean: (VBoolean: Boolean); vtChar: (VChar: _AnsiChr); vtExtended: (VExtended: PExtended); {$IFNDEF NEXTGEN} vtString: (VString: _PShortStr); {$ENDIF !</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——匿名函数</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_func/</link>
+      <pubDate>Sun, 03 Nov 2019 12:14:24 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_func/</guid>
+      <description>从其它平台迁移而来
+早期的Delphi版本是没有匿名函数的，不过可以定义一个函数类型来实现类似的功能；后期的版本已经支持匿名函数，随用随写。Go天生就支持匿名函数。
+Delphi 函数类型 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 //声明函数类型 type TMyProc = procedure(A: Integer); //过程 TMyFunc = function(x: Integer): Integer; //函数 //定义符合函数类型的函数 procedure MyProc(A: Integer); begin ShowMessage(IntToHex(A)); end; function MyFunc1(x: Integer): Integer; begin Result := x + x; end; function MyFunc2(x: Integer): Integer; begin Result := x * x; end; //使用 var mp: TMyProc; mf: TMyFunc; begin mp := MyProc; mf := MyFunc1; mp(mf(99)); end; //作为参数进行传递，这才是函数类型最主要的使用方法 procedure Test(x: Integer; Func: TMyFunc); begin ShowMessage(Func(x).</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——列表</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_list/</link>
+      <pubDate>Wed, 30 Oct 2019 21:58:48 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_list/</guid>
+      <description>从其它平台迁移而来
+Delphi中最基本的列表是TList类和TList&amp;lt;T&amp;gt;泛型类，还有线程安全的TThreadList类和TThreadList&amp;lt;T&amp;gt;泛型类，底层实现是数组。Go用的是container/list包，内部实现是双向链表。
+Delphi TList TList里存的是指针，使用时注意处理好指针即可。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 //声明 var l: TList; //构造 l := TList.Create; //添加 l.Add(p); //元素个数 n := l.Count; //列表容量 cap := l.Capacity; //取值 p1 := l.Items[0]; p2 := l.Extract(p1); //找到指针p1并从列表中取出，列表中将不再有p1，若其后还有元素，则前移填充空缺。 p := l.First; //取第一个元素 p := l.Last; //取最后一个元素 //查找元素的索引 i := l.IndexOf(p); //修改 l.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——字典</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_map/</link>
+      <pubDate>Mon, 28 Oct 2019 22:09:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_map/</guid>
+      <description>从其它平台迁移而来
+字典，又称为哈希表，是一种能够快速寻找值的理想结构。Go语言中对应的数据类型是map，Delphi中是TDictionary泛型类。
+声明 Delphi
+1 2 uses System.Generics.Collections; var 字典名: TDictionary&amp;lt;键类型, 值类型&amp;gt;; Go
+1 var 字典名 map[键类型]值类型 初始化 Delphi
+1 字典名 := TDictionary&amp;lt;键类型, 值类型&amp;gt;.Create(初始容量); Go
+1 2 3 4 //使用make构造 字典名 = make(map[键类型]值类型, 初始容量) //直接赋初值 字典名 = map[键类型]值类型{键1: 值1, 键2: 值2} 元素操作 Delphi
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 var m: TDictionary&amp;lt;Integer, string&amp;gt;; //构造 m := TDictionary&amp;lt;Integer, string&amp;gt;.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——数组</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_array/</link>
+      <pubDate>Tue, 08 Oct 2019 22:03:53 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_array/</guid>
+      <description>从其它平台迁移而来
+静态数组 一维数组 声明 Delphi
+1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go
+1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、&#39;a&#39;..&#39;z&#39;等。子界元素就是数组元素的下标。
+Go的数组长度只能是整型，下标为0~数组长度-1。
+初始化 Delphi
+1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go
+1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——基础</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_base/</link>
+      <pubDate>Mon, 09 Sep 2019 23:30:04 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_base/</guid>
+      <description>从其它平台迁移而来
+废话 长期从事Delphi开发，虽不敢说精通，但说很熟悉还是相当有自信的。不过，只会一门语言，而且还是这么老的语言，更是在大天朝很小众的语言，总感觉自己离饿死街头没多远了，所以趁着还没老再学个潮点的吧。
+先前考虑过Python，初步了解后觉得不太适合自己：
+解释型语言：部署时得先搞个运行环境，发布的程序就是源码本身，再加上这个执行效率，怎么想都还是编译型语言更合适。
+动态语言：无需声明，拿来就用，这已经很不合习惯了。想想一个变量，前一秒还是浮点数，下一秒就成字符串了，再一眨眼又成某个对象了……虽然一般不会有人这么写，但是挡不住手误啊，还是把这种小细节交给编译器更让人放心。
+所以，对于有点强迫症和洁癖的自己，最后还是选了Go，比较符合已有的编程习惯，学习成本应该相对会低些吧。
+至于Go嘛，想学是已经很久了，但由于种种原因却迟迟未开启，不过终究还是要迈出这一步的，所以就搞这么个系列来记录吧，一方面算是自我督促，另一方面也算是一种交流吧，当然，若一不留神帮上了谁，那自是开心极了。
+言归正传 已经初步了解过了Go，说来和Delphi还是有不少相似之处呢，从Delphi转向Go应该会比较轻松吧。
+工程结构 Delphi的工程算是比较自由的，源码的话，只要把单元路径引了或是直接包含进工程单元里就可以了，编译出的dcu和最终的exe指定下路径也就没问题了，通常我都使用下面这种结构：
+1 2 3 4 5 6 7 8 9 10 11 Project/ bin/ src/ dcu/ mod1/ *.dfm *.pas mod2/ *.dfm *.pas *.dpr 不过，每一个工程都要设置，而且我习惯将Debug和Release设置完全一样，也还真是够烦的。
+Go就没得选了，只有一种结构：
+1 2 3 4 5 6 7 8 9 10 11 Project/ bin/ pkg/ src/ *.go mod1/ *.go *_test.go mod2/ *.go *_test.go 整体和我原有的习惯差不多，还是蛮容易接受的，不过倒是要把这Project的路径加入到GOPATH系统变量里让人有一点小不爽。但是Go可以直接把测试都写了，这点还是蛮让我惊喜的，毕竟用了这么多年Delphi也没写过一行像样的测试。
+源码结构 Delphi典型的源码结构是这样：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 unit Unit1; interface uses .</description>
+    </item>
+    <item>
+      <title>Windows &#43; VS Code搭建 Go 开发环境</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_vscod/</link>
+      <pubDate>Sat, 15 Jun 2019 18:35:12 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_vscod/</guid>
+      <description>从其它平台迁移而来
+想学golang也就是Go语言由来已久，但苦于不像Delphi、C#这等有现成的IDE，第一步就卡壳了。所幸网上资源丰富，在尝试后终于把环境搭起来了，在此做个记录以备忘。
+安装 Git 安装Go Tools时需要用到。而且，搞开发不用Git？图样图森破！
+Git 官网（Git for windows 国内镜像），安装略。若已安装WSL则可直接使用WSL里的Git。
+安装 golang 由于众所周知的原因，Go的官网并不总是能访问，其实在国内是有一个官方镜像的。下载安装什么的就略过了。
+环境变量 安装好之后在命令行里运行go env即可查看Go环境变量。
+GOROOT：就是Go的安装目录，如C:\Go。
+GOPATH：Go的工程目录，不能是Go的安装目录，可以有多个目录，多个目录之间用;分隔，且下面安装的Go Tools会安装在第一个目录。如：C:\Users\Administrator\go。
+安装 VS Code 下载VS Code，并安装，没什么好说的。
+安装配置中文：打开VS Code，按Ctrl+Shift+P，输入display，选择Configure Display Language回车，选择zh-cn回车，若无则选择Install additional languages...回车，在左侧选择中文安装，安装完之后根据提示重启。
+按Ctrl+Shift+X搜索Go，安装微软的Go插件。
+关闭VS Code。
+安装 Go Tools 旧方案 主要是完全由VS Code来下载速度会异常感人。
+打开命令行依次执行以下语句 1 2 3 4 ::下载tools git clone https://github.com/golang/tools.git %GOPATH%\src\golang.org\x\tools ::下载lint git clone https://github.com/golang/lint.git %GOPATH%\src\golang.org\x\lint 待全部下载完之后，打开VS Code。
+Ctrl+N新建一个文档，选择语言模式为Go，会有Analysis Tools Missing的提示，点Install坐等完成（共11个），安装完成之后查看是否全部成功，最后重启VS Code。
+重启后在刚才新建的文档里写上go代码并保存，按F5调试，验证效果。
+自备梯子后，可直接运行以下批处理进行Go Tools的安装。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 ::代码补全 go get -v github.</description>
+    </item>
+  </channel>
+</rss>

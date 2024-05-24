@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Go os包 | 慢步道人</title>
+<meta name="keywords" content="go">
+<meta name="description" content="File 方法 含义 说明 Close 关闭文件 Chdir 改变当前工作目录 *File必须为目录 Chmod 修改文件权限 Chown 修改文件所有者和组 Fd 返回文件描述符 Name 返回文件名 Read 从文件读取内容到字节切片 读取后指针位置会移动 ReadAt 从文件读取内容到字节切片，从指定位置开始 读取后指针位置不会移动 ReadDir 获取目录下的列表，返回DirEntry切片 *File必须为目录 Readdir 获取目录下的列表，返回FileInfo切片 *File必须为目录 Readdirnames 获取指定目录下的文件名 *File必须为目录 ReadFrom 从io.Reader读取内容到文件 读取后指针位置会移动，本质上是写文件 Seek 设置指针位置 SetDeadline 设置文件I/O超时时间 只有部分文件类型支持 SetReadDeadline 设置文件读取超时时间 只有部分文件类型支持 SetWriteDeadline 设置文件写入超时时间 只有部分文件类型支持 Stat 获取文件信息，返回FileInfo Sync 将文件内容同步到磁盘 SyscallConn 获取与文件操作相关的系统调用连接 Truncate 截断文件 Write 将字节切片中的数据写入文件 写入后指针位置会移动 WriteAt 将字节切片中的数据写入文件，从指定位置开始 写入后指针位置不会移动 WriteString 将字符串写入文件 写入后指针位置会移动 WriteTo 将数据写入io.Writer 写入后指针位置会移动，本质上是读文件 FileInfo 方法 含义 说明 IsDir 返回文件是否是目录 ModTime 返回文件的修改时间 Name 返回文件名 Size 返回文件的大小 Sys 返回文件的系统信息 FileMode 方法 含义 说明 IsDir 返回文件是否是目录 IsRegular 返回文件是否是普通文件 Perm 返回文件的权限 String 返回文件的字符串表示形式 Type 返回文件的类型 Process 方法 含义 说明 Kill 杀掉进程 Release 释放与Process对象相关的资源 Signal 向进程发送信号 Wait 等待进程退出 ProcessState 用于获取已结束进程状态信息。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/go/go_learn_os/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/go/go_learn_os/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Go os包" />
+<meta property="og:description" content="File 方法 含义 说明 Close 关闭文件 Chdir 改变当前工作目录 *File必须为目录 Chmod 修改文件权限 Chown 修改文件所有者和组 Fd 返回文件描述符 Name 返回文件名 Read 从文件读取内容到字节切片 读取后指针位置会移动 ReadAt 从文件读取内容到字节切片，从指定位置开始 读取后指针位置不会移动 ReadDir 获取目录下的列表，返回DirEntry切片 *File必须为目录 Readdir 获取目录下的列表，返回FileInfo切片 *File必须为目录 Readdirnames 获取指定目录下的文件名 *File必须为目录 ReadFrom 从io.Reader读取内容到文件 读取后指针位置会移动，本质上是写文件 Seek 设置指针位置 SetDeadline 设置文件I/O超时时间 只有部分文件类型支持 SetReadDeadline 设置文件读取超时时间 只有部分文件类型支持 SetWriteDeadline 设置文件写入超时时间 只有部分文件类型支持 Stat 获取文件信息，返回FileInfo Sync 将文件内容同步到磁盘 SyscallConn 获取与文件操作相关的系统调用连接 Truncate 截断文件 Write 将字节切片中的数据写入文件 写入后指针位置会移动 WriteAt 将字节切片中的数据写入文件，从指定位置开始 写入后指针位置不会移动 WriteString 将字符串写入文件 写入后指针位置会移动 WriteTo 将数据写入io.Writer 写入后指针位置会移动，本质上是读文件 FileInfo 方法 含义 说明 IsDir 返回文件是否是目录 ModTime 返回文件的修改时间 Name 返回文件名 Size 返回文件的大小 Sys 返回文件的系统信息 FileMode 方法 含义 说明 IsDir 返回文件是否是目录 IsRegular 返回文件是否是普通文件 Perm 返回文件的权限 String 返回文件的字符串表示形式 Type 返回文件的类型 Process 方法 含义 说明 Kill 杀掉进程 Release 释放与Process对象相关的资源 Signal 向进程发送信号 Wait 等待进程退出 ProcessState 用于获取已结束进程状态信息。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/go/go_learn_os/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-23T23:49:39+08:00" />
+<meta property="article:modified_time" content="2024-10-23T23:49:39+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go os包"/>
+<meta name="twitter:description" content="File 方法 含义 说明 Close 关闭文件 Chdir 改变当前工作目录 *File必须为目录 Chmod 修改文件权限 Chown 修改文件所有者和组 Fd 返回文件描述符 Name 返回文件名 Read 从文件读取内容到字节切片 读取后指针位置会移动 ReadAt 从文件读取内容到字节切片，从指定位置开始 读取后指针位置不会移动 ReadDir 获取目录下的列表，返回DirEntry切片 *File必须为目录 Readdir 获取目录下的列表，返回FileInfo切片 *File必须为目录 Readdirnames 获取指定目录下的文件名 *File必须为目录 ReadFrom 从io.Reader读取内容到文件 读取后指针位置会移动，本质上是写文件 Seek 设置指针位置 SetDeadline 设置文件I/O超时时间 只有部分文件类型支持 SetReadDeadline 设置文件读取超时时间 只有部分文件类型支持 SetWriteDeadline 设置文件写入超时时间 只有部分文件类型支持 Stat 获取文件信息，返回FileInfo Sync 将文件内容同步到磁盘 SyscallConn 获取与文件操作相关的系统调用连接 Truncate 截断文件 Write 将字节切片中的数据写入文件 写入后指针位置会移动 WriteAt 将字节切片中的数据写入文件，从指定位置开始 写入后指针位置不会移动 WriteString 将字符串写入文件 写入后指针位置会移动 WriteTo 将数据写入io.Writer 写入后指针位置会移动，本质上是读文件 FileInfo 方法 含义 说明 IsDir 返回文件是否是目录 ModTime 返回文件的修改时间 Name 返回文件名 Size 返回文件的大小 Sys 返回文件的系统信息 FileMode 方法 含义 说明 IsDir 返回文件是否是目录 IsRegular 返回文件是否是普通文件 Perm 返回文件的权限 String 返回文件的字符串表示形式 Type 返回文件的类型 Process 方法 含义 说明 Kill 杀掉进程 Release 释放与Process对象相关的资源 Signal 向进程发送信号 Wait 等待进程退出 ProcessState 用于获取已结束进程状态信息。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚔️golang",
+      "item": "https://afrusrsc.github.io/posts/program/go/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Go os包",
+      "item": "https://afrusrsc.github.io/posts/program/go/go_learn_os/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go os包",
+  "name": "Go os包",
+  "description": "File 方法 含义 说明 Close 关闭文件 Chdir 改变当前工作目录 *File必须为目录 Chmod 修改文件权限 Chown 修改文件所有者和组 Fd 返回文件描述符 Name 返回文件名 Read 从文件读取内容到字节切片 读取后指针位置会移动 ReadAt 从文件读取内容到字节切片，从指定位置开始 读取后指针位置不会移动 ReadDir 获取目录下的列表，返回DirEntry切片 *File必须为目录 Readdir 获取目录下的列表，返回FileInfo切片 *File必须为目录 Readdirnames 获取指定目录下的文件名 *File必须为目录 ReadFrom 从io.Reader读取内容到文件 读取后指针位置会移动，本质上是写文件 Seek 设置指针位置 SetDeadline 设置文件I/O超时时间 只有部分文件类型支持 SetReadDeadline 设置文件读取超时时间 只有部分文件类型支持 SetWriteDeadline 设置文件写入超时时间 只有部分文件类型支持 Stat 获取文件信息，返回FileInfo Sync 将文件内容同步到磁盘 SyscallConn 获取与文件操作相关的系统调用连接 Truncate 截断文件 Write 将字节切片中的数据写入文件 写入后指针位置会移动 WriteAt 将字节切片中的数据写入文件，从指定位置开始 写入后指针位置不会移动 WriteString 将字符串写入文件 写入后指针位置会移动 WriteTo 将数据写入io.Writer 写入后指针位置会移动，本质上是读文件 FileInfo 方法 含义 说明 IsDir 返回文件是否是目录 ModTime 返回文件的修改时间 Name 返回文件名 Size 返回文件的大小 Sys 返回文件的系统信息 FileMode 方法 含义 说明 IsDir 返回文件是否是目录 IsRegular 返回文件是否是普通文件 Perm 返回文件的权限 String 返回文件的字符串表示形式 Type 返回文件的类型 Process 方法 含义 说明 Kill 杀掉进程 Release 释放与Process对象相关的资源 Signal 向进程发送信号 Wait 等待进程退出 ProcessState 用于获取已结束进程状态信息。",
+  "keywords": [
+    "go"
+  ],
+  "articleBody": "File 方法 含义 说明 Close 关闭文件 Chdir 改变当前工作目录 *File必须为目录 Chmod 修改文件权限 Chown 修改文件所有者和组 Fd 返回文件描述符 Name 返回文件名 Read 从文件读取内容到字节切片 读取后指针位置会移动 ReadAt 从文件读取内容到字节切片，从指定位置开始 读取后指针位置不会移动 ReadDir 获取目录下的列表，返回DirEntry切片 *File必须为目录 Readdir 获取目录下的列表，返回FileInfo切片 *File必须为目录 Readdirnames 获取指定目录下的文件名 *File必须为目录 ReadFrom 从io.Reader读取内容到文件 读取后指针位置会移动，本质上是写文件 Seek 设置指针位置 SetDeadline 设置文件I/O超时时间 只有部分文件类型支持 SetReadDeadline 设置文件读取超时时间 只有部分文件类型支持 SetWriteDeadline 设置文件写入超时时间 只有部分文件类型支持 Stat 获取文件信息，返回FileInfo Sync 将文件内容同步到磁盘 SyscallConn 获取与文件操作相关的系统调用连接 Truncate 截断文件 Write 将字节切片中的数据写入文件 写入后指针位置会移动 WriteAt 将字节切片中的数据写入文件，从指定位置开始 写入后指针位置不会移动 WriteString 将字符串写入文件 写入后指针位置会移动 WriteTo 将数据写入io.Writer 写入后指针位置会移动，本质上是读文件 FileInfo 方法 含义 说明 IsDir 返回文件是否是目录 ModTime 返回文件的修改时间 Name 返回文件名 Size 返回文件的大小 Sys 返回文件的系统信息 FileMode 方法 含义 说明 IsDir 返回文件是否是目录 IsRegular 返回文件是否是普通文件 Perm 返回文件的权限 String 返回文件的字符串表示形式 Type 返回文件的类型 Process 方法 含义 说明 Kill 杀掉进程 Release 释放与Process对象相关的资源 Signal 向进程发送信号 Wait 等待进程退出 ProcessState 用于获取已结束进程状态信息。\n方法 含义 说明 ExitCode 返回进程的退出码 Exited 返回进程是否已经退出 Pid 返回进程的进程ID String 返回进程的字符串表示形式 Success 返回进程是否成功退出 Sys 返回进程的系统信息 SysUsage 获取进程系统资源使用情况 SystemTime 获取进程的系统CPU时间 UserTime 获取进程的用户CPU时间 包函数 函数名 含义 说明 Chdir 改变当前工作目录 Chmod 修改文件权限 Chown 修改文件所有者和组 Chtimes 修改文件访问时间和修改时间 Clearenv 清除当前进程的环境变量 CopyFS 复制文件系统 Create 创建文件 CreateTemp 创建临时文件 DirFS 将一个本地目录转换为一个实现了fs.FS接口的文件系统对象 Environ 返回当前进程的环境变量 Executable 返回当前可执行文件的路径 Exit 直接退出当前进程 不会执行defer语句 Expand 将字符串中的${var}形式的变量替换为实际的值 ExpandEnv 将字符串中的环境变量引用（形如$VAR或${VAR}）替换为对应的环境变量值 FindProcess 查找指定进程 Getegid 返回当前进程的有效组ID Windows返回-1 Getenv 获取指定的环境变量 Setenv 设置指定的环境变量 Unsetenv 删除指定的环境变量 Geteuid 返回当前进程的有效用户ID Windows返回-1 Getgid 返回当前进程的组ID Windows返回-1 Getgroups 返回当前进程所属的组ID列表 Windows返回nil Getpagesize 返回当前系统的页大小 Getpid 返回当前进程的进程ID Getppid 返回当前进程的父进程ID Getuid 返回当前进程的用户ID Windows返回-1 Getwd 返回当前工作目录 Hostname 返回当前主机的名称 IsExist 检查错误是否表示文件或目录已经存在 针对error IsNotExist 检查错误是否表示文件或目录不存在 针对error IsPathSeparator 检查字符是否为路径分隔符 IsPermission 判断错误是否是由权限问题导致的 针对error IsTimeout 判断一个错误是否是由于超时导致的 针对error Lchown 修改符号链接本身的所有者和组 Link 创建硬链接 Symlink 创建符号链接 LookupEnv 获取指定的环境变量 Lstat 获取文件信息，返回FileInfo 对于符号链接是其本身 Stat 获取文件信息，返回FileInfo 对于符号链接是其指向的目标 Mkdir 创建目录 MkdirAll 创建多级目录 MkdirTemp 创建临时目录 NewFile 根据文件描述符创建一个文件对象 NewSyscallError 根据传入的系统调用名称syscall和原始错误err创建一个新的error对象 Open 以只读方式打开文件 OpenFile 以指定方式打开文件 Pipe 创建一个管道 ReadDir 获取目录下的列表，返回DirEntry切片 *File必须为目录 ReadFile 读取指定文件的全部内容到切片 Readlink 读取符号链接的目标 不能读硬链接 Remove 删除文件或目录 RemoveAll 删除指定目录及其所有子目录和文件 Rename 重命名文件或目录 SameFile 检查两个文件是否是同一个文件 StartProcess 启动一个新的进程 TempDir 返回默认的临时目录 Truncate 截断文件 UserCacheDir 返回用户缓存目录 UserConfigDir 返回用户配置目录 UserHomeDir 返回用户主目录 WriteFile 将字节切片中的数据写入文件 ",
+  "wordCount" : "269",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-23T23:49:39+08:00",
+  "dateModified": "2024-10-23T23:49:39+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/go/go_learn_os/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/go/">⚔️golang</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Go os包
+    </h1>
+    <div class="post-meta"><span title='2024-10-23 23:49:39 +0800 CST'>2024-10-23 23:49:39</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#file" aria-label="File">File</a></li>
+                    <li>
+                        <a href="#fileinfo" aria-label="FileInfo">FileInfo</a></li>
+                    <li>
+                        <a href="#filemode" aria-label="FileMode">FileMode</a></li>
+                    <li>
+                        <a href="#process" aria-label="Process">Process</a></li>
+                    <li>
+                        <a href="#processstate" aria-label="ProcessState">ProcessState</a></li>
+                    <li>
+                        <a href="#%e5%8c%85%e5%87%bd%e6%95%b0" aria-label="包函数">包函数</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="file">File<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Close</td>
+<td>关闭文件</td>
+<td></td>
+</tr>
+<tr>
+<td>Chdir</td>
+<td>改变当前工作目录</td>
+<td><code>*File</code>必须为目录</td>
+</tr>
+<tr>
+<td>Chmod</td>
+<td>修改文件权限</td>
+<td></td>
+</tr>
+<tr>
+<td>Chown</td>
+<td>修改文件所有者和组</td>
+<td></td>
+</tr>
+<tr>
+<td>Fd</td>
+<td>返回文件描述符</td>
+<td></td>
+</tr>
+<tr>
+<td>Name</td>
+<td>返回文件名</td>
+<td></td>
+</tr>
+<tr>
+<td>Read</td>
+<td>从文件读取内容到字节切片</td>
+<td>读取后指针位置会移动</td>
+</tr>
+<tr>
+<td>ReadAt</td>
+<td>从文件读取内容到字节切片，从指定位置开始</td>
+<td>读取后指针位置不会移动</td>
+</tr>
+<tr>
+<td>ReadDir</td>
+<td>获取目录下的列表，返回<code>DirEntry</code>切片</td>
+<td><code>*File</code>必须为目录</td>
+</tr>
+<tr>
+<td>Readdir</td>
+<td>获取目录下的列表，返回<code>FileInfo</code>切片</td>
+<td><code>*File</code>必须为目录</td>
+</tr>
+<tr>
+<td>Readdirnames</td>
+<td>获取指定目录下的文件名</td>
+<td><code>*File</code>必须为目录</td>
+</tr>
+<tr>
+<td>ReadFrom</td>
+<td>从<code>io.Reader</code>读取内容到文件</td>
+<td>读取后指针位置会移动，本质上是写文件</td>
+</tr>
+<tr>
+<td>Seek</td>
+<td>设置指针位置</td>
+<td></td>
+</tr>
+<tr>
+<td>SetDeadline</td>
+<td>设置文件I/O超时时间</td>
+<td>只有部分文件类型支持</td>
+</tr>
+<tr>
+<td>SetReadDeadline</td>
+<td>设置文件读取超时时间</td>
+<td>只有部分文件类型支持</td>
+</tr>
+<tr>
+<td>SetWriteDeadline</td>
+<td>设置文件写入超时时间</td>
+<td>只有部分文件类型支持</td>
+</tr>
+<tr>
+<td>Stat</td>
+<td>获取文件信息，返回<code>FileInfo</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Sync</td>
+<td>将文件内容同步到磁盘</td>
+<td></td>
+</tr>
+<tr>
+<td>SyscallConn</td>
+<td>获取与文件操作相关的系统调用连接</td>
+<td></td>
+</tr>
+<tr>
+<td>Truncate</td>
+<td>截断文件</td>
+<td></td>
+</tr>
+<tr>
+<td>Write</td>
+<td>将字节切片中的数据写入文件</td>
+<td>写入后指针位置会移动</td>
+</tr>
+<tr>
+<td>WriteAt</td>
+<td>将字节切片中的数据写入文件，从指定位置开始</td>
+<td>写入后指针位置不会移动</td>
+</tr>
+<tr>
+<td>WriteString</td>
+<td>将字符串写入文件</td>
+<td>写入后指针位置会移动</td>
+</tr>
+<tr>
+<td>WriteTo</td>
+<td>将数据写入<code>io.Writer</code></td>
+<td>写入后指针位置会移动，本质上是读文件</td>
+</tr>
+</tbody>
+</table>
+<h1 id="fileinfo">FileInfo<a hidden class="anchor" aria-hidden="true" href="#fileinfo">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IsDir</td>
+<td>返回文件是否是目录</td>
+<td></td>
+</tr>
+<tr>
+<td>ModTime</td>
+<td>返回文件的修改时间</td>
+<td></td>
+</tr>
+<tr>
+<td>Name</td>
+<td>返回文件名</td>
+<td></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>返回文件的大小</td>
+<td></td>
+</tr>
+<tr>
+<td>Sys</td>
+<td>返回文件的系统信息</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="filemode">FileMode<a hidden class="anchor" aria-hidden="true" href="#filemode">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IsDir</td>
+<td>返回文件是否是目录</td>
+<td></td>
+</tr>
+<tr>
+<td>IsRegular</td>
+<td>返回文件是否是普通文件</td>
+<td></td>
+</tr>
+<tr>
+<td>Perm</td>
+<td>返回文件的权限</td>
+<td></td>
+</tr>
+<tr>
+<td>String</td>
+<td>返回文件的字符串表示形式</td>
+<td></td>
+</tr>
+<tr>
+<td>Type</td>
+<td>返回文件的类型</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="process">Process<a hidden class="anchor" aria-hidden="true" href="#process">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kill</td>
+<td>杀掉进程</td>
+<td></td>
+</tr>
+<tr>
+<td>Release</td>
+<td>释放与<code>Process</code>对象相关的资源</td>
+<td></td>
+</tr>
+<tr>
+<td>Signal</td>
+<td>向进程发送信号</td>
+<td></td>
+</tr>
+<tr>
+<td>Wait</td>
+<td>等待进程退出</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="processstate">ProcessState<a hidden class="anchor" aria-hidden="true" href="#processstate">#</a></h1>
+<p>用于获取已结束进程状态信息。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ExitCode</td>
+<td>返回进程的退出码</td>
+<td></td>
+</tr>
+<tr>
+<td>Exited</td>
+<td>返回进程是否已经退出</td>
+<td></td>
+</tr>
+<tr>
+<td>Pid</td>
+<td>返回进程的进程ID</td>
+<td></td>
+</tr>
+<tr>
+<td>String</td>
+<td>返回进程的字符串表示形式</td>
+<td></td>
+</tr>
+<tr>
+<td>Success</td>
+<td>返回进程是否成功退出</td>
+<td></td>
+</tr>
+<tr>
+<td>Sys</td>
+<td>返回进程的系统信息</td>
+<td></td>
+</tr>
+<tr>
+<td>SysUsage</td>
+<td>获取进程系统资源使用情况</td>
+<td></td>
+</tr>
+<tr>
+<td>SystemTime</td>
+<td>获取进程的系统<code>CPU</code>时间</td>
+<td></td>
+</tr>
+<tr>
+<td>UserTime</td>
+<td>获取进程的用户<code>CPU</code>时间</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="包函数">包函数<a hidden class="anchor" aria-hidden="true" href="#包函数">#</a></h1>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chdir</td>
+<td>改变当前工作目录</td>
+<td></td>
+</tr>
+<tr>
+<td>Chmod</td>
+<td>修改文件权限</td>
+<td></td>
+</tr>
+<tr>
+<td>Chown</td>
+<td>修改文件所有者和组</td>
+<td></td>
+</tr>
+<tr>
+<td>Chtimes</td>
+<td>修改文件访问时间和修改时间</td>
+<td></td>
+</tr>
+<tr>
+<td>Clearenv</td>
+<td>清除当前进程的环境变量</td>
+<td></td>
+</tr>
+<tr>
+<td>CopyFS</td>
+<td>复制文件系统</td>
+<td></td>
+</tr>
+<tr>
+<td>Create</td>
+<td>创建文件</td>
+<td></td>
+</tr>
+<tr>
+<td>CreateTemp</td>
+<td>创建临时文件</td>
+<td></td>
+</tr>
+<tr>
+<td>DirFS</td>
+<td>将一个本地目录转换为一个实现了<code>fs.FS</code>接口的文件系统对象</td>
+<td></td>
+</tr>
+<tr>
+<td>Environ</td>
+<td>返回当前进程的环境变量</td>
+<td></td>
+</tr>
+<tr>
+<td>Executable</td>
+<td>返回当前可执行文件的路径</td>
+<td></td>
+</tr>
+<tr>
+<td>Exit</td>
+<td>直接退出当前进程</td>
+<td>不会执行<code>defer</code>语句</td>
+</tr>
+<tr>
+<td>Expand</td>
+<td>将字符串中的<code>${var}</code>形式的变量替换为实际的值</td>
+<td></td>
+</tr>
+<tr>
+<td>ExpandEnv</td>
+<td>将字符串中的环境变量引用（形如<code>$VAR</code>或<code>${VAR}</code>）替换为对应的环境变量值</td>
+<td></td>
+</tr>
+<tr>
+<td>FindProcess</td>
+<td>查找指定进程</td>
+<td></td>
+</tr>
+<tr>
+<td>Getegid</td>
+<td>返回当前进程的有效组ID</td>
+<td><code>Windows</code>返回<code>-1</code></td>
+</tr>
+<tr>
+<td>Getenv</td>
+<td>获取指定的环境变量</td>
+<td></td>
+</tr>
+<tr>
+<td>Setenv</td>
+<td>设置指定的环境变量</td>
+<td></td>
+</tr>
+<tr>
+<td>Unsetenv</td>
+<td>删除指定的环境变量</td>
+<td></td>
+</tr>
+<tr>
+<td>Geteuid</td>
+<td>返回当前进程的有效用户ID</td>
+<td><code>Windows</code>返回<code>-1</code></td>
+</tr>
+<tr>
+<td>Getgid</td>
+<td>返回当前进程的组ID</td>
+<td><code>Windows</code>返回<code>-1</code></td>
+</tr>
+<tr>
+<td>Getgroups</td>
+<td>返回当前进程所属的组ID列表</td>
+<td><code>Windows</code>返回<code>nil</code></td>
+</tr>
+<tr>
+<td>Getpagesize</td>
+<td>返回当前系统的页大小</td>
+<td></td>
+</tr>
+<tr>
+<td>Getpid</td>
+<td>返回当前进程的进程ID</td>
+<td></td>
+</tr>
+<tr>
+<td>Getppid</td>
+<td>返回当前进程的父进程ID</td>
+<td></td>
+</tr>
+<tr>
+<td>Getuid</td>
+<td>返回当前进程的用户ID</td>
+<td><code>Windows</code>返回<code>-1</code></td>
+</tr>
+<tr>
+<td>Getwd</td>
+<td>返回当前工作目录</td>
+<td></td>
+</tr>
+<tr>
+<td>Hostname</td>
+<td>返回当前主机的名称</td>
+<td></td>
+</tr>
+<tr>
+<td>IsExist</td>
+<td>检查错误是否表示文件或目录已经存在</td>
+<td>针对<code>error</code></td>
+</tr>
+<tr>
+<td>IsNotExist</td>
+<td>检查错误是否表示文件或目录不存在</td>
+<td>针对<code>error</code></td>
+</tr>
+<tr>
+<td>IsPathSeparator</td>
+<td>检查字符是否为路径分隔符</td>
+<td></td>
+</tr>
+<tr>
+<td>IsPermission</td>
+<td>判断错误是否是由权限问题导致的</td>
+<td>针对<code>error</code></td>
+</tr>
+<tr>
+<td>IsTimeout</td>
+<td>判断一个错误是否是由于超时导致的</td>
+<td>针对<code>error</code></td>
+</tr>
+<tr>
+<td>Lchown</td>
+<td>修改符号链接本身的所有者和组</td>
+<td></td>
+</tr>
+<tr>
+<td>Link</td>
+<td>创建硬链接</td>
+<td></td>
+</tr>
+<tr>
+<td>Symlink</td>
+<td>创建符号链接</td>
+<td></td>
+</tr>
+<tr>
+<td>LookupEnv</td>
+<td>获取指定的环境变量</td>
+<td></td>
+</tr>
+<tr>
+<td>Lstat</td>
+<td>获取文件信息，返回<code>FileInfo</code></td>
+<td>对于符号链接是其本身</td>
+</tr>
+<tr>
+<td>Stat</td>
+<td>获取文件信息，返回<code>FileInfo</code></td>
+<td>对于符号链接是其指向的目标</td>
+</tr>
+<tr>
+<td>Mkdir</td>
+<td>创建目录</td>
+<td></td>
+</tr>
+<tr>
+<td>MkdirAll</td>
+<td>创建多级目录</td>
+<td></td>
+</tr>
+<tr>
+<td>MkdirTemp</td>
+<td>创建临时目录</td>
+<td></td>
+</tr>
+<tr>
+<td>NewFile</td>
+<td>根据<code>文件描述符</code>创建一个文件对象</td>
+<td></td>
+</tr>
+<tr>
+<td>NewSyscallError</td>
+<td>根据传入的系统调用名称<code>syscall</code>和原始错误<code>err</code>创建一个新的<code>error</code>对象</td>
+<td></td>
+</tr>
+<tr>
+<td>Open</td>
+<td>以<code>只读</code>方式打开文件</td>
+<td></td>
+</tr>
+<tr>
+<td>OpenFile</td>
+<td>以指定方式打开文件</td>
+<td></td>
+</tr>
+<tr>
+<td>Pipe</td>
+<td>创建一个管道</td>
+<td></td>
+</tr>
+<tr>
+<td>ReadDir</td>
+<td>获取目录下的列表，返回<code>DirEntry</code>切片</td>
+<td><code>*File</code>必须为目录</td>
+</tr>
+<tr>
+<td>ReadFile</td>
+<td>读取指定文件的全部内容到切片</td>
+<td></td>
+</tr>
+<tr>
+<td>Readlink</td>
+<td>读取符号链接的目标</td>
+<td>不能读硬链接</td>
+</tr>
+<tr>
+<td>Remove</td>
+<td>删除文件或目录</td>
+<td></td>
+</tr>
+<tr>
+<td>RemoveAll</td>
+<td>删除指定目录及其所有子目录和文件</td>
+<td></td>
+</tr>
+<tr>
+<td>Rename</td>
+<td>重命名文件或目录</td>
+<td></td>
+</tr>
+<tr>
+<td>SameFile</td>
+<td>检查两个文件是否是同一个文件</td>
+<td></td>
+</tr>
+<tr>
+<td>StartProcess</td>
+<td>启动一个新的进程</td>
+<td></td>
+</tr>
+<tr>
+<td>TempDir</td>
+<td>返回默认的临时目录</td>
+<td></td>
+</tr>
+<tr>
+<td>Truncate</td>
+<td>截断文件</td>
+<td></td>
+</tr>
+<tr>
+<td>UserCacheDir</td>
+<td>返回用户缓存目录</td>
+<td></td>
+</tr>
+<tr>
+<td>UserConfigDir</td>
+<td>返回用户配置目录</td>
+<td></td>
+</tr>
+<tr>
+<td>UserHomeDir</td>
+<td>返回用户主目录</td>
+<td></td>
+</tr>
+<tr>
+<td>WriteFile</td>
+<td>将字节切片中的数据写入文件</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/go/">Go</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/go/go_learn_io/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Go io包</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/go/go_learn_time/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Go time包</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

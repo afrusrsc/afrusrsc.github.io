@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Lazarus插件式窗口设计尝试 | 慢步道人</title>
+<meta name="keywords" content="lazarus, pascal, dll">
+<meta name="description" content="前言 先前就尝试过使用Lazarus写一个插件式的桌面应用框架，主程序只负责整体的插件管理以及为插件提供页签式的展示容器，具体的功能实现都由插件（动态库）来完成。
+但是之前比较零散的几次尝试，多或少有些问题，比较有代表性的如：
+无法以模式窗口显示插件内的子窗口
+插件内的窗口在任务栏上显示的是和主程序分离的两个程序
+动态库无法卸载
+使用接口无法释放动态库里的对象
+无法跨平台（主要针对windows）
+近来又进行了一次系统性的尝试，以前的一些也针对性的研究了下，并找到了目前来看比较合适的解决方案，并将阶段性成果开源了，具体地址见文末。
+旧问题解决 模式窗口 这个问题其实早在Lazarus官方的wiki（Form in Dll）上就有解决方案了。
+在此基础上也尝试进行一些魔改，过程就不多说了，经验总结如下：
+DisableFormsCallBack和EnableFormsCallback两个回调必须为普通过程，改为类方法会导致模式窗口失效
+TApplicationCallback可以和插件动态库内的管理类合并，做为插件入口的统一管理，甚至做为插件统一接口的实现
+视觉上为同一程序 Form in Dll中已经涉及，即在CreateParams中将Params.WndParent赋值为主程序中对应容器的句柄。
+卸载/释放 对于动态库的卸载，在Lazarus的dll卸载问题中已有提到，本次直接避免。
+对于对象的释放，这前的尝试犯了一个很严重的错误，即未遵守谁创建谁释放这一原则。接口中增加专门的释放函数，用于释放通过接口创建的对象。但，对于接口创建的对象，主程序除了释放外，也不应该（事实上也不能）进行其它操作，否则会抛内存访问异常。
+共享内存管理器 如果仅使用基本数据类型的话，这就是个伪命题，但若使用高阶数据类型的话还是会方便很多，毕竟字符串其实并不算是真正的基本类型。
+文章在Lazarus中使用ShareMem解决了在Windows平台上共享内存管理器的问题。在QQ群的交流中，群友啊D提出使用GetMemoryManager和SetMemoryManager，目前来看是能解决该问题的。
+跨平台一致性 Lazarus本身就是跨平台的，只注意避免使用平台专用的api即可，或者对不同平台的api进行封装。
+对于插件式的动态库，exports导出的函数统一使用Name关键字强制命名。同时，对于32位CPU，导出函数统一使用cdecl而不是stdcall进行传参约束；对于64位CPU，导出函数统一使用默认的传参约束，即不使用任何关键字，由编译器管理。
+新的问题 基于有限的测试，Linux的gtk2中显示模式窗口时主窗体还能进行最大化、最小化、移动等操作，但不能操作窗体内的元素，这与Windows上的行为表现不太一致
+插件动态库创建的窗体，嵌入主程序容器后，并不能像嵌入自身容器内那样可以方便的自适应大小和位置
+TODO 解决新发现的问题
+主程序页签式容器的实现
+主程序插件的管理
+开源地址 Github地址：https://github.com/afrusrsc/x-framework
+Gitee地址：https://gitee.com/afrusrsc/x-framework">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_plugin_form/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_plugin_form/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Lazarus插件式窗口设计尝试" />
+<meta property="og:description" content="前言 先前就尝试过使用Lazarus写一个插件式的桌面应用框架，主程序只负责整体的插件管理以及为插件提供页签式的展示容器，具体的功能实现都由插件（动态库）来完成。
+但是之前比较零散的几次尝试，多或少有些问题，比较有代表性的如：
+无法以模式窗口显示插件内的子窗口
+插件内的窗口在任务栏上显示的是和主程序分离的两个程序
+动态库无法卸载
+使用接口无法释放动态库里的对象
+无法跨平台（主要针对windows）
+近来又进行了一次系统性的尝试，以前的一些也针对性的研究了下，并找到了目前来看比较合适的解决方案，并将阶段性成果开源了，具体地址见文末。
+旧问题解决 模式窗口 这个问题其实早在Lazarus官方的wiki（Form in Dll）上就有解决方案了。
+在此基础上也尝试进行一些魔改，过程就不多说了，经验总结如下：
+DisableFormsCallBack和EnableFormsCallback两个回调必须为普通过程，改为类方法会导致模式窗口失效
+TApplicationCallback可以和插件动态库内的管理类合并，做为插件入口的统一管理，甚至做为插件统一接口的实现
+视觉上为同一程序 Form in Dll中已经涉及，即在CreateParams中将Params.WndParent赋值为主程序中对应容器的句柄。
+卸载/释放 对于动态库的卸载，在Lazarus的dll卸载问题中已有提到，本次直接避免。
+对于对象的释放，这前的尝试犯了一个很严重的错误，即未遵守谁创建谁释放这一原则。接口中增加专门的释放函数，用于释放通过接口创建的对象。但，对于接口创建的对象，主程序除了释放外，也不应该（事实上也不能）进行其它操作，否则会抛内存访问异常。
+共享内存管理器 如果仅使用基本数据类型的话，这就是个伪命题，但若使用高阶数据类型的话还是会方便很多，毕竟字符串其实并不算是真正的基本类型。
+文章在Lazarus中使用ShareMem解决了在Windows平台上共享内存管理器的问题。在QQ群的交流中，群友啊D提出使用GetMemoryManager和SetMemoryManager，目前来看是能解决该问题的。
+跨平台一致性 Lazarus本身就是跨平台的，只注意避免使用平台专用的api即可，或者对不同平台的api进行封装。
+对于插件式的动态库，exports导出的函数统一使用Name关键字强制命名。同时，对于32位CPU，导出函数统一使用cdecl而不是stdcall进行传参约束；对于64位CPU，导出函数统一使用默认的传参约束，即不使用任何关键字，由编译器管理。
+新的问题 基于有限的测试，Linux的gtk2中显示模式窗口时主窗体还能进行最大化、最小化、移动等操作，但不能操作窗体内的元素，这与Windows上的行为表现不太一致
+插件动态库创建的窗体，嵌入主程序容器后，并不能像嵌入自身容器内那样可以方便的自适应大小和位置
+TODO 解决新发现的问题
+主程序页签式容器的实现
+主程序插件的管理
+开源地址 Github地址：https://github.com/afrusrsc/x-framework
+Gitee地址：https://gitee.com/afrusrsc/x-framework" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/lazarus_plugin_form/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-05-05T19:06:17+08:00" />
+<meta property="article:modified_time" content="2025-05-05T19:06:17+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Lazarus插件式窗口设计尝试"/>
+<meta name="twitter:description" content="前言 先前就尝试过使用Lazarus写一个插件式的桌面应用框架，主程序只负责整体的插件管理以及为插件提供页签式的展示容器，具体的功能实现都由插件（动态库）来完成。
+但是之前比较零散的几次尝试，多或少有些问题，比较有代表性的如：
+无法以模式窗口显示插件内的子窗口
+插件内的窗口在任务栏上显示的是和主程序分离的两个程序
+动态库无法卸载
+使用接口无法释放动态库里的对象
+无法跨平台（主要针对windows）
+近来又进行了一次系统性的尝试，以前的一些也针对性的研究了下，并找到了目前来看比较合适的解决方案，并将阶段性成果开源了，具体地址见文末。
+旧问题解决 模式窗口 这个问题其实早在Lazarus官方的wiki（Form in Dll）上就有解决方案了。
+在此基础上也尝试进行一些魔改，过程就不多说了，经验总结如下：
+DisableFormsCallBack和EnableFormsCallback两个回调必须为普通过程，改为类方法会导致模式窗口失效
+TApplicationCallback可以和插件动态库内的管理类合并，做为插件入口的统一管理，甚至做为插件统一接口的实现
+视觉上为同一程序 Form in Dll中已经涉及，即在CreateParams中将Params.WndParent赋值为主程序中对应容器的句柄。
+卸载/释放 对于动态库的卸载，在Lazarus的dll卸载问题中已有提到，本次直接避免。
+对于对象的释放，这前的尝试犯了一个很严重的错误，即未遵守谁创建谁释放这一原则。接口中增加专门的释放函数，用于释放通过接口创建的对象。但，对于接口创建的对象，主程序除了释放外，也不应该（事实上也不能）进行其它操作，否则会抛内存访问异常。
+共享内存管理器 如果仅使用基本数据类型的话，这就是个伪命题，但若使用高阶数据类型的话还是会方便很多，毕竟字符串其实并不算是真正的基本类型。
+文章在Lazarus中使用ShareMem解决了在Windows平台上共享内存管理器的问题。在QQ群的交流中，群友啊D提出使用GetMemoryManager和SetMemoryManager，目前来看是能解决该问题的。
+跨平台一致性 Lazarus本身就是跨平台的，只注意避免使用平台专用的api即可，或者对不同平台的api进行封装。
+对于插件式的动态库，exports导出的函数统一使用Name关键字强制命名。同时，对于32位CPU，导出函数统一使用cdecl而不是stdcall进行传参约束；对于64位CPU，导出函数统一使用默认的传参约束，即不使用任何关键字，由编译器管理。
+新的问题 基于有限的测试，Linux的gtk2中显示模式窗口时主窗体还能进行最大化、最小化、移动等操作，但不能操作窗体内的元素，这与Windows上的行为表现不太一致
+插件动态库创建的窗体，嵌入主程序容器后，并不能像嵌入自身容器内那样可以方便的自适应大小和位置
+TODO 解决新发现的问题
+主程序页签式容器的实现
+主程序插件的管理
+开源地址 Github地址：https://github.com/afrusrsc/x-framework
+Gitee地址：https://gitee.com/afrusrsc/x-framework"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Lazarus插件式窗口设计尝试",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/lazarus_plugin_form/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Lazarus插件式窗口设计尝试",
+  "name": "Lazarus插件式窗口设计尝试",
+  "description": "前言 先前就尝试过使用Lazarus写一个插件式的桌面应用框架，主程序只负责整体的插件管理以及为插件提供页签式的展示容器，具体的功能实现都由插件（动态库）来完成。\n但是之前比较零散的几次尝试，多或少有些问题，比较有代表性的如：\n无法以模式窗口显示插件内的子窗口\n插件内的窗口在任务栏上显示的是和主程序分离的两个程序\n动态库无法卸载\n使用接口无法释放动态库里的对象\n无法跨平台（主要针对windows）\n近来又进行了一次系统性的尝试，以前的一些也针对性的研究了下，并找到了目前来看比较合适的解决方案，并将阶段性成果开源了，具体地址见文末。\n旧问题解决 模式窗口 这个问题其实早在Lazarus官方的wiki（Form in Dll）上就有解决方案了。\n在此基础上也尝试进行一些魔改，过程就不多说了，经验总结如下：\nDisableFormsCallBack和EnableFormsCallback两个回调必须为普通过程，改为类方法会导致模式窗口失效\nTApplicationCallback可以和插件动态库内的管理类合并，做为插件入口的统一管理，甚至做为插件统一接口的实现\n视觉上为同一程序 Form in Dll中已经涉及，即在CreateParams中将Params.WndParent赋值为主程序中对应容器的句柄。\n卸载/释放 对于动态库的卸载，在Lazarus的dll卸载问题中已有提到，本次直接避免。\n对于对象的释放，这前的尝试犯了一个很严重的错误，即未遵守谁创建谁释放这一原则。接口中增加专门的释放函数，用于释放通过接口创建的对象。但，对于接口创建的对象，主程序除了释放外，也不应该（事实上也不能）进行其它操作，否则会抛内存访问异常。\n共享内存管理器 如果仅使用基本数据类型的话，这就是个伪命题，但若使用高阶数据类型的话还是会方便很多，毕竟字符串其实并不算是真正的基本类型。\n文章在Lazarus中使用ShareMem解决了在Windows平台上共享内存管理器的问题。在QQ群的交流中，群友啊D提出使用GetMemoryManager和SetMemoryManager，目前来看是能解决该问题的。\n跨平台一致性 Lazarus本身就是跨平台的，只注意避免使用平台专用的api即可，或者对不同平台的api进行封装。\n对于插件式的动态库，exports导出的函数统一使用Name关键字强制命名。同时，对于32位CPU，导出函数统一使用cdecl而不是stdcall进行传参约束；对于64位CPU，导出函数统一使用默认的传参约束，即不使用任何关键字，由编译器管理。\n新的问题 基于有限的测试，Linux的gtk2中显示模式窗口时主窗体还能进行最大化、最小化、移动等操作，但不能操作窗体内的元素，这与Windows上的行为表现不太一致\n插件动态库创建的窗体，嵌入主程序容器后，并不能像嵌入自身容器内那样可以方便的自适应大小和位置\nTODO 解决新发现的问题\n主程序页签式容器的实现\n主程序插件的管理\n开源地址 Github地址：https://github.com/afrusrsc/x-framework\nGitee地址：https://gitee.com/afrusrsc/x-framework",
+  "keywords": [
+    "lazarus", "pascal", "dll"
+  ],
+  "articleBody": "前言 先前就尝试过使用Lazarus写一个插件式的桌面应用框架，主程序只负责整体的插件管理以及为插件提供页签式的展示容器，具体的功能实现都由插件（动态库）来完成。\n但是之前比较零散的几次尝试，多或少有些问题，比较有代表性的如：\n无法以模式窗口显示插件内的子窗口\n插件内的窗口在任务栏上显示的是和主程序分离的两个程序\n动态库无法卸载\n使用接口无法释放动态库里的对象\n无法跨平台（主要针对windows）\n近来又进行了一次系统性的尝试，以前的一些也针对性的研究了下，并找到了目前来看比较合适的解决方案，并将阶段性成果开源了，具体地址见文末。\n旧问题解决 模式窗口 这个问题其实早在Lazarus官方的wiki（Form in Dll）上就有解决方案了。\n在此基础上也尝试进行一些魔改，过程就不多说了，经验总结如下：\nDisableFormsCallBack和EnableFormsCallback两个回调必须为普通过程，改为类方法会导致模式窗口失效\nTApplicationCallback可以和插件动态库内的管理类合并，做为插件入口的统一管理，甚至做为插件统一接口的实现\n视觉上为同一程序 Form in Dll中已经涉及，即在CreateParams中将Params.WndParent赋值为主程序中对应容器的句柄。\n卸载/释放 对于动态库的卸载，在Lazarus的dll卸载问题中已有提到，本次直接避免。\n对于对象的释放，这前的尝试犯了一个很严重的错误，即未遵守谁创建谁释放这一原则。接口中增加专门的释放函数，用于释放通过接口创建的对象。但，对于接口创建的对象，主程序除了释放外，也不应该（事实上也不能）进行其它操作，否则会抛内存访问异常。\n共享内存管理器 如果仅使用基本数据类型的话，这就是个伪命题，但若使用高阶数据类型的话还是会方便很多，毕竟字符串其实并不算是真正的基本类型。\n文章在Lazarus中使用ShareMem解决了在Windows平台上共享内存管理器的问题。在QQ群的交流中，群友啊D提出使用GetMemoryManager和SetMemoryManager，目前来看是能解决该问题的。\n跨平台一致性 Lazarus本身就是跨平台的，只注意避免使用平台专用的api即可，或者对不同平台的api进行封装。\n对于插件式的动态库，exports导出的函数统一使用Name关键字强制命名。同时，对于32位CPU，导出函数统一使用cdecl而不是stdcall进行传参约束；对于64位CPU，导出函数统一使用默认的传参约束，即不使用任何关键字，由编译器管理。\n新的问题 基于有限的测试，Linux的gtk2中显示模式窗口时主窗体还能进行最大化、最小化、移动等操作，但不能操作窗体内的元素，这与Windows上的行为表现不太一致\n插件动态库创建的窗体，嵌入主程序容器后，并不能像嵌入自身容器内那样可以方便的自适应大小和位置\nTODO 解决新发现的问题\n主程序页签式容器的实现\n主程序插件的管理\n开源地址 Github地址：https://github.com/afrusrsc/x-framework\nGitee地址：https://gitee.com/afrusrsc/x-framework\n",
+  "wordCount" : "40",
+  "inLanguage": "zh",
+  "datePublished": "2025-05-05T19:06:17+08:00",
+  "dateModified": "2025-05-05T19:06:17+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/pascal/lazarus_plugin_form/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/pascal/">⚒️pascal</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Lazarus插件式窗口设计尝试
+    </h1>
+    <div class="post-meta"><span title='2025-05-05 19:06:17 +0800 CST'>2025-05-05 19:06:17</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                    <li>
+                        <a href="#%e6%97%a7%e9%97%ae%e9%a2%98%e8%a7%a3%e5%86%b3" aria-label="旧问题解决">旧问题解决</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%a8%a1%e5%bc%8f%e7%aa%97%e5%8f%a3" aria-label="模式窗口">模式窗口</a></li>
+                    <li>
+                        <a href="#%e8%a7%86%e8%a7%89%e4%b8%8a%e4%b8%ba%e5%90%8c%e4%b8%80%e7%a8%8b%e5%ba%8f" aria-label="视觉上为同一程序">视觉上为同一程序</a></li>
+                    <li>
+                        <a href="#%e5%8d%b8%e8%bd%bd%e9%87%8a%e6%94%be" aria-label="卸载/释放">卸载/释放</a></li>
+                    <li>
+                        <a href="#%e5%85%b1%e4%ba%ab%e5%86%85%e5%ad%98%e7%ae%a1%e7%90%86%e5%99%a8" aria-label="共享内存管理器">共享内存管理器</a></li>
+                    <li>
+                        <a href="#%e8%b7%a8%e5%b9%b3%e5%8f%b0%e4%b8%80%e8%87%b4%e6%80%a7" aria-label="跨平台一致性">跨平台一致性</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e6%96%b0%e7%9a%84%e9%97%ae%e9%a2%98" aria-label="新的问题">新的问题</a></li>
+                    <li>
+                        <a href="#todo" aria-label="TODO">TODO</a></li>
+                    <li>
+                        <a href="#%e5%bc%80%e6%ba%90%e5%9c%b0%e5%9d%80" aria-label="开源地址">开源地址</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>先前就尝试过使用<code>Lazarus</code>写一个插件式的桌面应用框架，主程序只负责整体的插件管理以及为插件提供页签式的展示容器，具体的功能实现都由插件（动态库）来完成。</p>
+<p>但是之前比较零散的几次尝试，多或少有些问题，比较有代表性的如：</p>
+<ul>
+<li>
+<p>无法以模式窗口显示插件内的子窗口</p>
+</li>
+<li>
+<p>插件内的窗口在任务栏上显示的是和主程序分离的两个程序</p>
+</li>
+<li>
+<p>动态库无法卸载</p>
+</li>
+<li>
+<p>使用接口无法释放动态库里的对象</p>
+</li>
+<li>
+<p>无法跨平台（主要针对<code>windows</code>）</p>
+</li>
+</ul>
+<p>近来又进行了一次系统性的尝试，以前的一些也针对性的研究了下，并找到了目前来看比较合适的解决方案，并将阶段性成果<code>开源</code>了，具体地址见文末。</p>
+<h1 id="旧问题解决">旧问题解决<a hidden class="anchor" aria-hidden="true" href="#旧问题解决">#</a></h1>
+<h2 id="模式窗口">模式窗口<a hidden class="anchor" aria-hidden="true" href="#模式窗口">#</a></h2>
+<p>这个问题其实早在<code>Lazarus</code>官方的<code>wiki</code>（<a href="https://wiki.lazarus.freepascal.org/Form_in_DLL">Form in Dll</a>）上就有解决方案了。</p>
+<p>在此基础上也尝试进行一些魔改，过程就不多说了，经验总结如下：</p>
+<ul>
+<li>
+<p><code>DisableFormsCallBack</code>和<code>EnableFormsCallback</code>两个回调必须为普通过程，改为类方法会导致模式窗口失效</p>
+</li>
+<li>
+<p><code>TApplicationCallback</code>可以和插件动态库内的管理类合并，做为插件入口的统一管理，甚至做为插件统一接口的实现</p>
+</li>
+</ul>
+<h2 id="视觉上为同一程序">视觉上为同一程序<a hidden class="anchor" aria-hidden="true" href="#视觉上为同一程序">#</a></h2>
+<p><a href="https://wiki.lazarus.freepascal.org/Form_in_DLL">Form in Dll</a>中已经涉及，即在<code>CreateParams</code>中将<code>Params.WndParent</code>赋值为主程序中对应容器的句柄。</p>
+<h2 id="卸载释放">卸载/释放<a hidden class="anchor" aria-hidden="true" href="#卸载释放">#</a></h2>
+<p>对于动态库的卸载，在<a href="https://afrusrsc.github.io/posts/program/pascal/lazarus_dll_unload/">Lazarus的dll卸载问题</a>中已有提到，本次直接避免。</p>
+<p>对于对象的释放，这前的尝试犯了一个很严重的错误，即未遵守<code>谁创建谁释放</code>这一原则。接口中增加专门的<code>释放</code>函数，用于释放通过接口创建的对象。但，对于接口创建的对象，主程序除了释放外，也不应该（事实上也不能）进行其它操作，否则会抛内存访问异常。</p>
+<h2 id="共享内存管理器">共享内存管理器<a hidden class="anchor" aria-hidden="true" href="#共享内存管理器">#</a></h2>
+<p>如果仅使用基本数据类型的话，这就是个伪命题，但若使用高阶数据类型的话还是会方便很多，毕竟<code>字符串</code>其实并不算是真正的基本类型。</p>
+<p>文章<a href="https://afrusrsc.github.io/posts/program/pascal/lazarus_sharemem/">在Lazarus中使用ShareMem</a>解决了在<code>Windows</code>平台上共享内存管理器的问题。在QQ群的交流中，群友<code>啊D</code>提出使用<code>GetMemoryManager</code>和<code>SetMemoryManager</code>，目前来看是能解决该问题的。</p>
+<h2 id="跨平台一致性">跨平台一致性<a hidden class="anchor" aria-hidden="true" href="#跨平台一致性">#</a></h2>
+<p><code>Lazarus</code>本身就是跨平台的，只注意避免使用平台专用的api即可，或者对不同平台的api进行封装。</p>
+<p>对于插件式的动态库，<code>exports</code>导出的函数统一使用<code>Name</code>关键字强制命名。同时，对于<code>32位</code>CPU，导出函数统一使用<code>cdecl</code>而不是<code>stdcall</code>进行传参约束；对于<code>64位</code>CPU，导出函数统一使用默认的传参约束，即不使用任何关键字，由编译器管理。</p>
+<h1 id="新的问题">新的问题<a hidden class="anchor" aria-hidden="true" href="#新的问题">#</a></h1>
+<ul>
+<li>
+<p>基于有限的测试，<code>Linux</code>的<code>gtk2</code>中显示模式窗口时主窗体还能进行最大化、最小化、移动等操作，但不能操作窗体内的元素，这与<code>Windows</code>上的行为表现不太一致</p>
+</li>
+<li>
+<p>插件动态库创建的窗体，嵌入主程序容器后，并不能像嵌入自身容器内那样可以方便的自适应大小和位置</p>
+</li>
+</ul>
+<h1 id="todo">TODO<a hidden class="anchor" aria-hidden="true" href="#todo">#</a></h1>
+<ul>
+<li>
+<p>解决新发现的问题</p>
+</li>
+<li>
+<p>主程序页签式容器的实现</p>
+</li>
+<li>
+<p>主程序插件的管理</p>
+</li>
+</ul>
+<h1 id="开源地址">开源地址<a hidden class="anchor" aria-hidden="true" href="#开源地址">#</a></h1>
+<ul>
+<li>
+<p>Github地址：<a href="https://github.com/afrusrsc/x-framework">https://github.com/afrusrsc/x-framework</a></p>
+</li>
+<li>
+<p>Gitee地址：<a href="https://gitee.com/afrusrsc/x-framework">https://gitee.com/afrusrsc/x-framework</a></p>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/dll/">Dll</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/devops/docker_install/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>安装Docker</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/misc/ansi_es/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>ANSI转义序列</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>稳扎稳打学习Go | 慢步道人</title>
+<meta name="keywords" content="">
+<meta name="description" content="慢步道人">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/series/%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E5%AD%A6%E4%B9%A0go/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://afrusrsc.github.io/series/%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E5%AD%A6%E4%B9%A0go/index.xml">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/series/%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E5%AD%A6%E4%B9%A0go/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="稳扎稳打学习Go" />
+<meta property="og:description" content="慢步道人" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://afrusrsc.github.io/series/%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E5%AD%A6%E4%B9%A0go/" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="稳扎稳打学习Go"/>
+<meta name="twitter:description" content="慢步道人"/>
+
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/series/">📚系列</a></div>
+  <h1>
+    稳扎稳打学习Go
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Go builtin包
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>说明 预声明标识符是指在代码中可以直接使用的标识符，但它们并没有在任何包中声明。这些标识符通常是由Go语言的标准库或编译器提供的，它们在代码中可以直接使用，而不需要导入任何包。
+builtin包的作用是为这些预声明标识符提供文档说明，以便开发人员了解它们的用途和用法。通过查看builtin包的文档，开发人员可以了解到哪些预声明标识符是可用的，以及它们的作用和使用方法。
+内置函数 函数名 含义 说明 append 将元素追加到切片末尾 容量足够时，不会重新分配内存；容量不足时，会重新分配内存 copy 将切片中的元素复制到另一个切片中，返回复制的元素数量 delete 从映射中删除指定的键值对 len 返回切片、映射、通道或字符串的长度 cap 返回切片、映射或通道的容量 make 为切片、映射或通道分配内存，并返回该类型的零值 max 返回一组可比较类型中的最大值 如果是浮点型且参数中有NaN，则返回NaN min 返回一组可比较类型中的最小值 如果是浮点型且参数中有NaN，则返回NaN new 为指定类型的新值分配内存，并返回指向该类型的零值的指针 complex 创建一个复数 real 返回复数的实部 imag 返回复数的虚部 clear 清除切片、映射中的所有元素 close 关闭通道 只能由发送方调用 panic 停止当前协程的正常执行，引发一个运行时错误，导致程序回溯调用栈 recover 从panic中恢复，并返回panic的值 只能在defer语句中使用 print println 对传入的参数进行格式化，然后将格式化后的结果输出到标准错误 用于引导程序和调试，未来其可能会被修改或移除，不应该在生产环境中使用 </p>
+  </div>
+  <footer class="entry-footer"><span title='2024-10-18 13:35:53 +0800 CST'>2024-10-18 13:35:53</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Go builtin包" href="https://afrusrsc.github.io/posts/program/go/go_learn_builtin/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Go strconv包
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Go是强数据类型语言，且不支持隐式类型转换，strconv包是用于字符串和基本数据类型之间转换的。
+其它类型转字符串 函数名 含义 说明 FormatBool 布尔型转字符串 FormatInt FormatUint 整形转字符串 需指定进制 FormatFloat 浮点型转字符串 需指定格式、精度、位宽（32/64） FormatComplex 复数型转字符串 需指定格式、精度、位宽（64/128） Itoa 整形转字符串 固定十进制 字符串转其它类型 函数名 含义 说明 ParseBool 字符串转布尔型 1 t T true TRUE True为真，0 f F false FALSE False为假 ParseInt ParseUint 字符串转整形 需指定字符串的进制及转换后的位宽 ParseFloat 字符串转浮点型 需指定转换后的位宽 ParseComplex 字符串转复数 需指定转换后的位宽 Atoi 字符串转整形 固定十进制 其它 函数名 含义 说明 CanBackquote 判断一个字符串是否可以不被修改地放在反引号中 不能包含换行符，除了制表符之外，不能包含其他控制字符 IsGraphic 判断一个Unicode字符是否是图形字符 IsPrint的超集 IsPrint 判断一个Unicode字符是否是可打印字符 IsGraphic的子集 Quote 返回一个用双引号包裹的Go语言字符串字面量 控制字符和由IsPrint定义的不可打印字符会进行转义 QuoteToASCII 返回一个用双引号包裹的Go语言字符串字面量 非ASCII字符以及由IsPrint定义的不可打印字符会进行转义 QuoteToGraphic 返回一个用双引号包裹的Go语言字符串字面量 由IsGraphic定义的非图形字符会进行转义 QuoteRune 返回一个单引号包裹的Go字符字面量 控制字符和由IsPrint定义的不可打印字符会进行转义 QuoteRuneToASCII 返回一个单引号包裹的Go字符字面量 非ASCII字符以及由IsPrint定义的不可打印字符会进行转义 QuoteRuneToGraphic 返回一个单引号包裹的Go字符字面量 由IsGraphic定义的非图形字符会进行转义 AppendBool 布尔型转字符串，结果追加到指定的字节切片，并返回新的字节切片 AppendInt AppendUint 整型转字符串，结果追加到指定的字节切片，并返回新的字节切片 需指定进制 AppendFloat 浮点型转字符串，结果追加到指定的字节切片，并返回新的字节切片 需指定格式、精度、位宽（32/64） AppendQuote Quote处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteToASCII QuoteToASCII处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteToGraphic QuoteToGraphic处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteRune QuoteRune处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteRuneToASCII QuoteRuneToASCII处理后的结果追加到指定的字节切片，并返回新的字节切片 AppendQuoteRuneToGraphic QuoteRuneToGraphic处理后的结果追加到指定的字节切片，并返回新的字节切片 </p>
+  </div>
+  <footer class="entry-footer"><span title='2024-10-17 13:14:07 +0800 CST'>2024-10-17 13:14:07</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Go strconv包" href="https://afrusrsc.github.io/posts/program/go/go_learn_strconv/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Go fmt包
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>fmt包提供了格式化输入、输出的功能。
+格式化输出 函数名 说明 Print 以默认格式进行格式化，格式化结果输出到os.Stdout Printf 以指定格式进行格式化，格式化结果输出到os.Stdout Println 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到os.Stdout Fprint 以默认格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintf 以指定格式进行格式化，格式化结果输出到指定的io.Writer接口 Fprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果输出到指定的io.Writer接口 Sprint 以默认格式进行格式化，格式化结果以字符串形式返回 Sprintf 以指定格式进行格式化，格式化结果以字符串形式返回 Sprintln 以默认格式进行格式化，并在末尾添加换行符，格式化结果以字符串形式返回 具体格式化规则详见Go 格式化。
+格式化输入 函数名 说明 Scan 按默认格式从os.Stdin进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Scanf 按指定格式从os.Stdin进行扫描，扫描结果存入对应的变量 Scanln 按默认格式从os.Stdin进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Fscan 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Fscanf 按指定格式从指定的io.Reader接口进行扫描，扫描结果存入对应的变量 Fscanln 按默认格式从指定的io.Reader接口进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 Sscan 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，换行符按空格处理，扫描结果存入对应的变量 Sscanf 按指定格式从指定的字符串中进行扫描，扫描结果存入对应的变量 Sscanln 按默认格式从指定的字符串中进行扫描，空格用于分隔数据，遇换行符时停止扫描，扫描结果存入对应的变量 注意：变量前必须要带上&amp;才能成功接收扫描到的数据!
+其它 函数名 说明 Append 以默认格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendf 以指定格式进行格式化，格式化结果追加到指定的字节切片，并返回新的字节切片 Appendln 以默认格式进行格式化，并在末尾添加换行符，格式化结果追加到指定的字节切片，并返回新的字节切片 Errorf 以指定格式进行格式化，格式化结果转为error接口并返回 </p>
+  </div>
+  <footer class="entry-footer"><span title='2024-10-16 20:51:40 +0800 CST'>2024-10-16 20:51:40</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Go fmt包" href="https://afrusrsc.github.io/posts/program/go/go_learn_fmt/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Go 格式化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>格式化动词 常规 格式化动词 含义 %v 默认格式 %T 数据的类型 %% %本身 使用%v时不同类型默认对应的格式化动词如下：
+数据类型 格式化动词 说明 bool %t int int8 等 %d uint uint8 等 %d %#v时对应%#x float32 complex64 等 %g string %s chan %p pointer %p 布尔型 格式化动词 含义 示例 结果 %t true或false 1&gt;2 false 整型 格式化动词 含义 示例 结果 %b 二进制 90 1011010 %c 对应的 Unicode 字符 90 Z %d 十进制 90 90 %o 八进制 90 132 %O 带0o前缀的八进制 90 0o132 %q 用单引号包括的对应的 Unicode 字符，并且特殊字符会进行转义 90 ‘Z’ %x 小写的十六进制 90 5a %X 大写的十六进制 90 5A %U Unicode 格式：U&#43;1234；与U&#43;%04X相同 90 U&#43;005A 浮点型和复数型 格式化动词 含义 示例 结果 %b 十进制无小数的科学计数法表示浮点数，指数部分是2的幂次方 3....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-10-15 21:34:07 +0800 CST'>2024-10-15 21:34:07</span>&nbsp;·&nbsp;2 分钟&nbsp;·&nbsp;慢步道人</footer>
+  <a class="entry-link" aria-label="post link to Go 格式化" href="https://afrusrsc.github.io/posts/program/go/go_learn_format/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="https://afrusrsc.github.io/series/%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E5%AD%A6%E4%B9%A0go/">
+      «&nbsp;上一页&nbsp;1/2
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
