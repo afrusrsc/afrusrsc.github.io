@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>使用海康威视SDK的那些坑 | 慢步道人</title>
+<meta name="keywords" content="delphi, lazarus, pascal, 海康, sdk">
+<meta name="description" content="从其它平台迁移而来
+由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。
+Delphi版本的接口 Gitee地址
+首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C&#43;&#43;的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。
+由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。
+坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。
+其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。
+PlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/sdk_hcnetsdk/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/sdk_hcnetsdk/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="使用海康威视SDK的那些坑" />
+<meta property="og:description" content="从其它平台迁移而来
+由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。
+Delphi版本的接口 Gitee地址
+首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C&#43;&#43;的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。
+由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。
+坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。
+其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。
+PlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/sdk_hcnetsdk/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-01-02T16:29:46+08:00" />
+<meta property="article:modified_time" content="2019-01-02T16:29:46+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用海康威视SDK的那些坑"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。
+Delphi版本的接口 Gitee地址
+首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C&#43;&#43;的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。
+由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。
+坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。
+其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。
+PlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "使用海康威视SDK的那些坑",
+      "item": "https://afrusrsc.github.io/posts/program/sdk_hcnetsdk/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用海康威视SDK的那些坑",
+  "name": "使用海康威视SDK的那些坑",
+  "description": "从其它平台迁移而来\n由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。\nDelphi版本的接口 Gitee地址\n首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C++的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。\n由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。\n坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。\n其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。\nPlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。",
+  "keywords": [
+    "delphi", "lazarus", "pascal", "海康", "sdk"
+  ],
+  "articleBody": " 从其它平台迁移而来\n由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。\nDelphi版本的接口 Gitee地址\n首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C++的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。\n由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。\n坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。\n其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。\nPlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。\n",
+  "wordCount" : "12",
+  "inLanguage": "zh",
+  "datePublished": "2019-01-02T16:29:46+08:00",
+  "dateModified": "2019-01-02T16:29:46+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/sdk_hcnetsdk/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a></div>
+    <h1 class="post-title entry-hint-parent">
+      使用海康威视SDK的那些坑
+    </h1>
+    <div class="post-meta"><span title='2019-01-02 16:29:46 +0800 CST'>2019-01-02 16:29:46</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#delphi%e7%89%88%e6%9c%ac%e7%9a%84%e6%8e%a5%e5%8f%a3" aria-label="Delphi版本的接口">Delphi版本的接口</a></li>
+                    <li>
+                        <a href="#%e5%9d%91" aria-label="坑">坑</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<p>由于工作需要，项目中有使用到<code>海康威视</code>的产品，不可避免的就要使用海康的<code>SDK</code>进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。</p>
+<h1 id="delphi版本的接口">Delphi版本的接口<a hidden class="anchor" aria-hidden="true" href="#delphi版本的接口">#</a></h1>
+<p><a href="https://gitee.com/afrusrsc/HCNetSDK">Gitee地址</a></p>
+<p>首先，自己一直使用<code>Delphi</code>进行开发，然而海康官方只提供了C/C++的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。</p>
+<blockquote>
+<p><strong>由于<code>Delphi</code>商业使用的限制，现已转到<code>Lazarus</code>，全面拥抱开源。</strong></p>
+</blockquote>
+<h1 id="坑">坑<a hidden class="anchor" aria-hidden="true" href="#坑">#</a></h1>
+<ol>
+<li>播放声音</li>
+</ol>
+<p>预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。</p>
+<p>其实，这个问题特别简单，<strong>只需要把<code>HCNetSDKCom</code>目录下的<code>OpenAL32.dll</code>拷贝到<code>PlayCtrl.dll</code>所在的目录下就可以了</strong>。这下就明白了吧，没有声音的原因其实就是使用<code>NET_DVR_OpenSound</code>调了<code>PlayCtrl.dll</code>，而<code>PlayCtrl.dll</code>又调了<code>OpenAL32.dll</code>来播放声音，但是由于<code>PlayCtrl.dll</code>没有找到<code>OpenAL32.dll</code>所以没有声音，而且这个有问题的返回值也并没有一层层的返回给<code>NET_DVR_OpenSound</code>函数，结果就是函数返回调用成功了，但就是死活没声音。</p>
+<ol start="2">
+<li>PlayCtrl.dll不是PlayCtrl.dll</li>
+</ol>
+<p>使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是<strong>SDK里的<code>PlayCtrl.dll</code>并不是播放库里的<code>PlayCtrl.dll</code></strong>。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用<code>eXeScope</code>详细查看。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/delphi/">Delphi</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/%E6%B5%B7%E5%BA%B7/">海康</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/sdk/">Sdk</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/program/delphi_clientdataset/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>TClientDataSet的使用以及遇到的坑</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/delphi_custom_graphic_control/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Delphi自定义图形控件的自定义字体属性在设计期报错的解决办法</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
