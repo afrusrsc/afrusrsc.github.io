@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>海康 on 慢步道人</title>
+    <link>https://afrusrsc.github.io/tags/%E6%B5%B7%E5%BA%B7/</link>
+    <description>Recent content in 海康 on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Wed, 15 Dec 2021 11:29:07 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/tags/%E6%B5%B7%E5%BA%B7/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>慎用 out</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/lazarus_use_out/</link>
+      <pubDate>Wed, 15 Dec 2021 11:29:07 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/lazarus_use_out/</guid>
+      <description>从其它平台迁移而来
+最近需要评估一下海康摄像头不同抓拍方式的性能，以及封装类的可靠性。
+在测试过程中，又发现了当初遇见的设备内存抓拍报错的问题。当初排查的结论是：当封装类开启预览的情况下，使用设备抓图有较高概率抓拍失败。由于预览是必需的，最终选择了预览抓拍。
+现在，换用lazarus进行测试，发现设备抓图必失败，与是否预览无关。一点点调试，发现直接调用SDK原始方法进行设备抓图正常，使用封装类的设备抓图就不行，那肯定是封装类出了问题。
+最终发现，封装类的设备抓图使用了out来修饰参数，参数是TMemoryStream和TJPEGImage对象，尝试去掉out修饰符，然后就一切正常了。
+记得很久前专门研究过out和var修饰符的区别，当时查阅的结果是：out和var修饰的参数都是传址的，区别是out会对参数进行初始化，而var则不会。
+另外，参数为对象的情况，实际也是传址的。
+本次发现的问题可能就是使用out来修饰对象参数导致的，但并没有进行进一步的测试。
+附 测试环境 操作系统：win10
+硬盘：SSD
+测试结果 子码流预览抓图，耗时毫秒级；主码流预览抓图，耗时10+毫秒级
+预览抓图比设备拍图耗时少得多，设备抓图在100+毫秒级
+在相同分辨率情况下，预览抓图的文件大小比设备抓图的略大</description>
+    </item>
+    <item>
+      <title>使用海康威视SDK的那些坑</title>
+      <link>https://afrusrsc.github.io/posts/program/pascal/sdk_hcnetsdk/</link>
+      <pubDate>Wed, 02 Jan 2019 16:29:46 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/pascal/sdk_hcnetsdk/</guid>
+      <description>从其它平台迁移而来
+由于工作需要，项目中有使用到海康威视的产品，不可避免的就要使用海康的SDK进行二次开发。开发过程中磕磕绊绊的，踩了不少坑，这里做一个简单的记录，算是给健忘的自己提个醒吧。
+Delphi版本的接口 Gitee地址
+首先，自己一直使用Delphi进行开发，然而海康官方只提供了C/C++的接口和示例，无奈只能自己改写了。改写完的部分已经上传，希望能有人共同来完善。
+由于Delphi商业使用的限制，现已转到Lazarus，全面拥抱开源。
+坑 播放声音 预览时播放声音，回放时播放声音，甚至使用播放库播放已下载的视频时播放声音，这些对于前端摄像头自带麦克的场景肯定是刚需（另接麦克的情况暂未测试），然而按照官方SDK文档和示例代码写出的程序死活就是没有声音，这样的情况似乎不少人都遇到过，但是，好像并没有见谁把解决方法公开过。
+其实，这个问题特别简单，只需要把HCNetSDKCom目录下的OpenAL32.dll拷贝到PlayCtrl.dll所在的目录下就可以了。这下就明白了吧，没有声音的原因其实就是使用NET_DVR_OpenSound调了PlayCtrl.dll，而PlayCtrl.dll又调了OpenAL32.dll来播放声音，但是由于PlayCtrl.dll没有找到OpenAL32.dll所以没有声音，而且这个有问题的返回值也并没有一层层的返回给NET_DVR_OpenSound函数，结果就是函数返回调用成功了，但就是死活没声音。
+PlayCtrl.dll不是PlayCtrl.dll 使用海康SDK进行二次开发的，一般也会使用到海康的播放库，但是有一个问题是需要注意的，那就是SDK里的PlayCtrl.dll并不是播放库里的PlayCtrl.dll。虽然它们长得一样，名字也一样，但它们的本质却是完全不一样的，是不能互相替代的！有兴趣的朋友可以使用eXeScope详细查看。</description>
+    </item>
+  </channel>
+</rss>

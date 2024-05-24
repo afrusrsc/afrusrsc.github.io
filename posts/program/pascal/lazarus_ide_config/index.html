@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Lazarus开发环境配置 | 慢步道人</title>
+<meta name="keywords" content="lazarus, pascal">
+<meta name="description" content="从其它平台迁移而来
+前言 做为一个桌面应用开发者，工作中一直使用的是Delphi（是语言，也是IDE，基于pascal语言），无论是经典的D7，还是现下最新的XE，都有着还算丰富的使用经验吧，虽然这两者都各有优缺点。做为团队开发成员之一，具体使用什么，几乎是没什么选择权的，毕竟公司有自己的技术栈，当然还有相应的技术债。
+但是，做为一个个人开发者，还是比较喜欢严谨的pascal语言的（其实Go的一些语法就是借鉴pascal的，比如：类型在变量右侧），而且还有着那么多年的开发经验，理论上来说，写个小工具啊什么的，还是应该选择熟悉的Delphi才是，但是Delphi并不符合个人的选择条件：
+不要太重量级
+有当前比较流行的特性
+有相对活跃的社区
+D7以现在的眼光来看，绝对算是足够轻量级的，整个环境（不含三方组件）安装完还不到1G，但是是毕竟是二十年前的东西了，不说新特性，一些陈年bug就够喝一壶了。
+相对来说，XE却是一直在更新着，新特性是有了，但是仅安装包就7~9G，只安装桌面开发必须的自带组件，安装完也有15G&#43;，而且正版授权巨贵，社区版限制又巨多。
+至于有相对活跃的社区这条，国外应该还行，但对英文渣渣来说还是有点难了；而国内，Delphi都是快绝迹的语言了，当我什么都没说吧。
+所以，选来选去，也就只剩开源的Lazarus和CodeTyphon（基于Lazarus）了。原本是看中了CodeTyphon的，但是死活在Bug10上安装不成功，也就只能选Lazarus了，不过Lazarus倒也是越用越顺心了。
+虽说Lazarus标榜的一次编写，到处编译，不过，实际用到的几乎都是windows平台，至于其它平台，有机会再说吧。
+开发环境 以下以Lazarus 2.2.4为例。
+安装IDE Lazarus有32位版本和64位版本，而且都互相有对方架构的插件包，个人尝试后还是觉得分别安装两个版本比较合适（不要质疑，真的可以同时安装多个版本，不同架构、不同版本号都可以）。
+由于Bug10不愧是Bug10，所以个人还是喜欢整成免安装版本，万一哪天Bug10作妖，就不怕重新折腾了。
+在非系统盘下手动创建目录，比如D:\lazarus和D:\lazarus\config，前者是IDE的安装目录，后者是IDE的配置目录
+下载并运行安装包
+在选择目标位置这一步时，选择之前手动创建的安装目录，同时勾选创建一个新的第二的安装（不要质疑，哪怕是第一次安装），下一步
+到选择配置文件夹这一步，选择之前手动创建的配置目录，然后一路下一步
+安装完之后，把安装目录备份一下，再把IDE卸载了，然后把安装目录恢复了（当然，这一步也可以不做）
+运行lazarus.exe，首次运行时（包括未来重装系统后）会弹出Welcom to Lazarus IDE的窗口，其中Fppkg项会有叹号（似乎是2.2版本之后才有的），点Restore Fppkg configuration，再点Write new configuration files，最后点Start IDE
+可以为lazarus.exe创建快捷方式
+至此，IDE就算是安装完了，需要的话可以把安装目录整个压缩备份，不过个人还是建议把IDE配置好了再备份
+IDE配置 构建配置 由于Lazarus每次安装三方组件都要重新build，如果三方组件装得多了，IDE的exe会很大（不是你自己写的exe），而个人又是比较喜欢小巧的，所以这一步是少不了的。
+菜单Tools-&gt;Configure &quot;Build Lazarus&quot;
+Profile to build项选择Optimized IDE
+点Build会立即重新构建IDE；点Save Settings仅保存配置，下次构建时生效
+一体式窗口 安装完之后，IDE默认是D7那种分离式窗口，在小分辨率屏幕的时代很有用，不过现在嘛，个人感觉还是一体式窗口比较舒服。Lazarus已经提供了这样的包，只不过默认并没有启用。
+菜单Package-&gt;Install/Uninstall Packages ...
+右侧选择AnchorDockingDsgn 1.0，点Install selection或双击
+点Save and rebuild IDE重新构建，IDE重启之后就是一体式的窗口了
+拖动子窗口的标题，会自动吸附，调整为自己喜欢的布局，重启IDE即可
+此时，若是不小心把布局调乱了，就不好恢复了，所以可以考虑把自动保存布局功能给关了：
+菜单Tools-&gt;Desktops ...，去掉Auto save active desktop的勾，关闭 其它配置 菜单Tools-&gt;Options ...是IDE集中的配置，可依自己习惯或喜好进行配置。不过，倒是可以分享些个人的配置及相应的考虑，以供参考：">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_ide_config/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_ide_config/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Lazarus开发环境配置" />
+<meta property="og:description" content="从其它平台迁移而来
+前言 做为一个桌面应用开发者，工作中一直使用的是Delphi（是语言，也是IDE，基于pascal语言），无论是经典的D7，还是现下最新的XE，都有着还算丰富的使用经验吧，虽然这两者都各有优缺点。做为团队开发成员之一，具体使用什么，几乎是没什么选择权的，毕竟公司有自己的技术栈，当然还有相应的技术债。
+但是，做为一个个人开发者，还是比较喜欢严谨的pascal语言的（其实Go的一些语法就是借鉴pascal的，比如：类型在变量右侧），而且还有着那么多年的开发经验，理论上来说，写个小工具啊什么的，还是应该选择熟悉的Delphi才是，但是Delphi并不符合个人的选择条件：
+不要太重量级
+有当前比较流行的特性
+有相对活跃的社区
+D7以现在的眼光来看，绝对算是足够轻量级的，整个环境（不含三方组件）安装完还不到1G，但是是毕竟是二十年前的东西了，不说新特性，一些陈年bug就够喝一壶了。
+相对来说，XE却是一直在更新着，新特性是有了，但是仅安装包就7~9G，只安装桌面开发必须的自带组件，安装完也有15G&#43;，而且正版授权巨贵，社区版限制又巨多。
+至于有相对活跃的社区这条，国外应该还行，但对英文渣渣来说还是有点难了；而国内，Delphi都是快绝迹的语言了，当我什么都没说吧。
+所以，选来选去，也就只剩开源的Lazarus和CodeTyphon（基于Lazarus）了。原本是看中了CodeTyphon的，但是死活在Bug10上安装不成功，也就只能选Lazarus了，不过Lazarus倒也是越用越顺心了。
+虽说Lazarus标榜的一次编写，到处编译，不过，实际用到的几乎都是windows平台，至于其它平台，有机会再说吧。
+开发环境 以下以Lazarus 2.2.4为例。
+安装IDE Lazarus有32位版本和64位版本，而且都互相有对方架构的插件包，个人尝试后还是觉得分别安装两个版本比较合适（不要质疑，真的可以同时安装多个版本，不同架构、不同版本号都可以）。
+由于Bug10不愧是Bug10，所以个人还是喜欢整成免安装版本，万一哪天Bug10作妖，就不怕重新折腾了。
+在非系统盘下手动创建目录，比如D:\lazarus和D:\lazarus\config，前者是IDE的安装目录，后者是IDE的配置目录
+下载并运行安装包
+在选择目标位置这一步时，选择之前手动创建的安装目录，同时勾选创建一个新的第二的安装（不要质疑，哪怕是第一次安装），下一步
+到选择配置文件夹这一步，选择之前手动创建的配置目录，然后一路下一步
+安装完之后，把安装目录备份一下，再把IDE卸载了，然后把安装目录恢复了（当然，这一步也可以不做）
+运行lazarus.exe，首次运行时（包括未来重装系统后）会弹出Welcom to Lazarus IDE的窗口，其中Fppkg项会有叹号（似乎是2.2版本之后才有的），点Restore Fppkg configuration，再点Write new configuration files，最后点Start IDE
+可以为lazarus.exe创建快捷方式
+至此，IDE就算是安装完了，需要的话可以把安装目录整个压缩备份，不过个人还是建议把IDE配置好了再备份
+IDE配置 构建配置 由于Lazarus每次安装三方组件都要重新build，如果三方组件装得多了，IDE的exe会很大（不是你自己写的exe），而个人又是比较喜欢小巧的，所以这一步是少不了的。
+菜单Tools-&gt;Configure &quot;Build Lazarus&quot;
+Profile to build项选择Optimized IDE
+点Build会立即重新构建IDE；点Save Settings仅保存配置，下次构建时生效
+一体式窗口 安装完之后，IDE默认是D7那种分离式窗口，在小分辨率屏幕的时代很有用，不过现在嘛，个人感觉还是一体式窗口比较舒服。Lazarus已经提供了这样的包，只不过默认并没有启用。
+菜单Package-&gt;Install/Uninstall Packages ...
+右侧选择AnchorDockingDsgn 1.0，点Install selection或双击
+点Save and rebuild IDE重新构建，IDE重启之后就是一体式的窗口了
+拖动子窗口的标题，会自动吸附，调整为自己喜欢的布局，重启IDE即可
+此时，若是不小心把布局调乱了，就不好恢复了，所以可以考虑把自动保存布局功能给关了：
+菜单Tools-&gt;Desktops ...，去掉Auto save active desktop的勾，关闭 其它配置 菜单Tools-&gt;Options ...是IDE集中的配置，可依自己习惯或喜好进行配置。不过，倒是可以分享些个人的配置及相应的考虑，以供参考：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/program/pascal/lazarus_ide_config/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-02-25T23:52:38+08:00" />
+<meta property="article:modified_time" content="2023-02-25T23:52:38+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Lazarus开发环境配置"/>
+<meta name="twitter:description" content="从其它平台迁移而来
+前言 做为一个桌面应用开发者，工作中一直使用的是Delphi（是语言，也是IDE，基于pascal语言），无论是经典的D7，还是现下最新的XE，都有着还算丰富的使用经验吧，虽然这两者都各有优缺点。做为团队开发成员之一，具体使用什么，几乎是没什么选择权的，毕竟公司有自己的技术栈，当然还有相应的技术债。
+但是，做为一个个人开发者，还是比较喜欢严谨的pascal语言的（其实Go的一些语法就是借鉴pascal的，比如：类型在变量右侧），而且还有着那么多年的开发经验，理论上来说，写个小工具啊什么的，还是应该选择熟悉的Delphi才是，但是Delphi并不符合个人的选择条件：
+不要太重量级
+有当前比较流行的特性
+有相对活跃的社区
+D7以现在的眼光来看，绝对算是足够轻量级的，整个环境（不含三方组件）安装完还不到1G，但是是毕竟是二十年前的东西了，不说新特性，一些陈年bug就够喝一壶了。
+相对来说，XE却是一直在更新着，新特性是有了，但是仅安装包就7~9G，只安装桌面开发必须的自带组件，安装完也有15G&#43;，而且正版授权巨贵，社区版限制又巨多。
+至于有相对活跃的社区这条，国外应该还行，但对英文渣渣来说还是有点难了；而国内，Delphi都是快绝迹的语言了，当我什么都没说吧。
+所以，选来选去，也就只剩开源的Lazarus和CodeTyphon（基于Lazarus）了。原本是看中了CodeTyphon的，但是死活在Bug10上安装不成功，也就只能选Lazarus了，不过Lazarus倒也是越用越顺心了。
+虽说Lazarus标榜的一次编写，到处编译，不过，实际用到的几乎都是windows平台，至于其它平台，有机会再说吧。
+开发环境 以下以Lazarus 2.2.4为例。
+安装IDE Lazarus有32位版本和64位版本，而且都互相有对方架构的插件包，个人尝试后还是觉得分别安装两个版本比较合适（不要质疑，真的可以同时安装多个版本，不同架构、不同版本号都可以）。
+由于Bug10不愧是Bug10，所以个人还是喜欢整成免安装版本，万一哪天Bug10作妖，就不怕重新折腾了。
+在非系统盘下手动创建目录，比如D:\lazarus和D:\lazarus\config，前者是IDE的安装目录，后者是IDE的配置目录
+下载并运行安装包
+在选择目标位置这一步时，选择之前手动创建的安装目录，同时勾选创建一个新的第二的安装（不要质疑，哪怕是第一次安装），下一步
+到选择配置文件夹这一步，选择之前手动创建的配置目录，然后一路下一步
+安装完之后，把安装目录备份一下，再把IDE卸载了，然后把安装目录恢复了（当然，这一步也可以不做）
+运行lazarus.exe，首次运行时（包括未来重装系统后）会弹出Welcom to Lazarus IDE的窗口，其中Fppkg项会有叹号（似乎是2.2版本之后才有的），点Restore Fppkg configuration，再点Write new configuration files，最后点Start IDE
+可以为lazarus.exe创建快捷方式
+至此，IDE就算是安装完了，需要的话可以把安装目录整个压缩备份，不过个人还是建议把IDE配置好了再备份
+IDE配置 构建配置 由于Lazarus每次安装三方组件都要重新build，如果三方组件装得多了，IDE的exe会很大（不是你自己写的exe），而个人又是比较喜欢小巧的，所以这一步是少不了的。
+菜单Tools-&gt;Configure &quot;Build Lazarus&quot;
+Profile to build项选择Optimized IDE
+点Build会立即重新构建IDE；点Save Settings仅保存配置，下次构建时生效
+一体式窗口 安装完之后，IDE默认是D7那种分离式窗口，在小分辨率屏幕的时代很有用，不过现在嘛，个人感觉还是一体式窗口比较舒服。Lazarus已经提供了这样的包，只不过默认并没有启用。
+菜单Package-&gt;Install/Uninstall Packages ...
+右侧选择AnchorDockingDsgn 1.0，点Install selection或双击
+点Save and rebuild IDE重新构建，IDE重启之后就是一体式的窗口了
+拖动子窗口的标题，会自动吸附，调整为自己喜欢的布局，重启IDE即可
+此时，若是不小心把布局调乱了，就不好恢复了，所以可以考虑把自动保存布局功能给关了：
+菜单Tools-&gt;Desktops ...，去掉Auto save active desktop的勾，关闭 其它配置 菜单Tools-&gt;Options ...是IDE集中的配置，可依自己习惯或喜好进行配置。不过，倒是可以分享些个人的配置及相应的考虑，以供参考："/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻编程开发",
+      "item": "https://afrusrsc.github.io/posts/program/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "⚒️pascal",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Lazarus开发环境配置",
+      "item": "https://afrusrsc.github.io/posts/program/pascal/lazarus_ide_config/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Lazarus开发环境配置",
+  "name": "Lazarus开发环境配置",
+  "description": "从其它平台迁移而来\n前言 做为一个桌面应用开发者，工作中一直使用的是Delphi（是语言，也是IDE，基于pascal语言），无论是经典的D7，还是现下最新的XE，都有着还算丰富的使用经验吧，虽然这两者都各有优缺点。做为团队开发成员之一，具体使用什么，几乎是没什么选择权的，毕竟公司有自己的技术栈，当然还有相应的技术债。\n但是，做为一个个人开发者，还是比较喜欢严谨的pascal语言的（其实Go的一些语法就是借鉴pascal的，比如：类型在变量右侧），而且还有着那么多年的开发经验，理论上来说，写个小工具啊什么的，还是应该选择熟悉的Delphi才是，但是Delphi并不符合个人的选择条件：\n不要太重量级\n有当前比较流行的特性\n有相对活跃的社区\nD7以现在的眼光来看，绝对算是足够轻量级的，整个环境（不含三方组件）安装完还不到1G，但是是毕竟是二十年前的东西了，不说新特性，一些陈年bug就够喝一壶了。\n相对来说，XE却是一直在更新着，新特性是有了，但是仅安装包就7~9G，只安装桌面开发必须的自带组件，安装完也有15G+，而且正版授权巨贵，社区版限制又巨多。\n至于有相对活跃的社区这条，国外应该还行，但对英文渣渣来说还是有点难了；而国内，Delphi都是快绝迹的语言了，当我什么都没说吧。\n所以，选来选去，也就只剩开源的Lazarus和CodeTyphon（基于Lazarus）了。原本是看中了CodeTyphon的，但是死活在Bug10上安装不成功，也就只能选Lazarus了，不过Lazarus倒也是越用越顺心了。\n虽说Lazarus标榜的一次编写，到处编译，不过，实际用到的几乎都是windows平台，至于其它平台，有机会再说吧。\n开发环境 以下以Lazarus 2.2.4为例。\n安装IDE Lazarus有32位版本和64位版本，而且都互相有对方架构的插件包，个人尝试后还是觉得分别安装两个版本比较合适（不要质疑，真的可以同时安装多个版本，不同架构、不同版本号都可以）。\n由于Bug10不愧是Bug10，所以个人还是喜欢整成免安装版本，万一哪天Bug10作妖，就不怕重新折腾了。\n在非系统盘下手动创建目录，比如D:\\lazarus和D:\\lazarus\\config，前者是IDE的安装目录，后者是IDE的配置目录\n下载并运行安装包\n在选择目标位置这一步时，选择之前手动创建的安装目录，同时勾选创建一个新的第二的安装（不要质疑，哪怕是第一次安装），下一步\n到选择配置文件夹这一步，选择之前手动创建的配置目录，然后一路下一步\n安装完之后，把安装目录备份一下，再把IDE卸载了，然后把安装目录恢复了（当然，这一步也可以不做）\n运行lazarus.exe，首次运行时（包括未来重装系统后）会弹出Welcom to Lazarus IDE的窗口，其中Fppkg项会有叹号（似乎是2.2版本之后才有的），点Restore Fppkg configuration，再点Write new configuration files，最后点Start IDE\n可以为lazarus.exe创建快捷方式\n至此，IDE就算是安装完了，需要的话可以把安装目录整个压缩备份，不过个人还是建议把IDE配置好了再备份\nIDE配置 构建配置 由于Lazarus每次安装三方组件都要重新build，如果三方组件装得多了，IDE的exe会很大（不是你自己写的exe），而个人又是比较喜欢小巧的，所以这一步是少不了的。\n菜单Tools-\u0026gt;Configure \u0026quot;Build Lazarus\u0026quot;\nProfile to build项选择Optimized IDE\n点Build会立即重新构建IDE；点Save Settings仅保存配置，下次构建时生效\n一体式窗口 安装完之后，IDE默认是D7那种分离式窗口，在小分辨率屏幕的时代很有用，不过现在嘛，个人感觉还是一体式窗口比较舒服。Lazarus已经提供了这样的包，只不过默认并没有启用。\n菜单Package-\u0026gt;Install/Uninstall Packages ...\n右侧选择AnchorDockingDsgn 1.0，点Install selection或双击\n点Save and rebuild IDE重新构建，IDE重启之后就是一体式的窗口了\n拖动子窗口的标题，会自动吸附，调整为自己喜欢的布局，重启IDE即可\n此时，若是不小心把布局调乱了，就不好恢复了，所以可以考虑把自动保存布局功能给关了：\n菜单Tools-\u0026gt;Desktops ...，去掉Auto save active desktop的勾，关闭 其它配置 菜单Tools-\u0026gt;Options ...是IDE集中的配置，可依自己习惯或喜好进行配置。不过，倒是可以分享些个人的配置及相应的考虑，以供参考：",
+  "keywords": [
+    "lazarus", "pascal"
+  ],
+  "articleBody": " 从其它平台迁移而来\n前言 做为一个桌面应用开发者，工作中一直使用的是Delphi（是语言，也是IDE，基于pascal语言），无论是经典的D7，还是现下最新的XE，都有着还算丰富的使用经验吧，虽然这两者都各有优缺点。做为团队开发成员之一，具体使用什么，几乎是没什么选择权的，毕竟公司有自己的技术栈，当然还有相应的技术债。\n但是，做为一个个人开发者，还是比较喜欢严谨的pascal语言的（其实Go的一些语法就是借鉴pascal的，比如：类型在变量右侧），而且还有着那么多年的开发经验，理论上来说，写个小工具啊什么的，还是应该选择熟悉的Delphi才是，但是Delphi并不符合个人的选择条件：\n不要太重量级\n有当前比较流行的特性\n有相对活跃的社区\nD7以现在的眼光来看，绝对算是足够轻量级的，整个环境（不含三方组件）安装完还不到1G，但是是毕竟是二十年前的东西了，不说新特性，一些陈年bug就够喝一壶了。\n相对来说，XE却是一直在更新着，新特性是有了，但是仅安装包就7~9G，只安装桌面开发必须的自带组件，安装完也有15G+，而且正版授权巨贵，社区版限制又巨多。\n至于有相对活跃的社区这条，国外应该还行，但对英文渣渣来说还是有点难了；而国内，Delphi都是快绝迹的语言了，当我什么都没说吧。\n所以，选来选去，也就只剩开源的Lazarus和CodeTyphon（基于Lazarus）了。原本是看中了CodeTyphon的，但是死活在Bug10上安装不成功，也就只能选Lazarus了，不过Lazarus倒也是越用越顺心了。\n虽说Lazarus标榜的一次编写，到处编译，不过，实际用到的几乎都是windows平台，至于其它平台，有机会再说吧。\n开发环境 以下以Lazarus 2.2.4为例。\n安装IDE Lazarus有32位版本和64位版本，而且都互相有对方架构的插件包，个人尝试后还是觉得分别安装两个版本比较合适（不要质疑，真的可以同时安装多个版本，不同架构、不同版本号都可以）。\n由于Bug10不愧是Bug10，所以个人还是喜欢整成免安装版本，万一哪天Bug10作妖，就不怕重新折腾了。\n在非系统盘下手动创建目录，比如D:\\lazarus和D:\\lazarus\\config，前者是IDE的安装目录，后者是IDE的配置目录\n下载并运行安装包\n在选择目标位置这一步时，选择之前手动创建的安装目录，同时勾选创建一个新的第二的安装（不要质疑，哪怕是第一次安装），下一步\n到选择配置文件夹这一步，选择之前手动创建的配置目录，然后一路下一步\n安装完之后，把安装目录备份一下，再把IDE卸载了，然后把安装目录恢复了（当然，这一步也可以不做）\n运行lazarus.exe，首次运行时（包括未来重装系统后）会弹出Welcom to Lazarus IDE的窗口，其中Fppkg项会有叹号（似乎是2.2版本之后才有的），点Restore Fppkg configuration，再点Write new configuration files，最后点Start IDE\n可以为lazarus.exe创建快捷方式\n至此，IDE就算是安装完了，需要的话可以把安装目录整个压缩备份，不过个人还是建议把IDE配置好了再备份\nIDE配置 构建配置 由于Lazarus每次安装三方组件都要重新build，如果三方组件装得多了，IDE的exe会很大（不是你自己写的exe），而个人又是比较喜欢小巧的，所以这一步是少不了的。\n菜单Tools-\u003eConfigure \"Build Lazarus\"\nProfile to build项选择Optimized IDE\n点Build会立即重新构建IDE；点Save Settings仅保存配置，下次构建时生效\n一体式窗口 安装完之后，IDE默认是D7那种分离式窗口，在小分辨率屏幕的时代很有用，不过现在嘛，个人感觉还是一体式窗口比较舒服。Lazarus已经提供了这样的包，只不过默认并没有启用。\n菜单Package-\u003eInstall/Uninstall Packages ...\n右侧选择AnchorDockingDsgn 1.0，点Install selection或双击\n点Save and rebuild IDE重新构建，IDE重启之后就是一体式的窗口了\n拖动子窗口的标题，会自动吸附，调整为自己喜欢的布局，重启IDE即可\n此时，若是不小心把布局调乱了，就不好恢复了，所以可以考虑把自动保存布局功能给关了：\n菜单Tools-\u003eDesktops ...，去掉Auto save active desktop的勾，关闭 其它配置 菜单Tools-\u003eOptions ...是IDE集中的配置，可依自己习惯或喜好进行配置。不过，倒是可以分享些个人的配置及相应的考虑，以供参考：\n默认英文界面就挺好，毕竟中文翻译不全，也不够精准，万一需要去泡一下官方社区了，至少英文界面还能知道具体说的是哪儿\nEnvironment-\u003eIDE CoolBar，选择第一个工具条，点Configure，把File menu commands下的New ...添加上【理由：默认工具条上只有新建普通单元和窗体，新建工程、模块、Frame等还要去菜单里点，不够快捷】\nEnvironment-\u003eBackup，两个都选.~pp【理由：不管是工程还是单元，统一后缀名，方便用脚本清理，也方便加入版本库的忽略列表】\nEnvironment-\u003eNaming，Default Pascal extension项选择.pp【理由：方便与Delphi的源码文件做区分】\nEditor-\u003eDisplay，设置Show line numbers后的值为1【理由：每行都显示行号，方便与人交流/讨论代码】\nEditor-\u003eDisplay-\u003eMarkup and Matches，勾选Matching Keywords下的Outline (global)【理由：代码块带上垂直线，方便区分嵌套关系】\nEditor-\u003eCompletion and Hints，勾选Auto remove empty methods【理由：保持代码整洁，减少误导】\nJCF Format Settings-\u003eClarify-\u003eComments，不勾选Remove empty '//' comments【理由：相信我，你一定会用得上//空注释的】\nDebugger-\u003eDebugger backend，如果经常编写、调试dll的话，选择Gdb会比较合适，否则保持默认【理由：目前FpDebug不支持dll的调试】\n自带的第三方可选组件 上面的一体式窗口就是其中的一个组件包，其它组件包安装方法相同。这里简单介绍几个：\nh2paswizard 0.0：需要把C/C++的.h头文件转为pascal的.pas单元文件时会用到，不过就个人而言还是喜欢手撸来得精准\nLazActiveX 0.1：安装该包后才能安装基于ActiveX的组件，例如windows自带的TTS\nlazdeamon 0.9.9：编写windows 服务形式的应用了会用到\nlazvlc 1.0：VLC播放器的组件包，编写播放视频的应用了会用到，需要手动下载V2以上版本的libvlccore.dll和libvlc.dll\nweblaz 1.0：fpweb的组件包，不安装直接引用相关单元也可以\n官方远程仓库的第三方可选组件 菜单Package-\u003eOnline Package Manager ...可以下载/安装官方远程仓库收录的第三方可选组件，需要联网才能使用。也简单介绍几个：\nCEF4Delphi：谷歌浏览器内核，依赖DCPcrypt，同时需要手动下载版本号完全相同的一梭子二进制文件，所以还是直接去GitHub上下载吧\nDBTreeViewAndDBCntrlGrid：可从数据集中把树型数据直接显示为树，可以算做Lazarus默认的数据感知组件的扩充\nDCPcrypt：常用加密/解密算法包\nIndy10：Delphi上默认的经典的网络通讯组件包\nLNet：轻量级的网络通讯组件包，不过其UDP组件不能绑定发送端口，感觉莫名其妙\nMORMot：一个很牛的pascal语言的ORM框架\nPythonForLazarus：Python4Delphi的Lazarus版移植，懂的自然懂\n其它开源仓库的第三方组件 开源的实在是太多太多了……这里就只说一个个人觉得巨实用的：\ndataset-serialize：数据集与JSON序列化/反序列化的项目 ",
+  "wordCount" : "129",
+  "inLanguage": "zh",
+  "datePublished": "2023-02-25T23:52:38+08:00",
+  "dateModified": "2023-02-25T23:52:38+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/program/pascal/lazarus_ide_config/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/">💻编程开发</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/program/pascal/">⚒️pascal</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Lazarus开发环境配置
+    </h1>
+    <div class="post-meta"><span title='2023-02-25 23:52:38 +0800 CST'>2023-02-25 23:52:38</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                    <li>
+                        <a href="#%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83" aria-label="开发环境">开发环境</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%ae%89%e8%a3%85ide" aria-label="安装IDE">安装IDE</a></li>
+                    <li>
+                        <a href="#ide%e9%85%8d%e7%bd%ae" aria-label="IDE配置">IDE配置</a><ul>
+                            
+                    <li>
+                        <a href="#%e6%9e%84%e5%bb%ba%e9%85%8d%e7%bd%ae" aria-label="构建配置">构建配置</a></li>
+                    <li>
+                        <a href="#%e4%b8%80%e4%bd%93%e5%bc%8f%e7%aa%97%e5%8f%a3" aria-label="一体式窗口">一体式窗口</a></li>
+                    <li>
+                        <a href="#%e5%85%b6%e5%ae%83%e9%85%8d%e7%bd%ae" aria-label="其它配置">其它配置</a></li>
+                    <li>
+                        <a href="#%e8%87%aa%e5%b8%a6%e7%9a%84%e7%ac%ac%e4%b8%89%e6%96%b9%e5%8f%af%e9%80%89%e7%bb%84%e4%bb%b6" aria-label="自带的第三方可选组件">自带的第三方可选组件</a></li>
+                    <li>
+                        <a href="#%e5%ae%98%e6%96%b9%e8%bf%9c%e7%a8%8b%e4%bb%93%e5%ba%93%e7%9a%84%e7%ac%ac%e4%b8%89%e6%96%b9%e5%8f%af%e9%80%89%e7%bb%84%e4%bb%b6" aria-label="官方远程仓库的第三方可选组件">官方远程仓库的第三方可选组件</a></li>
+                    <li>
+                        <a href="#%e5%85%b6%e5%ae%83%e5%bc%80%e6%ba%90%e4%bb%93%e5%ba%93%e7%9a%84%e7%ac%ac%e4%b8%89%e6%96%b9%e7%bb%84%e4%bb%b6" aria-label="其它开源仓库的第三方组件">其它开源仓库的第三方组件</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><blockquote>
+<p><strong>从其它平台迁移而来</strong></p>
+</blockquote>
+<hr>
+<h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p>做为一个桌面应用开发者，工作中一直使用的是<code>Delphi</code>（是语言，也是IDE，基于<code>pascal</code>语言），无论是经典的<code>D7</code>，还是现下最新的<code>XE</code>，都有着还算丰富的使用经验吧，虽然这两者都各有优缺点。做为团队开发成员之一，具体使用什么，几乎是没什么选择权的，毕竟公司有自己的技术栈，当然还有相应的技术债。</p>
+<p>但是，做为一个个人开发者，还是比较喜欢严谨的<code>pascal</code>语言的（其实<code>Go</code>的一些语法就是借鉴<code>pascal</code>的，比如：类型在变量右侧），而且还有着那么多年的开发经验，理论上来说，写个小工具啊什么的，还是应该选择熟悉的<code>Delphi</code>才是，但是<code>Delphi</code>并不符合个人的选择条件：</p>
+<blockquote>
+<ol>
+<li>
+<p>不要太重量级</p>
+</li>
+<li>
+<p>有当前比较流行的特性</p>
+</li>
+<li>
+<p>有相对活跃的社区</p>
+</li>
+</ol>
+</blockquote>
+<p><code>D7</code>以现在的眼光来看，绝对算是足够轻量级的，整个环境（不含三方组件）安装完还不到<code>1G</code>，但是是毕竟是二十年前的东西了，不说新特性，一些陈年bug就够喝一壶了。</p>
+<p>相对来说，<code>XE</code>却是一直在更新着，新特性是有了，但是仅安装包就<code>7~9G</code>，只安装桌面开发必须的自带组件，安装完也有<code>15G+</code>，而且正版授权巨贵，社区版限制又巨多。</p>
+<p>至于<code>有相对活跃的社区</code>这条，国外应该还行，但对英文渣渣来说还是有点难了；而国内，<code>Delphi</code>都是快绝迹的语言了，当我什么都没说吧。</p>
+<p>所以，选来选去，也就只剩开源的<code>Lazarus</code>和<code>CodeTyphon</code>（基于<code>Lazarus</code>）了。原本是看中了<code>CodeTyphon</code>的，但是死活在<code>Bug10</code>上安装不成功，也就只能选<code>Lazarus</code>了，不过<code>Lazarus</code>倒也是越用越顺心了。</p>
+<p>虽说<code>Lazarus</code>标榜的<code>一次编写，到处编译</code>，不过，实际用到的几乎都是<code>windows</code>平台，至于其它平台，有机会再说吧。</p>
+<h1 id="开发环境">开发环境<a hidden class="anchor" aria-hidden="true" href="#开发环境">#</a></h1>
+<p>以下以<code>Lazarus 2.2.4</code>为例。</p>
+<h2 id="安装ide">安装IDE<a hidden class="anchor" aria-hidden="true" href="#安装ide">#</a></h2>
+<p><code>Lazarus</code>有<code>32位</code>版本和<code>64位</code>版本，而且都互相有对方架构的插件包，个人尝试后还是觉得分别安装两个版本比较合适（不要质疑，真的可以同时安装多个版本，不同架构、不同版本号都可以）。</p>
+<p>由于<code>Bug10</code>不愧是<code>Bug10</code>，所以个人还是喜欢整成免安装版本，万一哪天<code>Bug10</code>作妖，就不怕重新折腾了。</p>
+<ol>
+<li>
+<p>在非系统盘下手动创建目录，比如<code>D:\lazarus</code>和<code>D:\lazarus\config</code>，前者是<code>IDE</code>的安装目录，后者是<code>IDE</code>的配置目录</p>
+</li>
+<li>
+<p>下载并运行安装包</p>
+</li>
+<li>
+<p>在<code>选择目标位置</code>这一步时，选择之前手动创建的安装目录，同时勾选<code>创建一个新的第二的安装</code>（不要质疑，哪怕是第一次安装），下一步</p>
+</li>
+<li>
+<p>到<code>选择配置文件夹</code>这一步，选择之前手动创建的配置目录，然后一路下一步</p>
+</li>
+<li>
+<p>安装完之后，把安装目录备份一下，再把<code>IDE</code>卸载了，然后把安装目录恢复了（当然，这一步也可以不做）</p>
+</li>
+<li>
+<p>运行<code>lazarus.exe</code>，首次运行时（包括未来重装系统后）会弹出<code>Welcom to Lazarus IDE</code>的窗口，其中<code>Fppkg</code>项会有叹号（似乎是<code>2.2</code>版本之后才有的），点<code>Restore Fppkg configuration</code>，再点<code>Write new configuration files</code>，最后点<code>Start IDE</code></p>
+</li>
+<li>
+<p>可以为<code>lazarus.exe</code>创建快捷方式</p>
+</li>
+</ol>
+<p>至此，<code>IDE</code>就算是安装完了，需要的话可以把安装目录整个压缩备份，不过个人还是建议把IDE配置好了再备份</p>
+<h2 id="ide配置">IDE配置<a hidden class="anchor" aria-hidden="true" href="#ide配置">#</a></h2>
+<h3 id="构建配置">构建配置<a hidden class="anchor" aria-hidden="true" href="#构建配置">#</a></h3>
+<p>由于<code>Lazarus</code>每次安装三方组件都要重新<code>build</code>，如果三方组件装得多了，<code>IDE</code>的<code>exe</code>会很大（不是你自己写的<code>exe</code>），而个人又是比较喜欢小巧的，所以这一步是少不了的。</p>
+<ol>
+<li>
+<p>菜单<code>Tools</code>-&gt;<code>Configure &quot;Build Lazarus&quot;</code></p>
+</li>
+<li>
+<p><code>Profile to build</code>项选择<code>Optimized IDE</code></p>
+</li>
+<li>
+<p>点<code>Build</code>会立即重新构建IDE；点<code>Save Settings</code>仅保存配置，下次构建时生效</p>
+</li>
+</ol>
+<h3 id="一体式窗口">一体式窗口<a hidden class="anchor" aria-hidden="true" href="#一体式窗口">#</a></h3>
+<p>安装完之后，IDE默认是<code>D7</code>那种<code>分离式窗口</code>，在小分辨率屏幕的时代很有用，不过现在嘛，个人感觉还是<code>一体式窗口</code>比较舒服。<code>Lazarus</code>已经提供了这样的包，只不过默认并没有启用。</p>
+<ol>
+<li>
+<p>菜单<code>Package</code>-&gt;<code>Install/Uninstall Packages ...</code></p>
+</li>
+<li>
+<p>右侧选择<code>AnchorDockingDsgn 1.0</code>，点<code>Install selection</code>或双击</p>
+</li>
+<li>
+<p>点<code>Save and rebuild IDE</code>重新构建，IDE重启之后就是一体式的窗口了</p>
+</li>
+<li>
+<p>拖动子窗口的标题，会自动吸附，调整为自己喜欢的布局，重启IDE即可</p>
+</li>
+</ol>
+<p>此时，若是不小心把布局调乱了，就不好恢复了，所以可以考虑把自动保存布局功能给关了：</p>
+<ol start="5">
+<li>菜单<code>Tools</code>-&gt;<code>Desktops ...</code>，去掉<code>Auto save active desktop</code>的勾，关闭</li>
+</ol>
+<h3 id="其它配置">其它配置<a hidden class="anchor" aria-hidden="true" href="#其它配置">#</a></h3>
+<p>菜单<code>Tools</code>-&gt;<code>Options ...</code>是IDE集中的配置，可依自己习惯或喜好进行配置。不过，倒是可以分享些个人的配置及相应的考虑，以供参考：</p>
+<ul>
+<li>
+<p>默认英文界面就挺好，毕竟中文翻译不全，也不够精准，万一需要去泡一下官方社区了，至少英文界面还能知道具体说的是哪儿</p>
+</li>
+<li>
+<p><code>Environment</code>-&gt;<code>IDE CoolBar</code>，选择第一个工具条，点<code>Configure</code>，把<code>File menu commands</code>下的<code>New ...</code>添加上【理由：默认工具条上只有新建<code>普通单元</code>和<code>窗体</code>，新建<code>工程</code>、<code>模块</code>、<code>Frame</code>等还要去菜单里点，不够快捷】</p>
+</li>
+<li>
+<p><code>Environment</code>-&gt;<code>Backup</code>，两个都选<code>.~pp</code>【理由：不管是工程还是单元，统一后缀名，方便<code>用脚本清理</code>，也方便加入版本库的<code>忽略列表</code>】</p>
+</li>
+<li>
+<p><code>Environment</code>-&gt;<code>Naming</code>，<code>Default Pascal extension</code>项选择<code>.pp</code>【理由：方便与<code>Delphi</code>的源码文件做区分】</p>
+</li>
+<li>
+<p><code>Editor</code>-&gt;<code>Display</code>，设置<code>Show line numbers</code>后的值为<code>1</code>【理由：每行都显示行号，方便与人交流/讨论代码】</p>
+</li>
+<li>
+<p><code>Editor</code>-&gt;<code>Display</code>-&gt;<code>Markup and Matches</code>，勾选<code>Matching Keywords</code>下的<code>Outline (global)</code>【理由：代码块带上垂直线，方便区分嵌套关系】</p>
+</li>
+<li>
+<p><code>Editor</code>-&gt;<code>Completion and Hints</code>，勾选<code>Auto remove empty methods</code>【理由：保持代码整洁，减少误导】</p>
+</li>
+<li>
+<p><code>JCF Format Settings</code>-&gt;<code>Clarify</code>-&gt;<code>Comments</code>，不勾选<code>Remove empty '//' comments</code>【理由：相信我，你一定会用得上<code>//</code>空注释的】</p>
+</li>
+<li>
+<p><code>Debugger</code>-&gt;<code>Debugger backend</code>，如果经常编写、调试<code>dll</code>的话，选择<code>Gdb</code>会比较合适，否则保持默认【理由：目前<code>FpDebug</code>不支持<code>dll</code>的调试】</p>
+</li>
+</ul>
+<h3 id="自带的第三方可选组件">自带的第三方可选组件<a hidden class="anchor" aria-hidden="true" href="#自带的第三方可选组件">#</a></h3>
+<p>上面的<code>一体式窗口</code>就是其中的一个组件包，其它组件包安装方法相同。这里简单介绍几个：</p>
+<ul>
+<li>
+<p><code>h2paswizard 0.0</code>：需要把<code>C/C++</code>的<code>.h</code>头文件转为<code>pascal</code>的<code>.pas</code>单元文件时会用到，不过就个人而言还是喜欢手撸来得精准</p>
+</li>
+<li>
+<p><code>LazActiveX 0.1</code>：安装该包后才能安装基于<code>ActiveX</code>的组件，例如<code>windows</code>自带的<code>TTS</code></p>
+</li>
+<li>
+<p><code>lazdeamon 0.9.9</code>：编写<code>windows 服务</code>形式的应用了会用到</p>
+</li>
+<li>
+<p><code>lazvlc 1.0</code>：<code>VLC</code>播放器的组件包，编写播放视频的应用了会用到，需要手动下载<code>V2以上版本</code>的<code>libvlccore.dll</code>和<code>libvlc.dll</code></p>
+</li>
+<li>
+<p><code>weblaz 1.0</code>：<code>fpweb</code>的组件包，不安装直接引用相关单元也可以</p>
+</li>
+</ul>
+<h3 id="官方远程仓库的第三方可选组件">官方远程仓库的第三方可选组件<a hidden class="anchor" aria-hidden="true" href="#官方远程仓库的第三方可选组件">#</a></h3>
+<p>菜单<code>Package</code>-&gt;<code>Online Package Manager ...</code>可以下载/安装官方远程仓库收录的第三方可选组件，需要联网才能使用。也简单介绍几个：</p>
+<ul>
+<li>
+<p><code>CEF4Delphi</code>：谷歌浏览器内核，依赖<code>DCPcrypt</code>，同时需要手动下载版本号完全相同的一梭子二进制文件，所以还是直接去<code>GitHub</code>上下载吧</p>
+</li>
+<li>
+<p><code>DBTreeViewAndDBCntrlGrid</code>：可从数据集中把树型数据直接显示为树，可以算做<code>Lazarus</code>默认的数据感知组件的扩充</p>
+</li>
+<li>
+<p><code>DCPcrypt</code>：常用加密/解密算法包</p>
+</li>
+<li>
+<p><code>Indy10</code>：<code>Delphi</code>上默认的经典的网络通讯组件包</p>
+</li>
+<li>
+<p><code>LNet</code>：轻量级的网络通讯组件包，不过其<code>UDP</code>组件不能绑定发送端口，感觉莫名其妙</p>
+</li>
+<li>
+<p><code>MORMot</code>：一个很牛的<code>pascal</code>语言的<code>ORM</code>框架</p>
+</li>
+<li>
+<p><code>PythonForLazarus</code>：<code>Python4Delphi</code>的<code>Lazarus</code>版移植，懂的自然懂</p>
+</li>
+</ul>
+<h3 id="其它开源仓库的第三方组件">其它开源仓库的第三方组件<a hidden class="anchor" aria-hidden="true" href="#其它开源仓库的第三方组件">#</a></h3>
+<p>开源的实在是太多太多了……这里就只说一个个人觉得巨实用的：</p>
+<ul>
+<li><code>dataset-serialize</code>：数据集与JSON序列化/反序列化的项目</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/lazarus/">Lazarus</a></li>
+      <li><a href="https://afrusrsc.github.io/tags/pascal/">Pascal</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://afrusrsc.github.io/posts/other/mermaid_gantt/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Mermaid学习笔记之——甘特图</span>
+  </a>
+  <a class="next" href="https://afrusrsc.github.io/posts/program/pascal/lazarus_fphttpclient_https/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>FPHTTPClient请求https</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

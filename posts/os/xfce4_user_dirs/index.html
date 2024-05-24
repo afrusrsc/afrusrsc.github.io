@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Xfce4自定义用户文件夹 | 慢步道人</title>
+<meta name="keywords" content="xfce">
+<meta name="description" content="背景 在Linux上，一直使用的是xfce桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。
+但是，在中文环境下，默认的下载目录名字就是下载，在命令行下使用时还要切换输入法，麻烦，虽然可以建立软链接解决，但还是想知道有没有更直接的方法。
+解决方案 一番折腾后，发现了$HOME/.config/目录下的user-dirs.dirs文件，内容如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # This file is written by xdg-user-dirs-update # If you want to change or add directories, just edit the line you&#39;re # interested in. All local changes will be retained on the next run. # Format is XDG_xxx_DIR=&#34;$HOME/yyy&#34;, where yyy is a shell-escaped # homedir-relative path, or XDG_xxx_DIR=&#34;/yyy&#34;, where /yyy is an # absolute path.">
+<meta name="author" content="慢步道人">
+<link rel="canonical" href="https://afrusrsc.github.io/posts/os/xfce4_user_dirs/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.828576b1a5476849c84c82cb78a8b046f6f0bebcd9505652f39a5ee58fa4dcaf.css" integrity="sha256-goV2saVHaEnITILLeKiwRvbwvrzZUFZS85pe5Y&#43;k3K8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="apple-touch-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<link rel="mask-icon" href="https://afrusrsc.github.io/img/icon.jpg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://afrusrsc.github.io/posts/os/xfce4_user_dirs/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+  
+
+<meta property="og:title" content="Xfce4自定义用户文件夹" />
+<meta property="og:description" content="背景 在Linux上，一直使用的是xfce桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。
+但是，在中文环境下，默认的下载目录名字就是下载，在命令行下使用时还要切换输入法，麻烦，虽然可以建立软链接解决，但还是想知道有没有更直接的方法。
+解决方案 一番折腾后，发现了$HOME/.config/目录下的user-dirs.dirs文件，内容如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # This file is written by xdg-user-dirs-update # If you want to change or add directories, just edit the line you&#39;re # interested in. All local changes will be retained on the next run. # Format is XDG_xxx_DIR=&#34;$HOME/yyy&#34;, where yyy is a shell-escaped # homedir-relative path, or XDG_xxx_DIR=&#34;/yyy&#34;, where /yyy is an # absolute path." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://afrusrsc.github.io/posts/os/xfce4_user_dirs/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-07-13T10:26:19+08:00" />
+<meta property="article:modified_time" content="2025-07-13T10:26:19+08:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Xfce4自定义用户文件夹"/>
+<meta name="twitter:description" content="背景 在Linux上，一直使用的是xfce桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。
+但是，在中文环境下，默认的下载目录名字就是下载，在命令行下使用时还要切换输入法，麻烦，虽然可以建立软链接解决，但还是想知道有没有更直接的方法。
+解决方案 一番折腾后，发现了$HOME/.config/目录下的user-dirs.dirs文件，内容如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # This file is written by xdg-user-dirs-update # If you want to change or add directories, just edit the line you&#39;re # interested in. All local changes will be retained on the next run. # Format is XDG_xxx_DIR=&#34;$HOME/yyy&#34;, where yyy is a shell-escaped # homedir-relative path, or XDG_xxx_DIR=&#34;/yyy&#34;, where /yyy is an # absolute path."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "https://afrusrsc.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "🖥️操作系统",
+      "item": "https://afrusrsc.github.io/posts/os/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Xfce4自定义用户文件夹",
+      "item": "https://afrusrsc.github.io/posts/os/xfce4_user_dirs/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Xfce4自定义用户文件夹",
+  "name": "Xfce4自定义用户文件夹",
+  "description": "背景 在Linux上，一直使用的是xfce桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。\n但是，在中文环境下，默认的下载目录名字就是下载，在命令行下使用时还要切换输入法，麻烦，虽然可以建立软链接解决，但还是想知道有没有更直接的方法。\n解决方案 一番折腾后，发现了$HOME/.config/目录下的user-dirs.dirs文件，内容如下：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # This file is written by xdg-user-dirs-update # If you want to change or add directories, just edit the line you\u0026#39;re # interested in. All local changes will be retained on the next run. # Format is XDG_xxx_DIR=\u0026#34;$HOME/yyy\u0026#34;, where yyy is a shell-escaped # homedir-relative path, or XDG_xxx_DIR=\u0026#34;/yyy\u0026#34;, where /yyy is an # absolute path.",
+  "keywords": [
+    "xfce"
+  ],
+  "articleBody": "背景 在Linux上，一直使用的是xfce桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。\n但是，在中文环境下，默认的下载目录名字就是下载，在命令行下使用时还要切换输入法，麻烦，虽然可以建立软链接解决，但还是想知道有没有更直接的方法。\n解决方案 一番折腾后，发现了$HOME/.config/目录下的user-dirs.dirs文件，内容如下：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # This file is written by xdg-user-dirs-update # If you want to change or add directories, just edit the line you're # interested in. All local changes will be retained on the next run. # Format is XDG_xxx_DIR=\"$HOME/yyy\", where yyy is a shell-escaped # homedir-relative path, or XDG_xxx_DIR=\"/yyy\", where /yyy is an # absolute path. No other format is supported. # XDG_DESKTOP_DIR=\"$HOME/桌面\" XDG_DOWNLOAD_DIR=\"$HOME/下载\" XDG_TEMPLATES_DIR=\"$HOME/模板\" XDG_PUBLICSHARE_DIR=\"$HOME/公共\" XDG_DOCUMENTS_DIR=\"$HOME/文档\" XDG_MUSIC_DIR=\"$HOME/音乐\" XDG_PICTURES_DIR=\"$HOME/图片\" XDG_VIDEOS_DIR=\"$HOME/视频\" 嗯，就是这个了。\n修改$HOME/.config/user-dirs.dirs内容，把XDG_DOWNLOAD_DIR=\"$HOME/下载\"改为XDG_DOWNLOAD_DIR=\"$HOME/download\"\n把下载文件夹重命名为download\n重启（或者重新登录）\n其它的修改也是类似。\n",
+  "wordCount" : "94",
+  "inLanguage": "zh",
+  "datePublished": "2025-07-13T10:26:19+08:00",
+  "dateModified": "2025-07-13T10:26:19+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "慢步道人"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://afrusrsc.github.io/posts/os/xfce4_user_dirs/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "慢步道人",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://afrusrsc.github.io/img/icon.jpg"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script async src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://afrusrsc.github.io/" accesskey="h" title="慢步道人 (Alt + H)">
+                <img src="https://afrusrsc.github.io/img/icon.jpg" alt="" aria-label="logo"
+                    height="30">慢步道人</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://afrusrsc.github.io/search/" title="🔍搜索">
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/posts/" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/archives/" title="📅时间轴">
+                    <span>📅时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/tags/" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://afrusrsc.github.io/about/" title="👨🏻‍💻关于">
+                    <span>👨🏻‍💻关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://afrusrsc.github.io/">主页</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://afrusrsc.github.io/posts/os/">🖥️操作系统</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Xfce4自定义用户文件夹
+    </h1>
+    <div class="post-meta"><span title='2025-07-13 10:26:19 +0800 CST'>2025-07-13 10:26:19</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;慢步道人
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">目录</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                    <li>
+                        <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="解决方案">解决方案</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h1 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h1>
+<p>在<code>Linux</code>上，一直使用的是<code>xfce</code>桌面环境，要的就是一个简洁、轻量、稳定，够用却又不算丑。</p>
+<p>但是，在中文环境下，默认的<code>下载</code>目录名字就是<code>下载</code>，在命令行下使用时还要切换输入法，麻烦，虽然可以建立<code>软链接</code>解决，但还是想知道有没有更直接的方法。</p>
+<h1 id="解决方案">解决方案<a hidden class="anchor" aria-hidden="true" href="#解决方案">#</a></h1>
+<p>一番折腾后，发现了<code>$HOME/.config/</code>目录下的<code>user-dirs.dirs</code>文件，内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># This file is written by xdg-user-dirs-update</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># If you want to change or add directories, just edit the line you&#39;re</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># interested in. All local changes will be retained on the next run.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Format is XDG_xxx_DIR=&#34;$HOME/yyy&#34;, where yyy is a shell-escaped</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># homedir-relative path, or XDG_xxx_DIR=&#34;/yyy&#34;, where /yyy is an</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># absolute path. No other format is supported.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># </span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_DESKTOP_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/桌面&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_DOWNLOAD_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/下载&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_TEMPLATES_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/模板&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_PUBLICSHARE_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/公共&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_DOCUMENTS_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/文档&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_MUSIC_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/音乐&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_PICTURES_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/图片&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_VIDEOS_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/视频&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>嗯，就是这个了。</p>
+<ol>
+<li>
+<p>修改<code>$HOME/.config/user-dirs.dirs</code>内容，把<code>XDG_DOWNLOAD_DIR=&quot;$HOME/下载&quot;</code>改为<code>XDG_DOWNLOAD_DIR=&quot;$HOME/download&quot;</code></p>
+</li>
+<li>
+<p>把<code>下载</code>文件夹重命名为<code>download</code></p>
+</li>
+<li>
+<p>重启（或者重新登录）</p>
+</li>
+</ol>
+<p>其它的修改也是类似。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://afrusrsc.github.io/tags/xfce/">Xfce</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://afrusrsc.github.io/posts/os/debian_mount_ntfs/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Debian开机自动挂载ntfs分区</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2017-2025 <a href="https://github.com/afrusrsc">Jesse Jin</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

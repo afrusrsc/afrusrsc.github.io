@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>从Delphi到Go on 慢步道人</title>
+    <link>https://afrusrsc.github.io/series/%E4%BB%8Edelphi%E5%88%B0go/</link>
+    <description>Recent content in 从Delphi到Go on 慢步道人</description>
+    <generator>Hugo -- 0.125.7</generator>
+    <language>zh</language>
+    <copyright>2017-2025 Jesse Jin</copyright>
+    <lastBuildDate>Thu, 30 Jan 2020 12:52:16 +0800</lastBuildDate>
+    <atom:link href="https://afrusrsc.github.io/series/%E4%BB%8Edelphi%E5%88%B0go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>从Delphi到Go——接口</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_interface/</link>
+      <pubDate>Thu, 30 Jan 2020 12:52:16 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_interface/</guid>
+      <description>从其它平台迁移而来
+由于没有太多编写接口的经验，此处仅简单说明语法。后期对接口有更多认知和经验后再进行详细记录。
+Delphi Delphi的接口是侵入式接口，并且是单继承的，但类可以同时实现多个接口，类声明时需要显示声明实现了哪些接口。
+声明 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 type //直接声明 IMyInterface1 = interface function Func1: Integer; //函数 procedure Proc1(Value: Integer); //过程 property MI: Integer read Func1 write Proc1; //属性 end; //从已有接口继承 IMyInterface2 = interface(IMyInterface1) procedure Proc2; end; //含有 GUID 的接口可以公开给其它进程调用 IMyInterface3 = interface [&amp;#39;{3E51374A-D0E8-4C84-AA30-9634409E45DD}&amp;#39;] procedure Proc3; end; Delphi已经提供了基接口IInterface，自己声明的接口最好从IInterface继承。
+实现 1 2 3 4 5 6 7 8 9 10 11 type //含接口的类的声明 TMyClass = class(基类, 接口) public procedure Proc; //接口方法 end; //接口实现 procedure TMyClass.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——方法</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_method/</link>
+      <pubDate>Mon, 02 Dec 2019 22:56:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_method/</guid>
+      <description>从其它平台迁移而来
+结构体的方法 Delphi Delphi结构体的方法与类的方法几乎是一致的，主要区别是内存的管理方式和可见性不同。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 //定义 type TMyStruct = record No: Integer; Name: string; function ToString: string; end; //实现 function TMyStruct.ToString: string; begin Result := Format(&amp;#39;No:%d, Name:%s&amp;#39;, [Self.No, Self.Name]); end; //调用 var ms: TMyStruct; s: string; begin s := ms.ToString; end; Go 方法其实就是加了接收器的函数，语法如下：
+1 2 3 func (接收器变量 接收器类型) 方法名(参数列表) (返回参数) { 函数体 } Go结构体的方法无需声明，直接实现即可。</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——异常处理</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_except/</link>
+      <pubDate>Sun, 01 Dec 2019 22:35:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_except/</guid>
+      <description>从其它平台迁移而来
+Delphi try&amp;hellip;finally&amp;hellip;end 1 2 3 4 5 6 //创建、打开、加锁等 try //具体处理 finally //释放、关闭、解锁等 end; raise 1 raise Exception.Create(&amp;#39;异常信息&amp;#39;); //手动抛出异常 try&amp;hellip;except&amp;hellip;end 1 2 3 4 5 6 7 8 9 try //可能产生异常的语句块 except //异常的相关处理 on E: Exception do begin //对应类型的异常的处理 end; end; Go defer 加defer的语句会延迟到函数调用结束返回时才执行，相当于finally...end区。存在多个defer语句时，最先出现的总是最后才执行。
+1 2 3 4 5 func F(){ //打开、加锁等 defer //关闭、解锁等 //具体处理 } panic 1 panic(异常信息) recover 1 2 3 4 5 6 7 func FF(){ defer func(){ e := recover() //异常处理 }() //可能产生异常的语句块，或调用 panic() 抛出异常 } 虽然panic/recover组合可以模拟try.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——函数的可变参数</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_func_args/</link>
+      <pubDate>Wed, 27 Nov 2019 22:24:05 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_func_args/</guid>
+      <description>从其它平台迁移而来
+Delphi 事实上，Delphi并没有什么可以直接为函数传递可变参数（数量可变、类型可变）的语法，但是并不是说不可能实现，最常用的Format()函数就是最好的例子。
+虽然不能直接传递可变参数，但是通过一种叫做可变类型的开放数组即可实现为函数传递数量不定、类型不一的可变参数。
+可变类型 可变类型不是变体类型，而是一个记录类型TVarRec，在System单元中的定义如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 TVarRec = record { do not pack this record; it is compiler-generated } case Integer of 0: (case Byte of vtInteger: (VInteger: Integer); vtBoolean: (VBoolean: Boolean); vtChar: (VChar: _AnsiChr); vtExtended: (VExtended: PExtended); {$IFNDEF NEXTGEN} vtString: (VString: _PShortStr); {$ENDIF !</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——匿名函数</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_func/</link>
+      <pubDate>Sun, 03 Nov 2019 12:14:24 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_func/</guid>
+      <description>从其它平台迁移而来
+早期的Delphi版本是没有匿名函数的，不过可以定义一个函数类型来实现类似的功能；后期的版本已经支持匿名函数，随用随写。Go天生就支持匿名函数。
+Delphi 函数类型 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 //声明函数类型 type TMyProc = procedure(A: Integer); //过程 TMyFunc = function(x: Integer): Integer; //函数 //定义符合函数类型的函数 procedure MyProc(A: Integer); begin ShowMessage(IntToHex(A)); end; function MyFunc1(x: Integer): Integer; begin Result := x + x; end; function MyFunc2(x: Integer): Integer; begin Result := x * x; end; //使用 var mp: TMyProc; mf: TMyFunc; begin mp := MyProc; mf := MyFunc1; mp(mf(99)); end; //作为参数进行传递，这才是函数类型最主要的使用方法 procedure Test(x: Integer; Func: TMyFunc); begin ShowMessage(Func(x).</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——列表</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_list/</link>
+      <pubDate>Wed, 30 Oct 2019 21:58:48 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_list/</guid>
+      <description>从其它平台迁移而来
+Delphi中最基本的列表是TList类和TList&amp;lt;T&amp;gt;泛型类，还有线程安全的TThreadList类和TThreadList&amp;lt;T&amp;gt;泛型类，底层实现是数组。Go用的是container/list包，内部实现是双向链表。
+Delphi TList TList里存的是指针，使用时注意处理好指针即可。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 //声明 var l: TList; //构造 l := TList.Create; //添加 l.Add(p); //元素个数 n := l.Count; //列表容量 cap := l.Capacity; //取值 p1 := l.Items[0]; p2 := l.Extract(p1); //找到指针p1并从列表中取出，列表中将不再有p1，若其后还有元素，则前移填充空缺。 p := l.First; //取第一个元素 p := l.Last; //取最后一个元素 //查找元素的索引 i := l.IndexOf(p); //修改 l.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——字典</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_map/</link>
+      <pubDate>Mon, 28 Oct 2019 22:09:02 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_map/</guid>
+      <description>从其它平台迁移而来
+字典，又称为哈希表，是一种能够快速寻找值的理想结构。Go语言中对应的数据类型是map，Delphi中是TDictionary泛型类。
+声明 Delphi
+1 2 uses System.Generics.Collections; var 字典名: TDictionary&amp;lt;键类型, 值类型&amp;gt;; Go
+1 var 字典名 map[键类型]值类型 初始化 Delphi
+1 字典名 := TDictionary&amp;lt;键类型, 值类型&amp;gt;.Create(初始容量); Go
+1 2 3 4 //使用make构造 字典名 = make(map[键类型]值类型, 初始容量) //直接赋初值 字典名 = map[键类型]值类型{键1: 值1, 键2: 值2} 元素操作 Delphi
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 var m: TDictionary&amp;lt;Integer, string&amp;gt;; //构造 m := TDictionary&amp;lt;Integer, string&amp;gt;.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——数组</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_array/</link>
+      <pubDate>Tue, 08 Oct 2019 22:03:53 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_array/</guid>
+      <description>从其它平台迁移而来
+静态数组 一维数组 声明 Delphi
+1 var 数组名 : array[索引范围] of 元素类型; //索引范围是子界类型，格式为：下限..上限 Go
+1 var 数组名 [数组长度]元素类型 Delphi的索引范围可以是任意的子界类型，而且是包含上下限的闭区间。子界可以是任意的序数类型（整型、字符型、枚举元素等），例如：0..8、5..11、&#39;a&#39;..&#39;z&#39;等。子界元素就是数组元素的下标。
+Go的数组长度只能是整型，下标为0~数组长度-1。
+初始化 Delphi
+1 2 var 数组名 : array[1..N] of 元素类型 = (元素1, 元素2, ……, 元素N); //如果先声明后赋值的话，赋值时就需要遍历数组对每个元素分别赋值 Go
+1 2 3 4 5 6 7 8 9 10 11 var 数组名 [N]元素类型 = [N]元素类型{元素0, 元素1, ……, 元素N-1} //由于初始化时元素个数已知，以上代码也可写为： var 数组名 [N]元素类型 = [...]元素类型{元素0, 元素1, ……, 元素N-1} //如果先声明后赋值的话，写法如下： var 数组名 [N]元素类型 数组名 = [.</description>
+    </item>
+    <item>
+      <title>从Delphi到Go——基础</title>
+      <link>https://afrusrsc.github.io/posts/program/go/go_delphi_base/</link>
+      <pubDate>Mon, 09 Sep 2019 23:30:04 +0800</pubDate>
+      <guid>https://afrusrsc.github.io/posts/program/go/go_delphi_base/</guid>
+      <description>从其它平台迁移而来
+废话 长期从事Delphi开发，虽不敢说精通，但说很熟悉还是相当有自信的。不过，只会一门语言，而且还是这么老的语言，更是在大天朝很小众的语言，总感觉自己离饿死街头没多远了，所以趁着还没老再学个潮点的吧。
+先前考虑过Python，初步了解后觉得不太适合自己：
+解释型语言：部署时得先搞个运行环境，发布的程序就是源码本身，再加上这个执行效率，怎么想都还是编译型语言更合适。
+动态语言：无需声明，拿来就用，这已经很不合习惯了。想想一个变量，前一秒还是浮点数，下一秒就成字符串了，再一眨眼又成某个对象了……虽然一般不会有人这么写，但是挡不住手误啊，还是把这种小细节交给编译器更让人放心。
+所以，对于有点强迫症和洁癖的自己，最后还是选了Go，比较符合已有的编程习惯，学习成本应该相对会低些吧。
+至于Go嘛，想学是已经很久了，但由于种种原因却迟迟未开启，不过终究还是要迈出这一步的，所以就搞这么个系列来记录吧，一方面算是自我督促，另一方面也算是一种交流吧，当然，若一不留神帮上了谁，那自是开心极了。
+言归正传 已经初步了解过了Go，说来和Delphi还是有不少相似之处呢，从Delphi转向Go应该会比较轻松吧。
+工程结构 Delphi的工程算是比较自由的，源码的话，只要把单元路径引了或是直接包含进工程单元里就可以了，编译出的dcu和最终的exe指定下路径也就没问题了，通常我都使用下面这种结构：
+1 2 3 4 5 6 7 8 9 10 11 Project/ bin/ src/ dcu/ mod1/ *.dfm *.pas mod2/ *.dfm *.pas *.dpr 不过，每一个工程都要设置，而且我习惯将Debug和Release设置完全一样，也还真是够烦的。
+Go就没得选了，只有一种结构：
+1 2 3 4 5 6 7 8 9 10 11 Project/ bin/ pkg/ src/ *.go mod1/ *.go *_test.go mod2/ *.go *_test.go 整体和我原有的习惯差不多，还是蛮容易接受的，不过倒是要把这Project的路径加入到GOPATH系统变量里让人有一点小不爽。但是Go可以直接把测试都写了，这点还是蛮让我惊喜的，毕竟用了这么多年Delphi也没写过一行像样的测试。
+源码结构 Delphi典型的源码结构是这样：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 unit Unit1; interface uses .</description>
+    </item>
+  </channel>
+</rss>
